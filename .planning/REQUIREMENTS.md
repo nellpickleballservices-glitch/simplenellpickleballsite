@@ -168,16 +168,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MAP-01–05 | Phase 3 | Pending |
 | NOTIF-01–04 | Phase 3 | Pending |
 | DASH-01–05 | Phase 3 | Pending |
-| PUB-01–06 | Phase 4 | Pending |
-| CMS-01–03 | Phase 4 | Pending |
 | ADMIN-01–11 | Phase 4 | Pending |
+| CMS-01–03 | Phase 4 | Pending |
+| PUB-01–06 | Phase 5 | Pending |
 | AI-01–03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 62 total
-- Mapped to phases: 62
+- v1 requirements: 69 total
+- Mapped to phases: 69
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-07*
-*Last updated: 2026-03-07 after initial definition*
+*Last updated: 2026-03-07 — traceability updated after roadmap creation*
