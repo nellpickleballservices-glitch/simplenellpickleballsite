@@ -1,0 +1,183 @@
+# Requirements: NELL Pickleball Club
+
+**Defined:** 2026-03-07
+**Core Value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Authentication
+
+- [ ] **AUTH-01**: User can sign up with first name, last name, email, phone number, password, and membership plan selection
+- [ ] **AUTH-02**: First and last name fields validated separately — no numbers allowed, whitespace trimmed, capitalization normalized (e.g., jose urizar → Jose Urizar)
+- [ ] **AUTH-03**: Password requires minimum 8 characters with confirmation match
+- [ ] **AUTH-04**: User can log in with email and password
+- [ ] **AUTH-05**: User session persists across browser refresh (SSR cookie-based, using `@supabase/ssr`)
+- [ ] **AUTH-06**: User can request password reset via email link and set a new confirmed password
+- [ ] **AUTH-07**: Admin role stored in `app_metadata` (not `user_metadata`) — cannot be self-assigned
+
+### Memberships & Billing
+
+- [ ] **BILL-01**: User selects membership plan during signup: VIP Nell-Picker ($50/mo, all locations) or Basic Nell-Picker ($35/mo, one location)
+- [ ] **BILL-02**: Stripe Checkout creates a recurring subscription tied to the user's Supabase ID (`client_reference_id`)
+- [ ] **BILL-03**: Stripe webhook handles all subscription lifecycle events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`
+- [ ] **BILL-04**: Webhook events are deduplicated via `stripe_event_id` before processing (idempotency)
+- [ ] **BILL-05**: Webhook endpoint verifies Stripe signature using raw request body (`request.text()`)
+- [ ] **BILL-06**: Membership status synced in Supabase `memberships` table in real-time via webhooks
+- [ ] **BILL-07**: User can upgrade or downgrade their plan (Stripe handles proration)
+- [ ] **BILL-08**: User can cancel their subscription (access remains until period end)
+- [ ] **BILL-09**: Cancelled/past-due members cannot reserve courts (enforced at API and RLS level)
+
+### Court Reservation System
+
+- [ ] **RESV-01**: Active members can view available courts as a time-slot grid (date selected → courts × time-slots matrix)
+- [ ] **RESV-02**: Members can reserve a time slot (session length: default 60–90 min, admin-configurable)
+- [ ] **RESV-03**: System prevents double-booking via Postgres exclusion constraint on `(court_id, tstzrange)` using `btree_gist`
+- [ ] **RESV-04**: All reservation timestamps stored as UTC; displayed in `America/Santo_Domingo` (UTC-4, no DST)
+- [ ] **RESV-05**: Reservations store snapshot of `reservation_user_first_name` and `reservation_user_last_name` at booking time
+- [ ] **RESV-06**: Members can cancel their own reservation within a configurable cancellation window (e.g., 2 hours before session)
+- [ ] **RESV-07**: Basic tier members can only reserve courts at their assigned location (enforced at API level)
+- [ ] **RESV-08**: Admin can create a reservation on behalf of any active member (walk-in / phone bookings)
+- [ ] **RESV-09**: Admin can cancel any reservation
+
+### Interactive Court Map
+
+- [ ] **MAP-01**: Reservation page displays an interactive map (Leaflet, `dynamic({ ssr: false })`) with court markers
+- [ ] **MAP-02**: Markers are color-coded: green (available slots today), red (fully booked), gray (closed/maintenance)
+- [ ] **MAP-03**: Clicking a marker displays available time slots for that court in a side panel
+- [ ] **MAP-04**: Admin can set GPS coordinates for each court from the admin panel
+- [ ] **MAP-05**: Leaflet marker icon paths configured explicitly (prevents broken default icon bug)
+
+### Reservation Notifications
+
+- [ ] **NOTIF-01**: Confirmation email sent immediately when a reservation is made (via Resend)
+- [ ] **NOTIF-02**: Session end reminder triggered 10 minutes before session ends via Supabase Edge Function + pg_cron
+- [ ] **NOTIF-03**: Reminder message (bilingual): "Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin."
+- [ ] **NOTIF-04**: Reminder system tracks `reminder_sent` boolean per reservation to prevent duplicates
+
+### Member Dashboard
+
+- [ ] **DASH-01**: Member can view current membership status (plan, renewal date, status)
+- [ ] **DASH-02**: Member can view upcoming reservations with court, date, time, and cancellation option
+- [ ] **DASH-03**: Member can cancel a reservation (if within cancellation window)
+- [ ] **DASH-04**: Member can update profile: first name, last name, phone number
+- [ ] **DASH-05**: Member can change password: enter current password, new password, confirm new password
+
+### Public Website
+
+- [ ] **PUB-01**: Home page: hero section, CTA to join, pickleball overview, community messaging — all copy from CMS
+- [ ] **PUB-02**: About page: club description, vision, mission, values (Love & Passion, Accessibility, Discipline, Respect, Social Commitment, Integrity) — copy from CMS
+- [ ] **PUB-03**: Learn Pickleball page: sport origin (1965, Bainbridge Island, Joel Pritchard / Bill Bell / Barney McCallum), rules, scoring, court dimensions, equipment — copy from CMS
+- [ ] **PUB-04**: Events page: lists tournaments, training sessions, social events (admin-controlled, from database)
+- [ ] **PUB-05**: Contact page: contact form, WhatsApp link, social handles
+- [ ] **PUB-06**: All page copy editable via Admin CMS (no hardcoded marketing text)
+
+### Admin Panel
+
+- [ ] **ADMIN-01**: Admin can search users by first name, last name, email, or phone number
+- [ ] **ADMIN-02**: Admin can view any user's membership status and reservation history
+- [ ] **ADMIN-03**: Admin can disable/enable user accounts
+- [ ] **ADMIN-04**: Admin can trigger password reset for any user
+- [ ] **ADMIN-05**: Admin can add court locations with name, GPS coordinates, and capacity
+- [ ] **ADMIN-06**: Admin can block courts for maintenance (sets court status to closed)
+- [ ] **ADMIN-07**: Admin can view all reservations and cancel any reservation
+- [ ] **ADMIN-08**: Admin can create, edit, and delete events (tournaments, training, social)
+- [ ] **ADMIN-09**: Admin can view Stripe payment data (via embedded Stripe dashboard or webhook-synced table)
+- [ ] **ADMIN-10**: Admin CMS: edit content blocks for Home, About, Learn Pickleball, and FAQ pages (bilingual: `content_es`, `content_en`)
+- [ ] **ADMIN-11**: Admin routes protected at three layers: middleware (proxy.ts), layout, and API/Server Action level
+
+### Content Management System
+
+- [ ] **CMS-01**: `content_blocks` table stores: `block_key`, `block_type`, `content_es`, `content_en`, `sort_order`
+- [ ] **CMS-02**: Public pages fetch content blocks from Supabase at render time (ISR for performance)
+- [ ] **CMS-03**: Admin can update any content block via rich text or plain text editor in admin panel
+
+### Security & Infrastructure
+
+- [ ] **SEC-01**: Row Level Security enabled on all tables: `profiles`, `memberships`, `reservations`, `courts`, `locations`, `content_blocks`, `events`
+- [ ] **SEC-02**: Supabase `proxy.ts` (middleware) uses `getUser()` — not `getSession()` — for server-side JWT verification
+- [ ] **SEC-03**: Members can only read/write their own data; admin service role bypasses RLS only in webhook handler
+- [ ] **SEC-04**: Login attempt rate limiting (Supabase Auth built-in + optional custom rate limiter)
+- [ ] **SEC-05**: Protected routes enforce auth at middleware level for `/dashboard/*` and `/admin/*`
+
+### AI Chatbot
+
+- [ ] **AI-01**: AI assistant embedded on the platform (bilingual: Spanish/English)
+- [ ] **AI-02**: Chatbot answers questions about pickleball rules, membership options, reservations, events, and locations using site content as context
+- [ ] **AI-03**: Friendly, helpful tone; detects language from user input and responds in kind
+
+### Internationalization
+
+- [ ] **I18N-01**: Platform supports Spanish (primary) and English via `next-intl` with `[locale]` route segment
+- [ ] **I18N-02**: All UI strings externalized to locale files from Phase 1 (not retrofitted later)
+
+## v2 Requirements
+
+Deferred to future release.
+
+### Notifications
+
+- **NOTIF-V2-01**: Optional SMS confirmation via Twilio when reservation is made
+- **NOTIF-V2-02**: WhatsApp notification integration
+
+### Social & Community
+
+- **SOCIAL-01**: Member profile pages visible to other members
+- **SOCIAL-02**: Member-to-member messaging or chat
+
+### Mobile
+
+- **MOBILE-01**: Progressive Web App (PWA) installable on mobile
+- **MOBILE-02**: Native mobile app (React Native)
+
+### Advanced Reservations
+
+- **RESV-V2-01**: Guest passes — members can invite non-members for a session
+- **RESV-V2-02**: Group reservations (multiple courts blocked for a single event)
+- **RESV-V2-03**: Waitlist for fully booked courts
+
+### Analytics
+
+- **ANALYTICS-01**: Admin dashboard showing court utilization rates, peak hours, revenue metrics
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| SMS notifications (Twilio) | Optional per spec; adds complexity and cost for v1; deferred to v2 |
+| Native mobile app | Web-first; mobile app is a separate product milestone |
+| Real-time chat between members | Not core to club value; high complexity |
+| Video content hosting | Storage/bandwidth costs; defer to future milestone |
+| Multi-currency payments | USD only for v1; DR market uses USD for club memberships |
+| OAuth login (Google, GitHub) | Email/password + Supabase Auth sufficient for v1 |
+| Video-on-demand pickleball lessons | Content complexity; defer to v2 |
+| pgvector RAG for chatbot | Prompt-stuffing with content_blocks sufficient at v1 content volume |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| AUTH-01–07 | Phase 1 | Pending |
+| I18N-01–02 | Phase 1 | Pending |
+| SEC-01–05 | Phase 1 | Pending |
+| BILL-01–09 | Phase 2 | Pending |
+| RESV-01–09 | Phase 3 | Pending |
+| MAP-01–05 | Phase 3 | Pending |
+| NOTIF-01–04 | Phase 3 | Pending |
+| DASH-01–05 | Phase 3 | Pending |
+| PUB-01–06 | Phase 4 | Pending |
+| CMS-01–03 | Phase 4 | Pending |
+| ADMIN-01–11 | Phase 4 | Pending |
+| AI-01–03 | Phase 5 | Pending |
+
+**Coverage:**
+- v1 requirements: 62 total
+- Mapped to phases: 62
+- Unmapped: 0 ✓
+
+---
+*Requirements defined: 2026-03-07*
+*Last updated: 2026-03-07 after initial definition*
