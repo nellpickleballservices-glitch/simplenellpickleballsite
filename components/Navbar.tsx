@@ -7,6 +7,7 @@ import { logoutAction } from '@/app/actions/auth'
 export async function Navbar() {
   const t = await getTranslations('Nav')
   const tBilling = await getTranslations('Billing')
+  const tReservations = await getTranslations('Reservations')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -37,6 +38,12 @@ export async function Navbar() {
         </Link>
         {user ? (
           <>
+            <Link
+              href="/reservations"
+              className="text-sm text-offwhite hover:text-lime transition-colors"
+            >
+              {tReservations('navLink')}
+            </Link>
             <Link
               href="/dashboard"
               className="text-sm text-offwhite hover:text-lime transition-colors"

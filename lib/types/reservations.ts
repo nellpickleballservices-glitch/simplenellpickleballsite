@@ -102,8 +102,16 @@ export interface Location {
   created_at: string
 }
 
+export interface AvailabilitySummary {
+  total: number
+  available: number
+}
+
 export interface CourtWithConfig {
   court: Court
+  location: Location | null
   config: CourtConfig[]
   pricing: CourtPricing[]
+  timeSlots: TimeSlot[]
+  availabilitySummary: AvailabilitySummary
 }
