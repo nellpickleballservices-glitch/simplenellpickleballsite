@@ -10,7 +10,11 @@ export type AuthActionResult = {
   message?: string
 }
 
-export async function signUpAction(formData: FormData): Promise<AuthActionResult> {
+// useActionState requires signature: (prevState: State, formData: FormData) => Promise<State>
+export async function signUpAction(
+  _prevState: AuthActionResult,
+  formData: FormData,
+): Promise<AuthActionResult> {
   const rawFirstName = formData.get('firstName') as string
   const rawLastName = formData.get('lastName') as string
   const email = formData.get('email') as string
@@ -67,7 +71,10 @@ export async function signUpAction(formData: FormData): Promise<AuthActionResult
   redirect('/?welcome=1')
 }
 
-export async function loginAction(formData: FormData): Promise<AuthActionResult> {
+export async function loginAction(
+  _prevState: AuthActionResult,
+  formData: FormData,
+): Promise<AuthActionResult> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const supabase = await createClient()
@@ -84,7 +91,10 @@ export async function logoutAction(): Promise<void> {
   redirect('/login')
 }
 
-export async function resetPasswordAction(formData: FormData): Promise<AuthActionResult> {
+export async function resetPasswordAction(
+  _prevState: AuthActionResult,
+  formData: FormData,
+): Promise<AuthActionResult> {
   const email = formData.get('email') as string
   const supabase = await createClient()
   const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
@@ -97,7 +107,10 @@ export async function resetPasswordAction(formData: FormData): Promise<AuthActio
   return { message: 'Check your email for a password reset link' }
 }
 
-export async function updatePasswordAction(formData: FormData): Promise<AuthActionResult> {
+export async function updatePasswordAction(
+  _prevState: AuthActionResult,
+  formData: FormData,
+): Promise<AuthActionResult> {
   const password = formData.get('password') as string
   const confirmPassword = formData.get('confirmPassword') as string
 

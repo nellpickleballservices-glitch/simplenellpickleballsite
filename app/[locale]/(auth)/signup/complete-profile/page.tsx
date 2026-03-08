@@ -1,9 +1,9 @@
-import SignupForm from './SignupForm'
+import CompleteProfileForm from './CompleteProfileForm'
 
-export default function SignupPage() {
+export default function CompleteProfilePage() {
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-md">
         {/* NELL Logo */}
         <div className="text-center mb-8">
           <h1 className="text-lime font-bebas text-5xl tracking-widest">
@@ -17,11 +17,15 @@ export default function SignupPage() {
         </div>
 
         <div className="bg-[#0B1D3A] border border-[#1ED6C3] rounded-2xl shadow-xl p-8">
-          <h2 className="text-offwhite font-bold text-2xl mb-6 text-center">
+          <h2 className="text-offwhite font-bold text-2xl mb-2 text-center">
             {/* TODO: i18n */}
-            Create your account
+            One last step
           </h2>
-          <SignupForm />
+          <p className="text-offwhite/60 text-sm text-center mb-6">
+            {/* TODO: i18n */}
+            Complete your NELL Pickleball Club profile
+          </p>
+          <CompleteProfileForm />
         </div>
       </div>
     </main>

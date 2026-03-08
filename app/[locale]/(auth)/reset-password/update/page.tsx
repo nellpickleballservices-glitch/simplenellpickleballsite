@@ -1,9 +1,9 @@
-import SignupForm from './SignupForm'
+import UpdatePasswordForm from './UpdatePasswordForm'
 
-export default function SignupPage() {
+export default function UpdatePasswordPage() {
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-md">
         {/* NELL Logo */}
         <div className="text-center mb-8">
           <h1 className="text-lime font-bebas text-5xl tracking-widest">
@@ -19,9 +19,9 @@ export default function SignupPage() {
         <div className="bg-[#0B1D3A] border border-[#1ED6C3] rounded-2xl shadow-xl p-8">
           <h2 className="text-offwhite font-bold text-2xl mb-6 text-center">
             {/* TODO: i18n */}
-            Create your account
+            Set a new password
           </h2>
-          <SignupForm />
+          <UpdatePasswordForm />
         </div>
       </div>
     </main>
