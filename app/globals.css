@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-lime: #39FF14;
+  --color-midnight: #0B1D3A;
+  --color-turquoise: #1ED6C3;
+  --color-sunset: #FF6B2C;
+  --color-offwhite: #F7F9FC;
+  --color-charcoal: #2A2A2A;
+}
