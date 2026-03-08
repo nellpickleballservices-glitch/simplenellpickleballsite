@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import WelcomeBanner from './WelcomeBanner'
 
@@ -7,7 +7,7 @@ interface HomePageProps {
 }
 
 async function HomePage({ searchParams }: HomePageProps) {
-  const t = useTranslations('Home')
+  const t = await getTranslations('Home')
   const params = await searchParams
   const showWelcome = params.welcome === '1'
 

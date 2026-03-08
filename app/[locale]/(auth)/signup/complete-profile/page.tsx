@@ -1,9 +1,9 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import CompleteProfileForm from './CompleteProfileForm'
 
-function CompleteProfilePage() {
-  const t = useTranslations('Auth.completeProfile')
-  const tBrand = useTranslations('Brand')
+async function CompleteProfilePage() {
+  const t = await getTranslations('Auth.completeProfile')
+  const tBrand = await getTranslations('Brand')
 
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">

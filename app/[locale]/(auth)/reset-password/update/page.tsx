@@ -1,9 +1,9 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import UpdatePasswordForm from './UpdatePasswordForm'
 
-function UpdatePasswordPage() {
-  const t = useTranslations('Auth.updatePassword')
-  const tBrand = useTranslations('Brand')
+async function UpdatePasswordPage() {
+  const t = await getTranslations('Auth.updatePassword')
+  const tBrand = await getTranslations('Brand')
 
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">

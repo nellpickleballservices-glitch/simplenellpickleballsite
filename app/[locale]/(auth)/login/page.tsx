@@ -1,9 +1,9 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import LoginForm from './LoginForm'
 
-function LoginPage() {
-  const t = useTranslations('Auth.login')
-  const tBrand = useTranslations('Brand')
+async function LoginPage() {
+  const t = await getTranslations('Auth.login')
+  const tBrand = await getTranslations('Brand')
 
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">

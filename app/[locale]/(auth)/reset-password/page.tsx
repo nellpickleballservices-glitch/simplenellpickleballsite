@@ -1,9 +1,9 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import ResetPasswordForm from './ResetPasswordForm'
 
-function ResetPasswordPage() {
-  const t = useTranslations('Auth.resetPassword')
-  const tBrand = useTranslations('Brand')
+async function ResetPasswordPage() {
+  const t = await getTranslations('Auth.resetPassword')
+  const tBrand = await getTranslations('Brand')
 
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">
