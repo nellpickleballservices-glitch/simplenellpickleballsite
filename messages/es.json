@@ -239,5 +239,30 @@
       "guest_not_allowed": "Solo los miembros VIP pueden agregar invitados a su reserva.",
       "unexpected_error": "Algo salio mal. Por favor intenta de nuevo."
     }
+  },
+  "Settings": {
+    "pageTitle": "Configuracion",
+    "breadcrumbDashboard": "Panel",
+    "breadcrumbSettings": "Configuracion",
+    "personalInfoTitle": "Informacion Personal",
+    "changePasswordTitle": "Cambiar Contrasena",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Telefono (opcional)",
+    "saveProfile": "Guardar Cambios",
+    "saving": "Guardando...",
+    "profileUpdated": "Perfil actualizado exitosamente",
+    "currentPassword": "Contrasena actual",
+    "newPassword": "Nueva contrasena",
+    "confirmNewPassword": "Confirmar nueva contrasena",
+    "changePassword": "Cambiar Contrasena",
+    "changingPassword": "Cambiando...",
+    "passwordChanged": "Contrasena cambiada exitosamente",
+    "errors": {
+      "current_password_wrong": "La contrasena actual es incorrecta",
+      "password_too_short": "La nueva contrasena debe tener al menos 8 caracteres",
+      "passwords_dont_match": "Las contrasenas no coinciden",
+      "not_authenticated": "Debes iniciar sesion"
+    }
   }
 }

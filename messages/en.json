@@ -239,5 +239,30 @@
       "guest_not_allowed": "Only VIP members can add guests to their booking.",
       "unexpected_error": "Something went wrong. Please try again."
     }
+  },
+  "Settings": {
+    "pageTitle": "Settings",
+    "breadcrumbDashboard": "Dashboard",
+    "breadcrumbSettings": "Settings",
+    "personalInfoTitle": "Personal Information",
+    "changePasswordTitle": "Change Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone (optional)",
+    "saveProfile": "Save Changes",
+    "saving": "Saving...",
+    "profileUpdated": "Profile updated successfully",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "changePassword": "Change Password",
+    "changingPassword": "Changing...",
+    "passwordChanged": "Password changed successfully",
+    "errors": {
+      "current_password_wrong": "Current password is incorrect",
+      "password_too_short": "New password must be at least 8 characters",
+      "passwords_dont_match": "Passwords do not match",
+      "not_authenticated": "You must be logged in"
+    }
   }
 }
