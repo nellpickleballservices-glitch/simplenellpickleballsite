@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/5 | In Progress|  |
+| 1. Foundation | 3/5 | In Progress|  |
 | 2. Billing | 0/3 | Not started | - |
 | 3. Reservations | 0/4 | Not started | - |
 | 4. Admin and CMS | 0/4 | Not started | - |

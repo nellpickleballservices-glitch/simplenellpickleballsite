@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 01-foundation-02-PLAN.md
-last_updated: "2026-03-08T03:04:34Z"
-last_activity: 2026-03-08 — Plan 01-02 complete (Supabase clients + DB schema)
+status: executing
+stopped_at: Completed 01-foundation-01-PLAN.md
+last_updated: "2026-03-08T03:08:21.458Z"
+last_activity: 2026-03-08 — Plan 01-02 complete (Supabase clients + full DB schema with RLS)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
-  percent: 0
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -26,30 +26,31 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 1 of 5 (Foundation)
-Plan: 2 of 5 completed (next: 01-01)
+Plan: 3 of 5 completed (next: 01-03)
 Status: In Progress
-Last activity: 2026-03-08 — Plan 01-02 complete (Supabase clients + full DB schema with RLS)
+Last activity: 2026-03-08 — Plan 01-01 complete (Next.js 16 scaffold + proxy.ts + route groups)
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 3 min
-- Total execution time: 6 min
+- Total execution time: 10 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2/5 | 6 min | 3 min |
+| 01-foundation | 3/5 | 10 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 2 min
-- Trend: fast
+- Last 5 plans: 4 min, 2 min, 4 min
+- Trend: stable
 
 *Updated after each plan completion*
+| Phase 01-foundation P01 | 4 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation, 01-02]: app/auth/callback/route.ts placed outside [locale] — prevents locale prefix collision with Supabase OAuth redirect URL
 - [Phase 01-foundation, 01-02]: auth.uid() wrapped in (SELECT auth.uid()) in all RLS policies — enables Postgres query planner caching
 - [Phase 01-foundation, 01-02]: Unique policy names per table (e.g. "Service role full access on memberships") — avoids ambiguity in Supabase dashboard
+- [Phase 01-foundation]: proxy.ts comments avoid literal 'getSession()' string — source-code grep test would false-positive on comments
+- [Phase 01-foundation]: create-next-app unusable in non-empty directory — dependencies installed manually, identical outcome
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T03:04:34Z
-Stopped at: Completed 01-foundation-02-PLAN.md
+Last session: 2026-03-08T03:08:21.456Z
+Stopped at: Completed 01-foundation-01-PLAN.md
 Resume file: None
