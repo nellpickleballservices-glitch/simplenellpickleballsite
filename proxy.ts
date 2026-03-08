@@ -46,19 +46,16 @@ export async function proxy(request: NextRequest) {
   }
 
   // LOCKED DECISION (CONTEXT.md): Authenticated but unsubscribed users accessing /member/* go to /pricing.
-  // Subscription status check is a stub here — Phase 2 (Billing) will harden this by querying
-  // the memberships table. For now, the route pattern and redirect are established so downstream
-  // phases can rely on this behavior contract.
+  // Only active members can access /member/ routes. Queries memberships table via RLS.
   if (user && pathname.includes('/member/')) {
-    // TODO(Phase 2): Replace stub with real memberships table query:
-    //   const { data: membership } = await supabase
-    //     .from('memberships')
-    //     .select('status')
-    //     .eq('user_id', user.id)
-    //     .eq('status', 'active')
-    //     .maybeSingle()
-    //   const isSubscribed = !!membership
-    const isSubscribed = false // stub — Phase 2 hardens this
+    const { data: membership } = await supabase
+      .from('memberships')
+      .select('status')
+      .eq('user_id', user.id)
+      .in('status', ['active'])
+      .maybeSingle()
+
+    const isSubscribed = !!membership
     if (!isSubscribed) {
       const url = request.nextUrl.clone()
       url.pathname = '/pricing'
