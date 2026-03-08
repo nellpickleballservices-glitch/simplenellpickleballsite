@@ -155,7 +155,7 @@
     "confirmBilling": "Billed monthly, cancel anytime",
     "confirmProceed": "Proceed to Payment",
     "confirmCancel": "Go Back",
-    "cancelledMessage": "No worries — you can subscribe anytime.",
+    "checkoutCancelledMessage": "No worries — you can subscribe anytime.",
     "securedByStripe": "Secured by Stripe",
     "pricingNav": "Pricing",
     "checkoutPending": "Processing your membership...",

@@ -155,7 +155,7 @@
     "confirmBilling": "Facturado mensualmente, cancela cuando quieras",
     "confirmProceed": "Proceder al Pago",
     "confirmCancel": "Volver",
-    "cancelledMessage": "Tranquilo — puedes suscribirte cuando quieras.",
+    "checkoutCancelledMessage": "Tranquilo — puedes suscribirte cuando quieras.",
     "securedByStripe": "Procesado por Stripe",
     "pricingNav": "Precios",
     "checkoutPending": "Procesando tu membresía...",

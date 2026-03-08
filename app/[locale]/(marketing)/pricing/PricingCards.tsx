@@ -36,7 +36,7 @@ export function PricingCards({ user, membership, showCancelledMessage }: Pricing
       {/* Cancelled checkout banner */}
       {showCancelledMessage && (
         <div className="mb-8 border border-lime/40 bg-lime/5 rounded-xl px-6 py-4 text-center">
-          <p className="text-offwhite/90 text-sm">{t('cancelledMessage')}</p>
+          <p className="text-offwhite/90 text-sm">{t('checkoutCancelledMessage')}</p>
         </div>
       )}
 
