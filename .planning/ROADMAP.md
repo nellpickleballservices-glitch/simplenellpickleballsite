@@ -51,10 +51,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-00-PLAN.md — Wave 0 Nyquist gate: test stubs (billing, webhookHandler, proxyMembership, checkoutSuccess) + migration 0002 (webhook_events, UNIQUE(user_id) on memberships, supabase_realtime publication)
-- [ ] 02-01-PLAN.md — Stripe singleton, service-role Supabase client, billing Server Actions (checkout + portal), checkout and cancel pages, Billing i18n namespace
-- [ ] 02-02-PLAN.md — Webhook Route Handler at /api/stripe/webhook: raw body signature verification (request.text()), idempotency guard, five event handlers (checkout.session.completed, subscription.updated, subscription.deleted, invoice.payment_succeeded, invoice.payment_failed)
-- [ ] 02-03-PLAN.md — Post-checkout Realtime page (pending→active state machine), proxy.ts real membership gate replacing Phase 1 stub, human verification checkpoint
+- [ ] 02-00-PLAN.md — Wave 0 Nyquist gate: test stubs + migration 0002 (webhook_events table, UNIQUE(user_id) on memberships, supabase_realtime publication)
+- [ ] 02-01-PLAN.md — Stripe singleton, billing Server Actions (checkout + portal), pricing page with context-aware CTAs, Billing i18n namespace, Navbar pricing link
+- [ ] 02-02-PLAN.md — Webhook Route Handler at /api/stripe/webhook: raw body signature verification, idempotency guard, five event handler functions
+- [ ] 02-03-PLAN.md — Post-checkout Realtime page (pending/active/timeout state machine), dashboard membership card, proxy.ts real membership gate, human verification checkpoint
 
 ### Phase 3: Reservations
 **Goal**: An active member can view court availability on an interactive color-coded map, reserve a time slot with double-booking impossible at the database level, receive an immediate confirmation email, and get a reminder before their session ends.
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 5/5 | Complete   | 2026-03-08 |
+| 1. Foundation | 5/5 | Complete    | 2026-03-08 |
 | 2. Billing | 0/4 | Not started | - |
 | 3. Reservations | 0/4 | Not started | - |
 | 4. Admin and CMS | 0/4 | Not started | - |
