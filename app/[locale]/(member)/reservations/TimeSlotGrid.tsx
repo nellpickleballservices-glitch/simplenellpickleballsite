@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import type { TimeSlot, AvailabilitySummary } from '@/lib/types/reservations'
 import { getAvailabilityAction } from './actions'
 import CourtDiagram from './CourtDiagram'
+import ReservationForm from './ReservationForm'
 
 interface TimeSlotGridProps {
   initialTimeSlots: TimeSlot[]
@@ -58,6 +59,9 @@ export default function TimeSlotGrid({
   const [diagramSlot, setDiagramSlot] = useState<TimeSlot | null>(null)
   const [allSlotsForDiagram, setAllSlotsForDiagram] = useState<TimeSlot[]>([])
 
+  // Full court booking inline form state
+  const [fullCourtBookingSlot, setFullCourtBookingSlot] = useState<TimeSlot | null>(null)
+
   // Build date tabs
   const tabs: DateTab[] = []
   const tabLabels = [t('tabToday'), t('tabTomorrow')]
@@ -96,17 +100,11 @@ export default function TimeSlotGrid({
     setAllSlotsForDiagram(timeSlots.filter((s) => s.mode === 'open_play'))
   }
 
-  // Handle booking callback (placeholder for Plan 03-03)
-  const handleBookingRequest = (data: {
-    courtId: string
-    date: string
-    startTime: string
-    endTime: string
-    spotNumber?: number
-    guestName?: string
-  }) => {
-    // Will be implemented in Plan 03-03
-    console.log('Booking request:', data)
+  // Handle full court booking -- toggle inline form
+  const handleFullCourtBook = (slot: TimeSlot) => {
+    setFullCourtBookingSlot(
+      fullCourtBookingSlot?.startTime === slot.startTime ? null : slot
+    )
   }
 
   return (
@@ -145,36 +143,43 @@ export default function TimeSlotGrid({
             if (isFullCourt) {
               const isAvailable = slot.spots[0]?.isAvailable ?? false
               return (
-                <div
-                  key={slot.startTime}
-                  className="flex items-center justify-between bg-[#0a1628] rounded-lg px-3 py-2.5"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-white font-medium">
-                      {timeRange}
-                    </span>
-                    <span className="text-[10px] bg-[#1ED6C3]/20 text-[#1ED6C3] px-2 py-0.5 rounded-full">
-                      {t('modeFullCourt')}
-                    </span>
+                <div key={slot.startTime} className="space-y-1">
+                  <div className="flex items-center justify-between bg-[#0a1628] rounded-lg px-3 py-2.5">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-white font-medium">
+                        {timeRange}
+                      </span>
+                      <span className="text-[10px] bg-[#1ED6C3]/20 text-[#1ED6C3] px-2 py-0.5 rounded-full">
+                        {t('modeFullCourt')}
+                      </span>
+                    </div>
+                    {isAvailable ? (
+                      <button
+                        onClick={() => handleFullCourtBook(slot)}
+                        className="text-xs bg-[#39FF14] text-[#0B1D3A] font-semibold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
+                      >
+                        {t('bookCourt')}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-red-400 font-medium">
+                        {t('slotBooked')}
+                      </span>
+                    )}
                   </div>
-                  {isAvailable ? (
-                    <button
-                      onClick={() =>
-                        handleBookingRequest({
-                          courtId,
-                          date: selectedDate,
-                          startTime: slot.startTime,
-                          endTime: slot.endTime,
-                        })
-                      }
-                      className="text-xs bg-[#39FF14] text-[#0B1D3A] font-semibold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
-                    >
-                      {t('bookCourt')}
-                    </button>
-                  ) : (
-                    <span className="text-xs text-red-400 font-medium">
-                      {t('slotBooked')}
-                    </span>
+
+                  {/* Inline reservation form for full court */}
+                  {fullCourtBookingSlot?.startTime === slot.startTime && (
+                    <div className="bg-[#111b2e] rounded-lg px-3 py-3">
+                      <ReservationForm
+                        courtId={courtId}
+                        date={selectedDate}
+                        startTime={slot.startTime}
+                        endTime={slot.endTime}
+                        bookingMode="full_court"
+                        isVip={isVip}
+                        isMember={isMember}
+                      />
+                    </div>
                   )}
                 </div>
               )
@@ -239,8 +244,8 @@ export default function TimeSlotGrid({
           courtId={courtId}
           date={selectedDate}
           isVip={isVip}
+          isMember={isMember}
           onClose={() => setDiagramSlot(null)}
-          onBookingRequest={handleBookingRequest}
         />
       )}
     </div>

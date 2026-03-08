@@ -4,7 +4,12 @@ import { getTranslations } from 'next-intl/server'
 import { getCourtAvailability, getAppConfigs } from '@/lib/queries/reservations'
 import CourtCard from './CourtCard'
 
-export default async function ReservationsPage() {
+export default async function ReservationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paid?: string; payment_cancelled?: string }>
+}) {
+  const params = await searchParams
   const supabase = await createClient()
   const t = await getTranslations('Reservations')
 
@@ -51,6 +56,18 @@ export default async function ReservationsPage() {
         <h1 className="font-bebas-neue text-4xl text-white mb-8 tracking-wide">
           {t('pageTitle')}
         </h1>
+
+        {/* Stripe payment return banners */}
+        {params.paid === 'true' && (
+          <div className="mb-6 bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-3">
+            <p className="text-green-400 font-semibold text-sm">{t('paidSuccess')}</p>
+          </div>
+        )}
+        {params.payment_cancelled === 'true' && (
+          <div className="mb-6 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
+            <p className="text-amber-400 font-semibold text-sm">{t('paymentCancelled')}</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courts.map((courtData) => (

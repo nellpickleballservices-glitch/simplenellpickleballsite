@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import type { TimeSlot } from '@/lib/types/reservations'
+import ReservationForm from './ReservationForm'
 
 interface CourtDiagramProps {
   slot: TimeSlot
@@ -10,15 +11,8 @@ interface CourtDiagramProps {
   courtId: string
   date: string
   isVip: boolean
+  isMember: boolean
   onClose: () => void
-  onBookingRequest: (data: {
-    courtId: string
-    date: string
-    startTime: string
-    endTime: string
-    spotNumber?: number
-    guestName?: string
-  }) => void
 }
 
 /** Format a datetime string for display. */
@@ -38,13 +32,12 @@ export default function CourtDiagram({
   courtId,
   date,
   isVip,
+  isMember,
   onClose,
-  onBookingRequest,
 }: CourtDiagramProps) {
   const t = useTranslations('Reservations')
   const [currentSlot, setCurrentSlot] = useState<TimeSlot>(initialSlot)
   const [selectedSpot, setSelectedSpot] = useState<number | null>(null)
-  const [guestName, setGuestName] = useState('')
 
   const currentIndex = allSlots.findIndex(
     (s) => s.startTime === currentSlot.startTime
@@ -54,7 +47,6 @@ export default function CourtDiagram({
     if (currentIndex > 0) {
       setCurrentSlot(allSlots[currentIndex - 1])
       setSelectedSpot(null)
-      setGuestName('')
     }
   }
 
@@ -62,21 +54,7 @@ export default function CourtDiagram({
     if (currentIndex < allSlots.length - 1) {
       setCurrentSlot(allSlots[currentIndex + 1])
       setSelectedSpot(null)
-      setGuestName('')
     }
-  }
-
-  const handleReserve = () => {
-    if (selectedSpot === null) return
-    onBookingRequest({
-      courtId,
-      date,
-      startTime: currentSlot.startTime,
-      endTime: currentSlot.endTime,
-      spotNumber: selectedSpot,
-      guestName: guestName.trim() || undefined,
-    })
-    onClose()
   }
 
   // 2x2 quadrant positions
@@ -189,33 +167,23 @@ export default function CourtDiagram({
             </div>
           </div>
 
-          {/* VIP Guest name input */}
-          {isVip && selectedSpot !== null && (
-            <div className="mt-4">
-              <label className="text-gray-400 text-xs block mb-1">
-                {t('addGuest')}
-              </label>
-              <input
-                type="text"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                placeholder={t('guestNamePlaceholder')}
-                className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#39FF14] transition-colors"
-              />
-            </div>
-          )}
         </div>
 
-        {/* Reserve button */}
-        <div className="px-5 pb-5">
-          <button
-            onClick={handleReserve}
-            disabled={selectedSpot === null}
-            className="w-full bg-[#39FF14] text-[#0B1D3A] font-semibold py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {t('reserveSpot')}
-          </button>
-        </div>
+        {/* Reservation form when spot is selected */}
+        {selectedSpot !== null && (
+          <div className="px-5 pb-5">
+            <ReservationForm
+              courtId={courtId}
+              date={date}
+              startTime={currentSlot.startTime}
+              endTime={currentSlot.endTime}
+              bookingMode="open_play"
+              spotNumber={selectedSpot}
+              isVip={isVip}
+              isMember={isMember}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
