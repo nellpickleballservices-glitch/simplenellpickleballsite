@@ -240,6 +240,38 @@
       "unexpected_error": "Something went wrong. Please try again."
     }
   },
+  "Dashboard": {
+    "upcomingReservations": "Upcoming Reservations",
+    "noReservations": "No upcoming reservations",
+    "bookNow": "Reserve a Court",
+    "settings": "Settings",
+    "headerDate": "Date",
+    "headerTime": "Time",
+    "headerCourt": "Court",
+    "headerStatus": "Status",
+    "headerActions": "Actions",
+    "statusConfirmed": "Confirmed",
+    "statusPendingPayment": "Pending Payment",
+    "statusPaid": "Paid",
+    "statusCancelled": "Cancelled",
+    "cancelButton": "Cancel",
+    "cancelWindowPassed": "Cancellation window has passed",
+    "payNow": "Pay Now",
+    "cancelTitle": "Cancel Reservation",
+    "cancelConfirmation": "Are you sure you want to cancel this reservation?",
+    "court": "Court",
+    "date": "Date",
+    "time": "Time",
+    "cancelYes": "Yes, Cancel Reservation",
+    "cancelNo": "Keep Reservation",
+    "errors": {
+      "cancellation_window_passed": "Cancellation window has passed. You can only cancel at least {hours} hours before the session.",
+      "not_found": "Reservation not found.",
+      "unauthorized": "You can only manage your own reservations.",
+      "already_cancelled": "This reservation has already been cancelled.",
+      "unexpected_error": "Something went wrong. Please try again."
+    }
+  },
   "Settings": {
     "pageTitle": "Settings",
     "breadcrumbDashboard": "Dashboard",

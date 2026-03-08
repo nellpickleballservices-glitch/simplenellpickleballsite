@@ -240,6 +240,38 @@
       "unexpected_error": "Algo salio mal. Por favor intenta de nuevo."
     }
   },
+  "Dashboard": {
+    "upcomingReservations": "Proximas Reservas",
+    "noReservations": "No hay reservas proximas",
+    "bookNow": "Reservar una Cancha",
+    "settings": "Configuracion",
+    "headerDate": "Fecha",
+    "headerTime": "Hora",
+    "headerCourt": "Cancha",
+    "headerStatus": "Estado",
+    "headerActions": "Acciones",
+    "statusConfirmed": "Confirmada",
+    "statusPendingPayment": "Pago Pendiente",
+    "statusPaid": "Pagada",
+    "statusCancelled": "Cancelada",
+    "cancelButton": "Cancelar",
+    "cancelWindowPassed": "La ventana de cancelacion ha pasado",
+    "payNow": "Pagar Ahora",
+    "cancelTitle": "Cancelar Reserva",
+    "cancelConfirmation": "Estas seguro de que quieres cancelar esta reserva?",
+    "court": "Cancha",
+    "date": "Fecha",
+    "time": "Hora",
+    "cancelYes": "Si, Cancelar Reserva",
+    "cancelNo": "Mantener Reserva",
+    "errors": {
+      "cancellation_window_passed": "La ventana de cancelacion ha pasado. Solo puedes cancelar al menos {hours} horas antes de la sesion.",
+      "not_found": "Reserva no encontrada.",
+      "unauthorized": "Solo puedes gestionar tus propias reservas.",
+      "already_cancelled": "Esta reserva ya fue cancelada.",
+      "unexpected_error": "Algo salio mal. Por favor intenta de nuevo."
+    }
+  },
   "Settings": {
     "pageTitle": "Configuracion",
     "breadcrumbDashboard": "Panel",

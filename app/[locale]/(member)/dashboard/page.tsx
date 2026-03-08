@@ -3,10 +3,12 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import MembershipCard from './MembershipCard'
+import ReservationsTable from './ReservationsTable'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const t = await getTranslations('Billing')
+  const tDash = await getTranslations('Dashboard')
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
@@ -32,6 +34,47 @@ export default async function DashboardPage() {
     ? `${profile.first_name} ${profile.last_name}`.trim()
     : ''
 
+  // Fetch upcoming reservations
+  const now = new Date().toISOString()
+  const { data: reservationsRaw } = await supabase
+    .from('reservations')
+    .select('id, starts_at, ends_at, status, payment_status, court_id')
+    .eq('user_id', user.id)
+    .gt('starts_at', now)
+    .not('status', 'in', '("cancelled","expired")')
+    .order('starts_at', { ascending: true })
+
+  // Fetch court names for reservations
+  const courtIds = [...new Set((reservationsRaw || []).map(r => r.court_id))]
+  let courtNameMap: Record<string, string> = {}
+  if (courtIds.length > 0) {
+    const { data: courts } = await supabase
+      .from('courts')
+      .select('id, name')
+      .in('id', courtIds)
+    if (courts) {
+      courtNameMap = Object.fromEntries(courts.map(c => [c.id, c.name]))
+    }
+  }
+
+  const reservations = (reservationsRaw || []).map(r => ({
+    id: r.id,
+    starts_at: r.starts_at,
+    ends_at: r.ends_at,
+    status: r.status,
+    payment_status: r.payment_status,
+    court_name: courtNameMap[r.court_id] || 'Court',
+  }))
+
+  // Fetch cancellation window config
+  const { data: windowConfig } = await supabase
+    .from('app_config')
+    .select('value')
+    .eq('key', 'cancellation_window_hours')
+    .single()
+
+  const cancellationWindowHours = windowConfig?.value ?? 2
+
   // No membership — show subscribe banner
   if (!membership) {
     return (
@@ -56,11 +99,31 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#0a1628] py-12 px-4 flex flex-col items-center">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-white mb-8">
-          {userName ? `${userName}` : 'Dashboard'}
-        </h1>
+      <div className="w-full max-w-lg">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold text-white">
+            {userName ? `${userName}` : 'Dashboard'}
+          </h1>
+          <Link
+            href="/dashboard/settings"
+            className="text-gray-400 hover:text-white transition-colors text-sm"
+          >
+            {tDash('settings')}
+          </Link>
+        </div>
+
         <MembershipCard membership={membership} userName={userName} />
+
+        {/* Upcoming Reservations */}
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-white mb-4">
+            {tDash('upcomingReservations')}
+          </h2>
+          <ReservationsTable
+            reservations={reservations}
+            cancellationWindowHours={cancellationWindowHours}
+          />
+        </div>
       </div>
     </main>
   )
