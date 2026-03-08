@@ -45,9 +45,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // LOCKED DECISION (CONTEXT.md): Reservation routes are open to ALL authenticated users.
+  // Non-members pay per session. Skip membership gate for /reservations and /checkout-session.
+  const isReservationRoute =
+    pathname.includes('/reservations') || pathname.includes('/checkout-session')
+
   // LOCKED DECISION (CONTEXT.md): Authenticated but unsubscribed users accessing /member/* go to /pricing.
   // Only active members can access /member/ routes. Queries memberships table via RLS.
-  if (user && pathname.includes('/member/')) {
+  if (user && pathname.includes('/member/') && !isReservationRoute) {
     const { data: membership } = await supabase
       .from('memberships')
       .select('status')
