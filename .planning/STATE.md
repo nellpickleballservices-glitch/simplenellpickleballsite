@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-00-PLAN.md
-last_updated: "2026-03-08T07:47:01.797Z"
-last_activity: 2026-03-08 — Plan 02-00 complete (Nyquist gate — 25 test stubs + migration 0002)
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-08T07:51:57.406Z"
+last_activity: 2026-03-08 — Plan 02-01 complete (Stripe checkout, pricing page, billing i18n)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 7
+  percent: 78
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 2 of 5 (Billing)
-Plan: 1 of 4 completed (next: 02-01)
+Plan: 2 of 4 completed (next: 02-02)
 Status: In Progress
-Last activity: 2026-03-08 — Plan 02-00 complete (Nyquist gate — 25 test stubs + migration 0002)
+Last activity: 2026-03-08 — Plan 02-01 complete (Stripe checkout, pricing page, billing i18n)
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [███████░░░] 67%
 | Phase 01-foundation P03 | 7 | 3 tasks | 17 files |
 | Phase 01-foundation P04 | 10 | 2 tasks | 16 files |
 | Phase 02-billing P00 | 1 | 2 tasks | 5 files |
+| Phase 02-billing P01 | 3 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,7 @@ Recent decisions affecting current work:
 - [Phase 01-foundation, 01-04]: Server Components (page.tsx files) call useTranslations() directly without 'use client' — next-intl 4 supports both RSC and Client Component usage
 - [Phase 01-foundation, 01-04]: Brand namespace extracted for 'NELL' and 'Pickleball Club' strings — reused across all auth pages avoiding duplication
 - [Phase 02-billing]: test.skip() used consistently for billing stubs (test.todo() not available in Vitest)
+- [Phase 02-billing]: Stripe API version 2026-02-25.clover (matches installed package types)
 
 ### Pending Todos
 
@@ -98,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T07:47:01.795Z
-Stopped at: Completed 02-00-PLAN.md
+Last session: 2026-03-08T07:51:57.404Z
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None
