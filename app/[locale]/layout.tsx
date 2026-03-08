@@ -1,5 +1,21 @@
 import type { Metadata } from 'next'
+import { Bebas_Neue, Inter } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
 import '../globals.css'
+
+const bebasNeue = Bebas_Neue({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-bebas-neue',
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'NELL Pickleball Club',
@@ -14,9 +30,15 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
+  const messages = await getMessages()
+
   return (
-    <html lang={locale}>
-      <body>{children}</body>
+    <html lang={locale} className={`${bebasNeue.variable} ${inter.variable}`}>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
     </html>
   )
 }

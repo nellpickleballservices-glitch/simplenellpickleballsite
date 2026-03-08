@@ -1,0 +1,91 @@
+{
+  "Nav": {
+    "languageSwitcher": "Language",
+    "es": "Español",
+    "en": "English"
+  },
+  "Auth": {
+    "signup": {
+      "title": "Create your account",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submitButton": "Create account",
+      "submittingButton": "Creating account...",
+      "planSelectionTitle": "Choose a plan (optional)",
+      "planVipName": "VIP Nell-Picker",
+      "planVipPrice": "$50/mo",
+      "planVipDescription": "All locations",
+      "planVipFeature1": "All locations",
+      "planVipFeature2": "Priority court booking",
+      "planVipFeature3": "Member events access",
+      "planBasicName": "Basic Nell-Picker",
+      "planBasicPrice": "$35/mo",
+      "planBasicDescription": "One location",
+      "planBasicFeature1": "One location",
+      "planBasicFeature2": "Standard court booking",
+      "planBasicFeature3": "Member events access",
+      "googleButton": "Sign up with Google",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "or": "or"
+    },
+    "login": {
+      "title": "Welcome back",
+      "email": "Email",
+      "password": "Password",
+      "submitButton": "Sign in",
+      "submittingButton": "Signing in...",
+      "googleButton": "Sign in with Google",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up",
+      "or": "or"
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a link to reset your password.",
+      "email": "Email",
+      "submitButton": "Send reset link",
+      "sendingButton": "Sending...",
+      "successMessage": "Check your inbox for the reset link",
+      "backToLogin": "Back to login",
+      "checkInbox": "Check your inbox"
+    },
+    "updatePassword": {
+      "title": "New password",
+      "password": "New password",
+      "confirmPassword": "Confirm new password",
+      "submitButton": "Update password",
+      "updatingButton": "Updating..."
+    },
+    "completeProfile": {
+      "title": "One last step",
+      "subtitle": "Complete your NELL Pickleball Club profile",
+      "description": "We just need your phone number to complete your NELL profile.",
+      "phone": "Phone number",
+      "submitButton": "Complete profile",
+      "savingButton": "Saving..."
+    },
+    "errors": {
+      "nameRequired": "Name is required",
+      "nameNumbers": "Name cannot contain numbers",
+      "passwordLength": "Password must be at least 8 characters",
+      "passwordMatch": "Passwords do not match"
+    }
+  },
+  "Home": {
+    "title": "NELL",
+    "subtitle": "Pickleball Club",
+    "location": "Bávaro, Dominican Republic",
+    "joinButton": "Join the Club",
+    "welcome": "Hello, {name}! Welcome to NELL Pickleball Club."
+  },
+  "Brand": {
+    "name": "NELL",
+    "tagline": "Pickleball Club"
+  }
+}

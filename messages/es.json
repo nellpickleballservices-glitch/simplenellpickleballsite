@@ -1,0 +1,91 @@
+{
+  "Nav": {
+    "languageSwitcher": "Idioma",
+    "es": "Español",
+    "en": "English"
+  },
+  "Auth": {
+    "signup": {
+      "title": "Crea tu cuenta",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "phone": "Teléfono (opcional)",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submitButton": "Crear cuenta",
+      "submittingButton": "Creando cuenta...",
+      "planSelectionTitle": "Elige tu plan (opcional)",
+      "planVipName": "VIP Nell-Picker",
+      "planVipPrice": "$50/mes",
+      "planVipDescription": "Todos los locales",
+      "planVipFeature1": "Todos los locales",
+      "planVipFeature2": "Reserva de cancha prioritaria",
+      "planVipFeature3": "Acceso a eventos de miembros",
+      "planBasicName": "Basic Nell-Picker",
+      "planBasicPrice": "$35/mes",
+      "planBasicDescription": "Acceso a un local",
+      "planBasicFeature1": "Un local",
+      "planBasicFeature2": "Reserva de cancha estándar",
+      "planBasicFeature3": "Acceso a eventos de miembros",
+      "googleButton": "Registrarse con Google",
+      "alreadyHaveAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Inicia sesión",
+      "or": "o"
+    },
+    "login": {
+      "title": "Bienvenido de vuelta",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submitButton": "Iniciar sesión",
+      "submittingButton": "Iniciando sesión...",
+      "googleButton": "Iniciar sesión con Google",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes cuenta?",
+      "signupLink": "Regístrate",
+      "or": "o"
+    },
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "description": "Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.",
+      "email": "Correo electrónico",
+      "submitButton": "Enviar enlace",
+      "sendingButton": "Enviando...",
+      "successMessage": "Revisa tu correo para el enlace de restablecimiento",
+      "backToLogin": "Volver al inicio de sesión",
+      "checkInbox": "Revisa tu bandeja de entrada"
+    },
+    "updatePassword": {
+      "title": "Nueva contraseña",
+      "password": "Nueva contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submitButton": "Actualizar contraseña",
+      "updatingButton": "Actualizando..."
+    },
+    "completeProfile": {
+      "title": "Un último paso",
+      "subtitle": "Completa tu perfil de NELL Pickleball Club",
+      "description": "Solo necesitamos tu número de teléfono para completar tu perfil NELL.",
+      "phone": "Número de teléfono",
+      "submitButton": "Completar perfil",
+      "savingButton": "Guardando..."
+    },
+    "errors": {
+      "nameRequired": "El nombre es requerido",
+      "nameNumbers": "El nombre no puede contener números",
+      "passwordLength": "La contraseña debe tener al menos 8 caracteres",
+      "passwordMatch": "Las contraseñas no coinciden"
+    }
+  },
+  "Home": {
+    "title": "NELL",
+    "subtitle": "Pickleball Club",
+    "location": "Bávaro, República Dominicana",
+    "joinButton": "Únete al Club",
+    "welcome": "¡Hola, {name}! Bienvenido a NELL Pickleball Club."
+  },
+  "Brand": {
+    "name": "NELL",
+    "tagline": "Pickleball Club"
+  }
+}
