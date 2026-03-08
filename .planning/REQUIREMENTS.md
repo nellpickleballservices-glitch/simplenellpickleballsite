@@ -19,15 +19,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Memberships & Billing
 
-- [ ] **BILL-01**: User selects membership plan during signup: VIP Nell-Picker ($50/mo, all locations) or Basic Nell-Picker ($35/mo, one location)
-- [ ] **BILL-02**: Stripe Checkout creates a recurring subscription tied to the user's Supabase ID (`client_reference_id`)
-- [ ] **BILL-03**: Stripe webhook handles all subscription lifecycle events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`
-- [ ] **BILL-04**: Webhook events are deduplicated via `stripe_event_id` before processing (idempotency)
-- [ ] **BILL-05**: Webhook endpoint verifies Stripe signature using raw request body (`request.text()`)
-- [ ] **BILL-06**: Membership status synced in Supabase `memberships` table in real-time via webhooks
-- [ ] **BILL-07**: User can upgrade or downgrade their plan (Stripe handles proration)
-- [ ] **BILL-08**: User can cancel their subscription (access remains until period end)
-- [ ] **BILL-09**: Cancelled/past-due members cannot reserve courts (enforced at API and RLS level)
+- [x] **BILL-01**: User selects membership plan during signup: VIP Nell-Picker ($50/mo, all locations) or Basic Nell-Picker ($35/mo, one location)
+- [x] **BILL-02**: Stripe Checkout creates a recurring subscription tied to the user's Supabase ID (`client_reference_id`)
+- [x] **BILL-03**: Stripe webhook handles all subscription lifecycle events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`
+- [x] **BILL-04**: Webhook events are deduplicated via `stripe_event_id` before processing (idempotency)
+- [x] **BILL-05**: Webhook endpoint verifies Stripe signature using raw request body (`request.text()`)
+- [x] **BILL-06**: Membership status synced in Supabase `memberships` table in real-time via webhooks
+- [x] **BILL-07**: User can upgrade or downgrade their plan (Stripe handles proration)
+- [x] **BILL-08**: User can cancel their subscription (access remains until period end)
+- [x] **BILL-09**: Cancelled/past-due members cannot reserve courts (enforced at API and RLS level)
 
 ### Court Reservation System
 
