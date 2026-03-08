@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-08T16:55:55.000Z"
-last_activity: 2026-03-08 — Plan 03-03 complete (Reservation booking/cancellation Server Actions, Stripe per-session payment, webhook handler)
+status: executing
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-08T16:59:37.558Z"
+last_activity: 2026-03-08 — Plan 03-02 complete (Court cards page, availability queries, Server Action re-fetch, court diagram modal)
 progress:
   total_phases: 5
   completed_phases: 2
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 3 of 5 (Reservations)
-Plan: 3 of 5 completed
+Plan: 2 of 5 completed
 Status: In Progress
-Last activity: 2026-03-08 — Plan 03-03 complete (Reservation booking/cancellation Server Actions, Stripe per-session payment, webhook handler)
+Last activity: 2026-03-08 — Plan 03-02 complete (Court cards page, availability queries, Server Action re-fetch, court diagram modal)
 
 Progress: [████████░░] 86%
 
@@ -62,6 +62,7 @@ Progress: [████████░░] 86%
 | Phase 03-reservations P01 | 3 | 2 tasks | 7 files |
 | Phase 03-reservations P02 | 2 | 2 tasks | 6 files |
 | Phase 03-reservations P03 | 2 | 2 tasks | 6 files |
+| Phase 03-reservations P02 | 4 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -99,7 +100,8 @@ Recent decisions affecting current work:
 - [Phase 03-reservations, 03-01]: Owner-only SELECT policy on reservations replaced with all-authenticated policy for availability display
 - [Phase 03-reservations, 03-03]: Application-level pre-insert conflict check complements DB exclusion constraints for cross-mode blocking (full_court vs open_play)
 - [Phase 03-reservations, 03-03]: Webhook route dispatches checkout.session.completed based on session.mode to separate subscription from one-time payment handling
-
+- [Phase 03-reservations]: Server Action (getAvailabilityAction) for date tab re-fetch instead of searchParams or full page reload
+- [Phase 03-reservations]: Abstract 2x2 quadrant layout for court diagram (over realistic doubles positions)
 
 ### Pending Todos
 
@@ -117,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T16:55:55Z
-Stopped at: Completed 03-03-PLAN.md
-Resume file: .planning/phases/03-reservations/03-03-SUMMARY.md
+Last session: 2026-03-08T16:59:37.555Z
+Stopped at: Completed 03-02-PLAN.md
+Resume file: None
