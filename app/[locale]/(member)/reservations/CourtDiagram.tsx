@@ -1,0 +1,222 @@
+'use client'
+
+import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import type { TimeSlot } from '@/lib/types/reservations'
+
+interface CourtDiagramProps {
+  slot: TimeSlot
+  allSlots: TimeSlot[]
+  courtId: string
+  date: string
+  isVip: boolean
+  onClose: () => void
+  onBookingRequest: (data: {
+    courtId: string
+    date: string
+    startTime: string
+    endTime: string
+    spotNumber?: number
+    guestName?: string
+  }) => void
+}
+
+/** Format a datetime string for display. */
+function formatTime(isoString: string): string {
+  const date = new Date(isoString)
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/Santo_Domingo',
+  }).format(date)
+}
+
+export default function CourtDiagram({
+  slot: initialSlot,
+  allSlots,
+  courtId,
+  date,
+  isVip,
+  onClose,
+  onBookingRequest,
+}: CourtDiagramProps) {
+  const t = useTranslations('Reservations')
+  const [currentSlot, setCurrentSlot] = useState<TimeSlot>(initialSlot)
+  const [selectedSpot, setSelectedSpot] = useState<number | null>(null)
+  const [guestName, setGuestName] = useState('')
+
+  const currentIndex = allSlots.findIndex(
+    (s) => s.startTime === currentSlot.startTime
+  )
+
+  const handlePrevSlot = () => {
+    if (currentIndex > 0) {
+      setCurrentSlot(allSlots[currentIndex - 1])
+      setSelectedSpot(null)
+      setGuestName('')
+    }
+  }
+
+  const handleNextSlot = () => {
+    if (currentIndex < allSlots.length - 1) {
+      setCurrentSlot(allSlots[currentIndex + 1])
+      setSelectedSpot(null)
+      setGuestName('')
+    }
+  }
+
+  const handleReserve = () => {
+    if (selectedSpot === null) return
+    onBookingRequest({
+      courtId,
+      date,
+      startTime: currentSlot.startTime,
+      endTime: currentSlot.endTime,
+      spotNumber: selectedSpot,
+      guestName: guestName.trim() || undefined,
+    })
+    onClose()
+  }
+
+  // 2x2 quadrant positions
+  const quadrantPositions = [
+    { row: 0, col: 0 }, // Spot 1: top-left
+    { row: 0, col: 1 }, // Spot 2: top-right
+    { row: 1, col: 0 }, // Spot 3: bottom-left
+    { row: 1, col: 1 }, // Spot 4: bottom-right
+  ]
+
+  return (
+    // Modal backdrop
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div className="bg-[#111b2e] rounded-xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl">
+        {/* Modal header */}
+        <div className="bg-[#0B1D3A] px-5 py-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-white font-bebas-neue text-lg tracking-wide">
+              {t('selectTimeSlot')}
+            </h3>
+            <p className="text-gray-400 text-xs mt-0.5">
+              {formatTime(currentSlot.startTime)} - {formatTime(currentSlot.endTime)}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors text-xl leading-none"
+            aria-label={t('closeModal')}
+          >
+            &times;
+          </button>
+        </div>
+
+        {/* Time slot navigation */}
+        {allSlots.length > 1 && (
+          <div className="flex items-center justify-between px-5 py-2 bg-[#0a1628]">
+            <button
+              onClick={handlePrevSlot}
+              disabled={currentIndex <= 0}
+              className="text-gray-400 hover:text-white disabled:opacity-30 transition-colors text-sm"
+            >
+              &larr; Prev
+            </button>
+            <span className="text-gray-300 text-xs">
+              {currentIndex + 1} / {allSlots.length}
+            </span>
+            <button
+              onClick={handleNextSlot}
+              disabled={currentIndex >= allSlots.length - 1}
+              className="text-gray-400 hover:text-white disabled:opacity-30 transition-colors text-sm"
+            >
+              Next &rarr;
+            </button>
+          </div>
+        )}
+
+        {/* Court diagram: 2x2 quadrant grid */}
+        <div className="p-5">
+          <div className="relative border-2 border-[#1ED6C3]/30 rounded-lg p-3">
+            {/* Court net line */}
+            <div className="absolute left-1/2 top-3 bottom-3 w-px bg-[#1ED6C3]/40" />
+            <div className="absolute top-1/2 left-3 right-3 h-px bg-[#1ED6C3]/40" />
+
+            <div className="grid grid-cols-2 gap-3">
+              {currentSlot.spots.map((spot, idx) => {
+                const pos = quadrantPositions[idx]
+                if (!pos) return null
+                const isAvailable = spot.isAvailable
+                const isSelected = selectedSpot === spot.spotNumber
+
+                return (
+                  <button
+                    key={spot.spotNumber}
+                    onClick={() => {
+                      if (isAvailable) {
+                        setSelectedSpot(
+                          isSelected ? null : spot.spotNumber
+                        )
+                      }
+                    }}
+                    disabled={!isAvailable}
+                    className={`
+                      relative aspect-square rounded-lg flex flex-col items-center justify-center
+                      transition-all duration-200 text-sm font-semibold
+                      ${
+                        isAvailable
+                          ? isSelected
+                            ? 'bg-[#39FF14] text-[#0B1D3A] ring-2 ring-white scale-105'
+                            : 'bg-[#39FF14]/20 text-[#39FF14] hover:bg-[#39FF14]/40 cursor-pointer'
+                          : 'bg-red-500/20 text-red-400 cursor-not-allowed'
+                      }
+                    `}
+                  >
+                    <span className="text-base font-bold">
+                      {t('spotLabel', { number: String(spot.spotNumber) })}
+                    </span>
+                    <span className="text-[10px] mt-1">
+                      {isAvailable
+                        ? t('slotAvailable')
+                        : spot.reservedBy || t('spotOccupied')}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* VIP Guest name input */}
+          {isVip && selectedSpot !== null && (
+            <div className="mt-4">
+              <label className="text-gray-400 text-xs block mb-1">
+                {t('addGuest')}
+              </label>
+              <input
+                type="text"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                placeholder={t('guestNamePlaceholder')}
+                className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#39FF14] transition-colors"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Reserve button */}
+        <div className="px-5 pb-5">
+          <button
+            onClick={handleReserve}
+            disabled={selectedSpot === null}
+            className="w-full bg-[#39FF14] text-[#0B1D3A] font-semibold py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {t('reserveSpot')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
