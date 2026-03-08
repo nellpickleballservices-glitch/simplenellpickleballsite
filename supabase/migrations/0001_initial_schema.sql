@@ -92,7 +92,7 @@ CREATE TABLE reservations (
 ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can read own reservations"   ON reservations FOR SELECT TO authenticated USING ((SELECT auth.uid()) = user_id);
 CREATE POLICY "Users can insert own reservations" ON reservations FOR INSERT TO authenticated WITH CHECK ((SELECT auth.uid()) = user_id);
-CREATE POLICY "Users can update own reservations" ON reservations FOR UPDATE TO authenticated USING ((SELECT auth.uid()) = user_id);
+CREATE POLICY "Users can update own reservations" ON reservations FOR UPDATE TO authenticated USING ((SELECT auth.uid()) = user_id) WITH CHECK ((SELECT auth.uid()) = user_id);
 CREATE POLICY "Service role full access on reservations" ON reservations FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- ============================================================
@@ -109,7 +109,8 @@ CREATE TABLE events (
   created_at     TIMESTAMPTZ DEFAULT NOW()
 );
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public can read events" ON events FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Public can read events" ON events FOR SELECT TO anon USING (true);
+CREATE POLICY "Authenticated can read events" ON events FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Service role full access on events" ON events FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- ============================================================
@@ -125,5 +126,6 @@ CREATE TABLE content_blocks (
   updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
 ALTER TABLE content_blocks ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public can read content_blocks" ON content_blocks FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Anon can read content_blocks" ON content_blocks FOR SELECT TO anon USING (true);
+CREATE POLICY "Authenticated can read content_blocks" ON content_blocks FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Service role full access on content_blocks" ON content_blocks FOR ALL TO service_role USING (true) WITH CHECK (true);
