@@ -1,0 +1,117 @@
+'use server'
+
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { normalizeName, validateName } from '@/lib/utils/normalizeName'
+import { validatePasswordLength, validatePasswordMatch } from '@/lib/utils/passwordValidation'
+
+export type AuthActionResult = {
+  errors?: Record<string, string>
+  message?: string
+}
+
+export async function signUpAction(formData: FormData): Promise<AuthActionResult> {
+  const rawFirstName = formData.get('firstName') as string
+  const rawLastName = formData.get('lastName') as string
+  const email = formData.get('email') as string
+  const phone = formData.get('phone') as string
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+  const planType = formData.get('planType') as string | null  // optional
+
+  // Server-side validation
+  const errors: Record<string, string> = {}
+  const firstNameError = validateName(rawFirstName)
+  const lastNameError = validateName(rawLastName)
+  const passwordError = validatePasswordLength(password)
+  const confirmError = validatePasswordMatch(password, confirmPassword)
+
+  if (firstNameError) errors.firstName = firstNameError
+  if (lastNameError) errors.lastName = lastNameError
+  if (passwordError) errors.password = passwordError
+  if (confirmError) errors.confirmPassword = confirmError
+  if (Object.keys(errors).length > 0) return { errors }
+
+  // Normalize names before creating account
+  const firstName = normalizeName(rawFirstName)
+  const lastName = normalizeName(rawLastName)
+
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+      },
+    },
+  })
+
+  if (error) return { message: error.message }
+  if (!data.user) return { message: 'Signup failed — no user returned' }
+
+  // Insert profile row
+  const { error: profileError } = await supabase.from('profiles').insert({
+    id: data.user.id,
+    first_name: firstName,
+    last_name: lastName,
+    phone: phone || null,
+    locale_pref: 'es',
+  })
+
+  if (profileError) return { message: profileError.message }
+
+  // ?welcome=1 triggers the WelcomeBanner component in app/[locale]/page.tsx
+  redirect('/?welcome=1')
+}
+
+export async function loginAction(formData: FormData): Promise<AuthActionResult> {
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const supabase = await createClient()
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) return { message: error.message }
+
+  redirect('/')
+}
+
+export async function logoutAction(): Promise<void> {
+  const supabase = await createClient()
+  await supabase.auth.signOut()
+  redirect('/login')
+}
+
+export async function resetPasswordAction(formData: FormData): Promise<AuthActionResult> {
+  const email = formData.get('email') as string
+  const supabase = await createClient()
+  const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/reset-password/update`,
+  })
+
+  if (error) return { message: error.message }
+  return { message: 'Check your email for a password reset link' }
+}
+
+export async function updatePasswordAction(formData: FormData): Promise<AuthActionResult> {
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+
+  const errors: Record<string, string> = {}
+  const passwordError = validatePasswordLength(password)
+  const confirmError = validatePasswordMatch(password, confirmPassword)
+
+  if (passwordError) errors.password = passwordError
+  if (confirmError) errors.confirmPassword = confirmError
+  if (Object.keys(errors).length > 0) return { errors }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password })
+  if (error) return { message: error.message }
+
+  redirect('/login')
+}
