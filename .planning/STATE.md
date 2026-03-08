@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-08T07:51:57.406Z"
-last_activity: 2026-03-08 — Plan 02-01 complete (Stripe checkout, pricing page, billing i18n)
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-08T07:52:09Z"
+last_activity: 2026-03-08 — Plan 02-02 complete (Webhook route handler with signature verification, idempotency, 5 lifecycle handlers)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 9
-  completed_plans: 7
-  percent: 78
+  completed_plans: 8
+  percent: 89
 ---
 
 # Project State
@@ -26,28 +26,28 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 2 of 5 (Billing)
-Plan: 2 of 4 completed (next: 02-02)
+Plan: 3 of 4 completed (next: 02-03)
 Status: In Progress
-Last activity: 2026-03-08 — Plan 02-01 complete (Stripe checkout, pricing page, billing i18n)
+Last activity: 2026-03-08 — Plan 02-02 complete (Webhook route handler with signature verification, idempotency, 5 lifecycle handlers)
 
-Progress: [████████░░] 78%
+Progress: [████████░░] 82%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 5 min
-- Total execution time: 21 min
+- Total plans completed: 8
+- Average duration: 4 min
+- Total execution time: 29 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 4/5 | 20 min | 5 min |
-| 02-billing | 1/4 | 1 min | 1 min |
+| 02-billing | 3/4 | 8 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 2 min, 4 min, 10 min, 1 min
+- Last 5 plans: 4 min, 10 min, 1 min, 3 min, 4 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -56,6 +56,7 @@ Progress: [████████░░] 78%
 | Phase 01-foundation P04 | 10 | 2 tasks | 16 files |
 | Phase 02-billing P00 | 1 | 2 tasks | 5 files |
 | Phase 02-billing P01 | 3 | 2 tasks | 9 files |
+| Phase 02-billing P02 | 4 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation, 01-04]: Brand namespace extracted for 'NELL' and 'Pickleball Club' strings — reused across all auth pages avoiding duplication
 - [Phase 02-billing]: test.skip() used consistently for billing stubs (test.todo() not available in Vitest)
 - [Phase 02-billing]: Stripe API version 2026-02-25.clover (matches installed package types)
+- [Phase 02-billing, 02-02]: current_period_end accessed via subscription.items.data[0] — moved from Subscription root to SubscriptionItem in Stripe clover API
+- [Phase 02-billing, 02-02]: Invoice subscription ID via invoice.parent.subscription_details.subscription — restructured in Stripe clover API
+- [Phase 02-billing, 02-02]: Webhook handlers throw on DB errors so route returns 500 and Stripe retries
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T07:51:57.404Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-08T07:52:09Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
