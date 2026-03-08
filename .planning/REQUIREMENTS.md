@@ -33,9 +33,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **RESV-01**: Active members can view available courts as a time-slot grid (date selected → courts × time-slots matrix)
 - [ ] **RESV-02**: Members can reserve a time slot (session length: default 60–90 min, admin-configurable)
-- [ ] **RESV-03**: System prevents double-booking via Postgres exclusion constraint on `(court_id, tstzrange)` using `btree_gist`
-- [ ] **RESV-04**: All reservation timestamps stored as UTC; displayed in `America/Santo_Domingo` (UTC-4, no DST)
-- [ ] **RESV-05**: Reservations store snapshot of `reservation_user_first_name` and `reservation_user_last_name` at booking time
+- [x] **RESV-03**: System prevents double-booking via Postgres exclusion constraint on `(court_id, tstzrange)` using `btree_gist`
+- [x] **RESV-04**: All reservation timestamps stored as UTC; displayed in `America/Santo_Domingo` (UTC-4, no DST)
+- [x] **RESV-05**: Reservations store snapshot of `reservation_user_first_name` and `reservation_user_last_name` at booking time
 - [ ] **RESV-06**: Members can cancel their own reservation within a configurable cancellation window (e.g., 2 hours before session)
 - [ ] **RESV-07**: Basic tier members can only reserve courts at their assigned location (enforced at API level)
 - [ ] **RESV-08**: Admin can create a reservation on behalf of any active member (walk-in / phone bookings)
@@ -46,8 +46,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **MAP-01**: Reservation page displays an interactive map (Leaflet, `dynamic({ ssr: false })`) with court markers
 - [ ] **MAP-02**: Markers are color-coded: green (available slots today), red (fully booked), gray (closed/maintenance)
 - [ ] **MAP-03**: Clicking a marker displays available time slots for that court in a side panel
-- [ ] **MAP-04**: Admin can set GPS coordinates for each court from the admin panel
-- [ ] **MAP-05**: Leaflet marker icon paths configured explicitly (prevents broken default icon bug)
+- [x] **MAP-04**: Admin can set GPS coordinates for each court from the admin panel
+- [x] **MAP-05**: Leaflet marker icon paths configured explicitly (prevents broken default icon bug)
 
 ### Reservation Notifications
 

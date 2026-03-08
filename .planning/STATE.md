@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-08T09:20:45.658Z"
-last_activity: 2026-03-08 — Plan 02-03 complete (Post-checkout Realtime page, dashboard membership card, proxy.ts real membership gating)
+status: in_progress
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-08T16:52:00.000Z"
+last_activity: 2026-03-08 — Plan 03-01 complete (Reservation foundation: migration, types, Resend, proxy.ts)
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
-  percent: 100
+  total_plans: 14
+  completed_plans: 10
+  percent: 71
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-07)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Phase 2 — Billing
+**Current focus:** Phase 3 — Reservations
 
 ## Current Position
 
-Phase: 2 of 5 (Billing) -- COMPLETE
-Plan: 4 of 4 completed
-Status: Phase Complete
-Last activity: 2026-03-08 — Plan 02-03 complete (Post-checkout Realtime page, dashboard membership card, proxy.ts real membership gating)
+Phase: 3 of 5 (Reservations)
+Plan: 1 of 5 completed
+Status: In Progress
+Last activity: 2026-03-08 — Plan 03-01 complete (Reservation foundation: migration, types, Resend, proxy.ts)
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 3 min
-- Total execution time: 30 min
+- Total execution time: 33 min
 
 **By Phase:**
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100%
 |-------|-------|-------|----------|
 | 01-foundation | 4/5 | 20 min | 5 min |
 | 02-billing | 4/4 | 9 min | 2 min |
+| 03-reservations | 1/5 | 3 min | 3 min |
 
 **Recent Trend:**
 - Last 5 plans: 10 min, 1 min, 3 min, 4 min, 1 min
@@ -58,6 +59,7 @@ Progress: [██████████] 100%
 | Phase 02-billing P01 | 3 | 2 tasks | 9 files |
 | Phase 02-billing P02 | 4 | 2 tasks | 3 files |
 | Phase 02-billing P03 | 1 | 2 tasks | 7 files |
+| Phase 03-reservations P01 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -91,6 +93,8 @@ Recent decisions affecting current work:
 - [Phase 02-billing, 02-02]: Invoice subscription ID via invoice.parent.subscription_details.subscription — restructured in Stripe clover API
 - [Phase 02-billing, 02-02]: Webhook handlers throw on DB errors so route returns 500 and Stripe retries
 - [Phase 02-billing, 02-03]: Court reservations open to ALL users (not just active members) — non-members pay per session via Stripe one-time payment or cash at location. Cash reservations marked "pending payment". proxy.ts membership gate does NOT apply to reservation routes.
+- [Phase 03-reservations, 03-01]: onboarding@resend.dev used as FROM address during development (production will use nellpickleball.com domain)
+- [Phase 03-reservations, 03-01]: Owner-only SELECT policy on reservations replaced with all-authenticated policy for availability display
 
 
 ### Pending Todos
@@ -104,9 +108,11 @@ None yet.
 - [Research]: Check `@supabase/ssr` package changelog for any breaking changes after Aug 2025 before starting Phase 1
 - [User Action Required]: Run supabase/migrations/0001_initial_schema.sql in Supabase Dashboard SQL Editor before plan 01-03
 - [User Action Required]: Run supabase/migrations/0002_webhook_events.sql in Supabase Dashboard SQL Editor before plans 02-01 through 02-03
+- [User Action Required]: Run supabase/migrations/0003_reservations.sql in Supabase Dashboard SQL Editor before plans 03-02 through 03-05
+- [User Action Required]: Set RESEND_API_KEY environment variable (obtain from resend.com dashboard)
 
 ## Session Continuity
 
-Last session: 2026-03-08T09:20:45.648Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-reservations/03-CONTEXT.md
+Last session: 2026-03-08T16:52:00Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: .planning/phases/03-reservations/03-01-SUMMARY.md
