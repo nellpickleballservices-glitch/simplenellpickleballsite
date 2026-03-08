@@ -15,7 +15,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **AUTH-04**: User can log in with email and password
 - [ ] **AUTH-05**: User session persists across browser refresh (SSR cookie-based, using `@supabase/ssr`)
 - [ ] **AUTH-06**: User can request password reset via email link and set a new confirmed password
-- [ ] **AUTH-07**: Admin role stored in `app_metadata` (not `user_metadata`) — cannot be self-assigned
+- [x] **AUTH-07**: Admin role stored in `app_metadata` (not `user_metadata`) — cannot be self-assigned
 
 ### Memberships & Billing
 
@@ -95,10 +95,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Security & Infrastructure
 
-- [ ] **SEC-01**: Row Level Security enabled on all tables: `profiles`, `memberships`, `reservations`, `courts`, `locations`, `content_blocks`, `events`
+- [x] **SEC-01**: Row Level Security enabled on all tables: `profiles`, `memberships`, `reservations`, `courts`, `locations`, `content_blocks`, `events`
 - [ ] **SEC-02**: Supabase `proxy.ts` (middleware) uses `getUser()` — not `getSession()` — for server-side JWT verification
-- [ ] **SEC-03**: Members can only read/write their own data; admin service role bypasses RLS only in webhook handler
-- [ ] **SEC-04**: Login attempt rate limiting (Supabase Auth built-in + optional custom rate limiter)
+- [x] **SEC-03**: Members can only read/write their own data; admin service role bypasses RLS only in webhook handler
+- [x] **SEC-04**: Login attempt rate limiting (Supabase Auth built-in + optional custom rate limiter)
 - [ ] **SEC-05**: Protected routes enforce auth at middleware level for `/dashboard/*` and `/admin/*`
 
 ### AI Chatbot
