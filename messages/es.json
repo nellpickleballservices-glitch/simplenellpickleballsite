@@ -181,5 +181,19 @@
     "updatePaymentCta": "Actualizar Método de Pago",
     "noMembershipBanner": "Suscríbete para acceder a las reservas de canchas",
     "viewPlans": "Ver Planes"
+  },
+  "Reservations": {
+    "errors": {
+      "pending_payment_block": "Tienes una reserva con pago pendiente. Por favor completa el pago antes de hacer otra reserva.",
+      "beyond_booking_window": "Este horario esta fuera de tu ventana de reserva anticipada.",
+      "location_restricted": "Tu membresia Basic solo cubre tu local asignado. Actualiza a VIP para acceder a todos los locales.",
+      "slot_taken": "Este horario ya no esta disponible. Por favor elige otro.",
+      "cancellation_window_passed": "La ventana de cancelacion ha pasado. Solo puedes cancelar al menos {hours} horas antes de la sesion.",
+      "not_found": "Reserva no encontrada.",
+      "unauthorized": "Solo puedes gestionar tus propias reservas.",
+      "already_cancelled": "Esta reserva ya fue cancelada.",
+      "guest_not_allowed": "Solo los miembros VIP pueden agregar invitados a su reserva.",
+      "unexpected_error": "Algo salio mal. Por favor intenta de nuevo."
+    }
   }
 }

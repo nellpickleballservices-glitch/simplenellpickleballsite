@@ -181,5 +181,19 @@
     "updatePaymentCta": "Update Payment Method",
     "noMembershipBanner": "Subscribe to access court reservations",
     "viewPlans": "View Plans"
+  },
+  "Reservations": {
+    "errors": {
+      "pending_payment_block": "You have a pending payment reservation. Please complete payment before booking again.",
+      "beyond_booking_window": "This time slot is beyond your advance booking window.",
+      "location_restricted": "Your Basic membership only covers your home location. Upgrade to VIP for all locations.",
+      "slot_taken": "This time slot is no longer available. Please choose another.",
+      "cancellation_window_passed": "Cancellation window has passed. You can only cancel at least {hours} hours before the session.",
+      "not_found": "Reservation not found.",
+      "unauthorized": "You can only manage your own reservations.",
+      "already_cancelled": "This reservation has already been cancelled.",
+      "guest_not_allowed": "Only VIP members can add guests to their booking.",
+      "unexpected_error": "Something went wrong. Please try again."
+    }
   }
 }
