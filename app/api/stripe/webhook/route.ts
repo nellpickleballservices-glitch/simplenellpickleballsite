@@ -3,6 +3,7 @@ import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import {
   handleCheckoutCompleted,
+  handleOneTimePaymentCompleted,
   handleSubscriptionUpdated,
   handleSubscriptionDeleted,
   handleInvoicePaymentSucceeded,
@@ -51,12 +52,15 @@ export async function POST(request: Request) {
   // Step 4: Event dispatch — route to appropriate handler
   try {
     switch (event.type) {
-      case 'checkout.session.completed':
-        await handleCheckoutCompleted(
-          event.data.object as Stripe.Checkout.Session,
-          supabaseAdmin
-        )
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        if (session.mode === 'payment') {
+          await handleOneTimePaymentCompleted(session, supabaseAdmin)
+        } else {
+          await handleCheckoutCompleted(session, supabaseAdmin)
+        }
         break
+      }
       case 'customer.subscription.updated':
         await handleSubscriptionUpdated(
           event.data.object as Stripe.Subscription,

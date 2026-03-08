@@ -158,6 +158,36 @@ export async function handleInvoicePaymentSucceeded(
 }
 
 /**
+ * checkout.session.completed with mode=payment — updates reservation from pending_payment to paid/confirmed.
+ * Called when a non-member completes a per-session Stripe Checkout payment.
+ */
+export async function handleOneTimePaymentCompleted(
+  session: Stripe.Checkout.Session,
+  supabase: SupabaseClient
+): Promise<void> {
+  const reservationId = session.metadata?.reservation_id
+  if (!reservationId) {
+    // No reservation_id means this is a subscription checkout, not per-session
+    return
+  }
+
+  const { error } = await supabase
+    .from('reservations')
+    .update({
+      payment_status: 'paid',
+      status: 'confirmed',
+      stripe_payment_id: session.id,
+    })
+    .eq('id', reservationId)
+    .eq('status', 'pending_payment')
+
+  if (error) {
+    // Log warning but do not throw — reservation may have been cancelled
+    console.warn(`Failed to update reservation ${reservationId} after payment:`, error.message)
+  }
+}
+
+/**
  * invoice.payment_failed — sets membership status to past_due.
  */
 export async function handleInvoicePaymentFailed(
