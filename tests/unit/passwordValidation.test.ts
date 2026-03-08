@@ -1,10 +1,28 @@
 import { describe, it, expect } from 'vitest'
+import { validatePasswordLength, validatePasswordMatch } from '@/lib/utils/passwordValidation'
 
-// Stub: will import from lib/utils/passwordValidation.ts once created in plan 01-03
 describe('passwordValidation', () => {
-  it.todo('rejects passwords shorter than 8 characters')
-  it.todo('accepts passwords of exactly 8 characters')
-  it.todo('accepts passwords longer than 8 characters')
-  it.todo('validatePasswordMatch: returns null when passwords match')
-  it.todo('validatePasswordMatch: returns error string when passwords do not match')
+  it('rejects passwords shorter than 8 characters', () => {
+    const result = validatePasswordLength('1234567')
+    expect(result).not.toBeNull()
+    expect(result).toBe('Password must be at least 8 characters')
+  })
+
+  it('accepts passwords of exactly 8 characters', () => {
+    expect(validatePasswordLength('12345678')).toBeNull()
+  })
+
+  it('accepts passwords longer than 8 characters', () => {
+    expect(validatePasswordLength('alongpassword')).toBeNull()
+  })
+
+  it('validatePasswordMatch: returns null when passwords match', () => {
+    expect(validatePasswordMatch('abc', 'abc')).toBeNull()
+  })
+
+  it('validatePasswordMatch: returns error string when passwords do not match', () => {
+    const result = validatePasswordMatch('abc', 'xyz')
+    expect(result).not.toBeNull()
+    expect(result).toBe('Passwords do not match')
+  })
 })
