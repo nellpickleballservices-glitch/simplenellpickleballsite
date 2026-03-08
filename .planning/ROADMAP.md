@@ -119,6 +119,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete    | 2026-03-08 |
 | 2. Billing | 4/4 | Complete   | 2026-03-08 |
-| 3. Reservations | 1/5 | In Progress|  |
+| 3. Reservations | 2/5 | In Progress|  |
 | 4. Admin and CMS | 0/4 | Not started | - |
 | 5. Public Website and AI Chatbot | 0/3 | Not started | - |

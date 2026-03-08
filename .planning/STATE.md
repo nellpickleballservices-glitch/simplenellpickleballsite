@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-08T16:52:00.000Z"
-last_activity: 2026-03-08 — Plan 03-01 complete (Reservation foundation: migration, types, Resend, proxy.ts)
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-08T16:55:55.000Z"
+last_activity: 2026-03-08 — Plan 03-03 complete (Reservation booking/cancellation Server Actions, Stripe per-session payment, webhook handler)
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 14
-  completed_plans: 10
-  percent: 71
+  completed_plans: 12
+  percent: 86
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 3 of 5 (Reservations)
-Plan: 1 of 5 completed
+Plan: 3 of 5 completed
 Status: In Progress
-Last activity: 2026-03-08 — Plan 03-01 complete (Reservation foundation: migration, types, Resend, proxy.ts)
+Last activity: 2026-03-08 — Plan 03-03 complete (Reservation booking/cancellation Server Actions, Stripe per-session payment, webhook handler)
 
-Progress: [███████░░░] 71%
+Progress: [████████░░] 86%
 
 ## Performance Metrics
 
@@ -45,7 +45,7 @@ Progress: [███████░░░] 71%
 |-------|-------|-------|----------|
 | 01-foundation | 4/5 | 20 min | 5 min |
 | 02-billing | 4/4 | 9 min | 2 min |
-| 03-reservations | 1/5 | 3 min | 3 min |
+| 03-reservations | 3/5 | 7 min | 2 min |
 
 **Recent Trend:**
 - Last 5 plans: 10 min, 1 min, 3 min, 4 min, 1 min
@@ -60,6 +60,8 @@ Progress: [███████░░░] 71%
 | Phase 02-billing P02 | 4 | 2 tasks | 3 files |
 | Phase 02-billing P03 | 1 | 2 tasks | 7 files |
 | Phase 03-reservations P01 | 3 | 2 tasks | 7 files |
+| Phase 03-reservations P02 | 2 | 2 tasks | 6 files |
+| Phase 03-reservations P03 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -95,6 +97,8 @@ Recent decisions affecting current work:
 - [Phase 02-billing, 02-03]: Court reservations open to ALL users (not just active members) — non-members pay per session via Stripe one-time payment or cash at location. Cash reservations marked "pending payment". proxy.ts membership gate does NOT apply to reservation routes.
 - [Phase 03-reservations, 03-01]: onboarding@resend.dev used as FROM address during development (production will use nellpickleball.com domain)
 - [Phase 03-reservations, 03-01]: Owner-only SELECT policy on reservations replaced with all-authenticated policy for availability display
+- [Phase 03-reservations, 03-03]: Application-level pre-insert conflict check complements DB exclusion constraints for cross-mode blocking (full_court vs open_play)
+- [Phase 03-reservations, 03-03]: Webhook route dispatches checkout.session.completed based on session.mode to separate subscription from one-time payment handling
 
 
 ### Pending Todos
@@ -113,6 +117,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T16:52:00Z
-Stopped at: Completed 03-01-PLAN.md
-Resume file: .planning/phases/03-reservations/03-01-SUMMARY.md
+Last session: 2026-03-08T16:55:55Z
+Stopped at: Completed 03-03-PLAN.md
+Resume file: .planning/phases/03-reservations/03-03-SUMMARY.md

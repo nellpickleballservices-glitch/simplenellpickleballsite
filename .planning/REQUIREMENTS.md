@@ -32,14 +32,14 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Court Reservation System
 
 - [ ] **RESV-01**: Active members can view available courts as a time-slot grid (date selected → courts × time-slots matrix)
-- [ ] **RESV-02**: Members can reserve a time slot (session length: default 60–90 min, admin-configurable)
+- [x] **RESV-02**: Members can reserve a time slot (session length: default 60–90 min, admin-configurable)
 - [x] **RESV-03**: System prevents double-booking via Postgres exclusion constraint on `(court_id, tstzrange)` using `btree_gist`
 - [x] **RESV-04**: All reservation timestamps stored as UTC; displayed in `America/Santo_Domingo` (UTC-4, no DST)
 - [x] **RESV-05**: Reservations store snapshot of `reservation_user_first_name` and `reservation_user_last_name` at booking time
-- [ ] **RESV-06**: Members can cancel their own reservation within a configurable cancellation window (e.g., 2 hours before session)
+- [x] **RESV-06**: Members can cancel their own reservation within a configurable cancellation window (e.g., 2 hours before session)
 - [ ] **RESV-07**: Basic tier members can only reserve courts at their assigned location (enforced at API level)
-- [ ] **RESV-08**: Admin can create a reservation on behalf of any active member (walk-in / phone bookings)
-- [ ] **RESV-09**: Admin can cancel any reservation
+- [x] **RESV-08**: Admin can create a reservation on behalf of any active member (walk-in / phone bookings)
+- [x] **RESV-09**: Admin can cancel any reservation
 
 ### Interactive Court Map
 
@@ -51,7 +51,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Reservation Notifications
 
-- [ ] **NOTIF-01**: Confirmation email sent immediately when a reservation is made (via Resend)
+- [x] **NOTIF-01**: Confirmation email sent immediately when a reservation is made (via Resend)
 - [ ] **NOTIF-02**: Session end reminder triggered 10 minutes before session ends via Supabase Edge Function + pg_cron
 - [ ] **NOTIF-03**: Reminder message (bilingual): "Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin."
 - [ ] **NOTIF-04**: Reminder system tracks `reminder_sent` boolean per reservation to prevent duplicates
