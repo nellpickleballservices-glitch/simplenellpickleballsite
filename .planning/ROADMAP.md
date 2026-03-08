@@ -48,12 +48,13 @@ Plans:
   2. A cancelled or payment-failed subscription causes the membership status in Supabase to update to inactive, and that member can no longer access court reservation routes
   3. A member can upgrade from Basic to VIP or downgrade from VIP to Basic — Stripe handles proration and the Supabase `memberships` row reflects the new plan
   4. All Stripe webhook events are processed exactly once — duplicate events are rejected via `stripe_event_id` idempotency check
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: Stripe product setup — VIP Nell-Picker ($50/mo) and Basic Nell-Picker ($35/mo) price IDs, Stripe Checkout Session Server Action with `client_reference_id = supabase_user_id`, success and cancel redirect pages
-- [ ] 02-02: Stripe webhook Route Handler — `/api/stripe/webhook` with raw body signature verification (`request.text()`), all subscription lifecycle events handled (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`), `webhook_events` idempotency table
-- [ ] 02-03: Membership sync and gating — Supabase `memberships` table upsert from webhook, Supabase Realtime polling on post-checkout success page, middleware enforcement blocking cancelled/past-due members from `/member/*` routes
+- [ ] 02-00-PLAN.md — Wave 0 Nyquist gate: test stubs (billing, webhookHandler, proxyMembership, checkoutSuccess) + migration 0002 (webhook_events, UNIQUE(user_id) on memberships, supabase_realtime publication)
+- [ ] 02-01-PLAN.md — Stripe singleton, service-role Supabase client, billing Server Actions (checkout + portal), checkout and cancel pages, Billing i18n namespace
+- [ ] 02-02-PLAN.md — Webhook Route Handler at /api/stripe/webhook: raw body signature verification (request.text()), idempotency guard, five event handlers (checkout.session.completed, subscription.updated, subscription.deleted, invoice.payment_succeeded, invoice.payment_failed)
+- [ ] 02-03-PLAN.md — Post-checkout Realtime page (pending→active state machine), proxy.ts real membership gate replacing Phase 1 stub, human verification checkpoint
 
 ### Phase 3: Reservations
 **Goal**: An active member can view court availability on an interactive color-coded map, reserve a time slot with double-booking impossible at the database level, receive an immediate confirmation email, and get a reminder before their session ends.
@@ -116,7 +117,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-08 |
-| 2. Billing | 0/3 | Not started | - |
+| 2. Billing | 0/4 | Not started | - |
 | 3. Reservations | 0/4 | Not started | - |
 | 4. Admin and CMS | 0/4 | Not started | - |
 | 5. Public Website and AI Chatbot | 0/3 | Not started | - |
