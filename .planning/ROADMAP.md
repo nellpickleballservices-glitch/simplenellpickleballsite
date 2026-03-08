@@ -57,22 +57,23 @@ Plans:
 - [ ] 02-03-PLAN.md — Post-checkout Realtime page (pending/active/timeout state machine), dashboard membership card, proxy.ts real membership gate, human verification checkpoint
 
 ### Phase 3: Reservations
-**Goal**: An active member can view court availability on an interactive color-coded map, reserve a time slot with double-booking impossible at the database level, receive an immediate confirmation email, and get a reminder before their session ends.
+**Goal**: Any logged-in user can view court availability on court cards with Google Maps thumbnails, reserve a time slot (members free, non-members pay per session) with double-booking impossible at the database level, receive an immediate confirmation email, and get a reminder before their session ends.
 **Depends on**: Phase 2
 **Requirements**: RESV-01, RESV-02, RESV-03, RESV-04, RESV-05, RESV-06, RESV-07, RESV-08, RESV-09, MAP-01, MAP-02, MAP-03, MAP-04, MAP-05, NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
 **Success Criteria** (what must be TRUE):
-  1. An active member opens the reservation page and sees an interactive Leaflet map with court markers color-coded green (available), red (fully booked), or gray (closed) — clicking a marker shows available time slots in a side panel
-  2. A member reserves a time slot and receives a confirmation email within 30 seconds — two members attempting to book the same slot simultaneously results in one booking and one clear error, never a double-booking
-  3. A member who cancels within the allowed window sees their reservation removed; a member who tries to cancel outside the window sees an informative error
-  4. Ten minutes before a session ends, the member receives an email reminder: "Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin." — the reminder fires exactly once per reservation
-  5. A logged-in member can view their upcoming reservations, current membership status, update their name and phone, and change their password — all from the dashboard
-**Plans**: 4 plans
+  1. A logged-in user opens the reservation page and sees 3 court cards with Google Maps thumbnails, time slot grids showing availability, and a court diagram modal with 4-quadrant spots color-coded green (available) or red (taken)
+  2. A user reserves a time slot and receives a confirmation email within 30 seconds — two users attempting to book the same slot simultaneously results in one booking and one clear error, never a double-booking
+  3. A user who cancels within the allowed window sees their reservation removed; a user who tries to cancel outside the window sees an informative error
+  4. Ten minutes before a session ends, the user receives an email reminder: "Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin." — the reminder fires exactly once per reservation
+  5. A logged-in user can view their upcoming reservations, current membership status, update their name and phone, and change their password — all from the dashboard
+**Plans**: 5 plans
 
 Plans:
-- [ ] 03-01: Court availability grid — date picker UI, courts × time-slots matrix, availability computed from `reservations` table, timestamps stored and displayed in `America/Santo_Domingo` (UTC-4)
-- [ ] 03-02: Interactive Leaflet map — `next/dynamic` with `ssr: false`, color-coded markers (green/red/gray based on availability), click-to-show-slots side panel, explicit marker icon paths to prevent broken icon bug
-- [ ] 03-03: Reservation booking and cancellation — Server Action with Postgres exclusion constraint on `(court_id, tstzrange)` using `btree_gist` for double-booking prevention, name snapshot at booking time, Basic-tier location enforcement, admin override booking, cancellation window enforcement; Resend confirmation email
-- [ ] 03-04: Notifications and dashboard — Supabase Edge Function `session-reminder` with pg_cron every 1 minute, `reminder_sent` flag per reservation, bilingual reminder email via Resend; member dashboard (membership status, upcoming reservations, profile edit, password change)
+- [ ] 03-01-PLAN.md — Migration 0003 (btree_gist, court_config, app_config, court_pricing, reservation columns, exclusion constraints, seed data), TypeScript types, Resend integration, proxy.ts reservation exception
+- [ ] 03-02-PLAN.md — Court cards page with Google Maps thumbnails, time slot grid with tab strip date selector, court diagram modal with 4-quadrant spot availability, availability query functions
+- [ ] 03-03-PLAN.md — Reservation Server Actions (create with double-booking protection + cancel with window enforcement), Stripe per-session payment action, webhook handler for one-time payments, confirmation email
+- [ ] 03-04-PLAN.md — Reservation form wiring to court diagram, payment panel for non-members, dashboard reservations table with cancellation dialog
+- [ ] 03-05-PLAN.md — Dashboard settings page (profile edit + password change), session reminder Edge Function with pg_cron, bilingual reminder emails via Resend
 
 ### Phase 4: Admin and CMS
 **Goal**: A club admin can manage every operational aspect of the club — users, courts, reservations, events — and edit all platform content through a CMS, with every admin action protected at middleware, layout, and API handler level.
@@ -118,6 +119,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete    | 2026-03-08 |
 | 2. Billing | 4/4 | Complete   | 2026-03-08 |
-| 3. Reservations | 0/4 | Not started | - |
+| 3. Reservations | 0/5 | Not started | - |
 | 4. Admin and CMS | 0/4 | Not started | - |
 | 5. Public Website and AI Chatbot | 0/3 | Not started | - |
