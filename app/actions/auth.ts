@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { normalizeName, validateName } from '@/lib/utils/normalizeName'
 import { validatePasswordLength, validatePasswordMatch } from '@/lib/utils/passwordValidation'
 
@@ -56,8 +57,9 @@ export async function signUpAction(
   if (error) return { message: error.message }
   if (!data.user) return { message: 'Signup failed — no user returned' }
 
-  // Insert profile row
-  const { error: profileError } = await supabase.from('profiles').insert({
+  // Insert profile row via admin client — regular client has no session yet
+  // until email is confirmed, so auth.uid() is null and RLS would block the insert.
+  const { error: profileError } = await supabaseAdmin.from('profiles').insert({
     id: data.user.id,
     first_name: firstName,
     last_name: lastName,
