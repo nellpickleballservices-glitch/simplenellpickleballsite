@@ -1,25 +1,26 @@
+import { useTranslations } from 'next-intl'
 import SignupForm from './SignupForm'
 
-export default function SignupPage() {
+function SignupPage() {
+  const t = useTranslations('Auth.signup')
+  const tBrand = useTranslations('Brand')
+
   return (
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
         {/* NELL Logo */}
         <div className="text-center mb-8">
           <h1 className="text-lime font-bebas text-5xl tracking-widest">
-            {/* TODO: i18n */}
-            NELL
+            {tBrand('name')}
           </h1>
           <p className="text-offwhite/60 text-sm mt-1">
-            {/* TODO: i18n */}
-            Pickleball Club
+            {tBrand('tagline')}
           </p>
         </div>
 
         <div className="bg-[#0B1D3A] border border-[#1ED6C3] rounded-2xl shadow-xl p-8">
           <h2 className="text-offwhite font-bold text-2xl mb-6 text-center">
-            {/* TODO: i18n */}
-            Create your account
+            {t('title')}
           </h2>
           <SignupForm />
         </div>
@@ -27,3 +28,5 @@ export default function SignupPage() {
     </main>
   )
 }
+
+export default SignupPage

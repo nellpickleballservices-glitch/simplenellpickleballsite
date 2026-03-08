@@ -1,12 +1,14 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { loginAction, AuthActionResult } from '@/app/actions/auth'
 import { createClient } from '@/lib/supabase/client'
 
 const initialState: AuthActionResult = {}
 
 export default function LoginForm() {
+  const t = useTranslations('Auth.login')
   const [state, formAction, isPending] = useActionState(loginAction, initialState)
 
   async function handleGoogleSignIn() {
@@ -51,15 +53,13 @@ export default function LoginForm() {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        {/* TODO: i18n */}
-        Iniciar sesión con Google
+        {t('googleButton')}
       </button>
 
       <div className="flex items-center gap-3">
         <hr className="flex-1 border-offwhite/20" />
         <span className="text-offwhite/40 text-sm">
-          {/* TODO: i18n */}
-          or
+          {t('or')}
         </span>
         <hr className="flex-1 border-offwhite/20" />
       </div>
@@ -68,8 +68,7 @@ export default function LoginForm() {
         {/* Email */}
         <div className="flex flex-col gap-1">
           <label htmlFor="email" className="text-offwhite text-sm font-medium">
-            {/* TODO: i18n */}
-            Email
+            {t('email')}
           </label>
           <input
             id="email"
@@ -85,12 +84,10 @@ export default function LoginForm() {
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <label htmlFor="password" className="text-offwhite text-sm font-medium">
-              {/* TODO: i18n */}
-              Password
+              {t('password')}
             </label>
             <a href="/reset-password" className="text-turquoise text-sm hover:underline">
-              {/* TODO: i18n */}
-              ¿Olvidaste tu contraseña?
+              {t('forgotPassword')}
             </a>
           </div>
           <input
@@ -114,17 +111,14 @@ export default function LoginForm() {
           disabled={isPending}
           className="bg-lime text-midnight font-bold rounded-full py-3 px-6 hover:scale-105 hover:bg-sunset transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {/* TODO: i18n */}
-          {isPending ? 'Signing in...' : 'Sign In'}
+          {isPending ? t('submittingButton') : t('submitButton')}
         </button>
       </form>
 
       <p className="text-offwhite/60 text-sm text-center">
-        {/* TODO: i18n */}
-        Don&apos;t have an account?{' '}
+        {t('noAccount')}{' '}
         <a href="/signup" className="text-turquoise hover:underline">
-          {/* TODO: i18n */}
-          Sign up
+          {t('signupLink')}
         </a>
       </p>
     </div>

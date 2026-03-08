@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { signUpAction, AuthActionResult } from '@/app/actions/auth'
 import { validateName } from '@/lib/utils/normalizeName'
 
 const initialState: AuthActionResult = {}
 
 export default function SignupForm() {
+  const t = useTranslations('Auth.signup')
   const [state, formAction, isPending] = useActionState(signUpAction, initialState)
 
   const [firstNameError, setFirstNameError] = useState<string | null>(null)
@@ -31,8 +33,7 @@ export default function SignupForm() {
       <div className="flex gap-4">
         <div className="flex-1 flex flex-col gap-1">
           <label htmlFor="firstName" className="text-offwhite text-sm font-medium">
-            {/* TODO: i18n */}
-            First Name
+            {t('firstName')}
           </label>
           <input
             id="firstName"
@@ -48,8 +49,7 @@ export default function SignupForm() {
 
         <div className="flex-1 flex flex-col gap-1">
           <label htmlFor="lastName" className="text-offwhite text-sm font-medium">
-            {/* TODO: i18n */}
-            Last Name
+            {t('lastName')}
           </label>
           <input
             id="lastName"
@@ -67,8 +67,7 @@ export default function SignupForm() {
       {/* Email */}
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Email
+          {t('email')}
         </label>
         <input
           id="email"
@@ -83,8 +82,7 @@ export default function SignupForm() {
       {/* Phone (optional) */}
       <div className="flex flex-col gap-1">
         <label htmlFor="phone" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Phone (optional)
+          {t('phone')}
         </label>
         <input
           id="phone"
@@ -98,8 +96,7 @@ export default function SignupForm() {
       {/* Password */}
       <div className="flex flex-col gap-1">
         <label htmlFor="password" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Password
+          {t('password')}
         </label>
         <input
           id="password"
@@ -118,8 +115,7 @@ export default function SignupForm() {
       {/* Confirm password */}
       <div className="flex flex-col gap-1">
         <label htmlFor="confirmPassword" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Confirm Password
+          {t('confirmPassword')}
         </label>
         <input
           id="confirmPassword"
@@ -137,8 +133,7 @@ export default function SignupForm() {
       {/* Plan selection — optional */}
       <div className="flex flex-col gap-3">
         <p className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Choose a plan (optional)
+          {t('planSelectionTitle')}
         </p>
         <div className="flex gap-4">
           {/* VIP plan card */}
@@ -152,15 +147,13 @@ export default function SignupForm() {
             }`}
           >
             <p className="text-offwhite font-bold text-lg">
-              {/* TODO: i18n */}
-              VIP Nell-Picker
+              {t('planVipName')}
             </p>
             <p className="text-lime font-bold text-2xl mt-1">$50<span className="text-sm font-normal text-offwhite/70">/mo</span></p>
             <ul className="mt-2 space-y-1 text-offwhite/80 text-sm">
-              {/* TODO: i18n */}
-              <li>All locations</li>
-              <li>Priority court booking</li>
-              <li>Member events access</li>
+              <li>{t('planVipFeature1')}</li>
+              <li>{t('planVipFeature2')}</li>
+              <li>{t('planVipFeature3')}</li>
             </ul>
           </button>
 
@@ -175,15 +168,13 @@ export default function SignupForm() {
             }`}
           >
             <p className="text-offwhite font-bold text-lg">
-              {/* TODO: i18n */}
-              Basic Nell-Picker
+              {t('planBasicName')}
             </p>
             <p className="text-lime font-bold text-2xl mt-1">$35<span className="text-sm font-normal text-offwhite/70">/mo</span></p>
             <ul className="mt-2 space-y-1 text-offwhite/80 text-sm">
-              {/* TODO: i18n */}
-              <li>One location</li>
-              <li>Standard court booking</li>
-              <li>Member events access</li>
+              <li>{t('planBasicFeature1')}</li>
+              <li>{t('planBasicFeature2')}</li>
+              <li>{t('planBasicFeature3')}</li>
             </ul>
           </button>
         </div>
@@ -202,16 +193,13 @@ export default function SignupForm() {
         disabled={isPending}
         className="bg-lime text-midnight font-bold rounded-full py-3 px-6 hover:scale-105 hover:bg-sunset transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {/* TODO: i18n */}
-        {isPending ? 'Creating account...' : 'Create Account'}
+        {isPending ? t('submittingButton') : t('submitButton')}
       </button>
 
       <p className="text-offwhite/60 text-sm text-center">
-        {/* TODO: i18n */}
-        Already have an account?{' '}
+        {t('alreadyHaveAccount')}{' '}
         <a href="/login" className="text-turquoise hover:underline">
-          {/* TODO: i18n */}
-          Sign in
+          {t('loginLink')}
         </a>
       </p>
     </form>

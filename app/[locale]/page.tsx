@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/server'
 import WelcomeBanner from './WelcomeBanner'
 
@@ -5,7 +6,8 @@ interface HomePageProps {
   searchParams: Promise<{ welcome?: string }>
 }
 
-export default async function HomePage({ searchParams }: HomePageProps) {
+async function HomePage({ searchParams }: HomePageProps) {
+  const t = useTranslations('Home')
   const params = await searchParams
   const showWelcome = params.welcome === '1'
 
@@ -31,25 +33,23 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       <section className="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center">
         <h1 className="text-lime font-bebas text-7xl tracking-widest mb-4">
-          {/* TODO: i18n */}
-          NELL
+          {t('title')}
         </h1>
         <p className="text-offwhite text-xl max-w-lg mb-2">
-          {/* TODO: i18n */}
-          Pickleball Club
+          {t('subtitle')}
         </p>
         <p className="text-offwhite/60 text-base max-w-lg mb-8">
-          {/* TODO: i18n */}
-          Bávaro, Dominican Republic
+          {t('location')}
         </p>
         <a
           href="/signup"
           className="bg-lime text-midnight font-bold rounded-full py-4 px-10 text-lg hover:scale-105 hover:bg-sunset transition-all"
         >
-          {/* TODO: i18n */}
-          Join the Club
+          {t('joinButton')}
         </a>
       </section>
     </main>
   )
 }
+
+export default HomePage

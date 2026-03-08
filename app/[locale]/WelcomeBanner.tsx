@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface WelcomeBannerProps {
   firstName: string
 }
 
 export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
+  const t = useTranslations('Home')
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
@@ -24,8 +26,7 @@ export default function WelcomeBanner({ firstName }: WelcomeBannerProps) {
       role="status"
       aria-live="polite"
     >
-      {/* TODO: i18n */}
-      Hello, {firstName}! Welcome to NELL Pickleball Club.
+      {t('welcome', { name: firstName })}
     </div>
   )
 }

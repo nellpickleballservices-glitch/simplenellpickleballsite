@@ -1,5 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import createMiddleware from 'next-intl/middleware'
+import { routing } from './i18n/routing'
+
+const intlMiddleware = createMiddleware(routing)
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -62,8 +66,13 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Note: next-intl middleware will be composed here in plan 01-04
-  return supabaseResponse
+  // Compose next-intl middleware after Supabase auth check.
+  // Copy Supabase auth cookies into the intl response so session is preserved.
+  const intlResponse = intlMiddleware(request)
+  supabaseResponse.cookies.getAll().forEach((cookie) => {
+    intlResponse.cookies.set(cookie.name, cookie.value, cookie)
+  })
+  return intlResponse
 }
 
 export const config = {

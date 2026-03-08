@@ -1,19 +1,20 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { updatePasswordAction, AuthActionResult } from '@/app/actions/auth'
 
 const initialState: AuthActionResult = {}
 
 export default function UpdatePasswordForm() {
+  const t = useTranslations('Auth.updatePassword')
   const [state, formAction, isPending] = useActionState(updatePasswordAction, initialState)
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
       <div className="flex flex-col gap-1">
         <label htmlFor="password" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          New Password
+          {t('password')}
         </label>
         <input
           id="password"
@@ -31,8 +32,7 @@ export default function UpdatePasswordForm() {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="confirmPassword" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Confirm New Password
+          {t('confirmPassword')}
         </label>
         <input
           id="confirmPassword"
@@ -56,8 +56,7 @@ export default function UpdatePasswordForm() {
         disabled={isPending}
         className="bg-lime text-midnight font-bold rounded-full py-3 px-6 hover:scale-105 hover:bg-sunset transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {/* TODO: i18n */}
-        {isPending ? 'Updating...' : 'Update Password'}
+        {isPending ? t('updatingButton') : t('submitButton')}
       </button>
     </form>
   )

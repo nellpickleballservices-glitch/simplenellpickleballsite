@@ -1,25 +1,25 @@
 'use client'
 
 import { useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { AuthActionResult } from '@/app/actions/auth'
 import { completeOAuthProfileAction } from './actions'
 
 const initialState: AuthActionResult = {}
 
 export default function CompleteProfileForm() {
+  const t = useTranslations('Auth.completeProfile')
   const [state, formAction, isPending] = useActionState(completeOAuthProfileAction, initialState)
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
       <p className="text-offwhite/70 text-sm text-center">
-        {/* TODO: i18n */}
-        We just need your phone number to complete your NELL profile.
+        {t('description')}
       </p>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="phone" className="text-offwhite text-sm font-medium">
-          {/* TODO: i18n */}
-          Phone Number
+          {t('phone')}
         </label>
         <input
           id="phone"
@@ -44,8 +44,7 @@ export default function CompleteProfileForm() {
         disabled={isPending}
         className="bg-lime text-midnight font-bold rounded-full py-3 px-6 hover:scale-105 hover:bg-sunset transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {/* TODO: i18n */}
-        {isPending ? 'Saving...' : 'Complete Profile'}
+        {isPending ? t('savingButton') : t('submitButton')}
       </button>
     </form>
   )
