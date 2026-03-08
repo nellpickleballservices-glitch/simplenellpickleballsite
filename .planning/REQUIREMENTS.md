@@ -109,8 +109,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Internationalization
 
-- [ ] **I18N-01**: Platform supports Spanish (primary) and English via `next-intl` with `[locale]` route segment
-- [ ] **I18N-02**: All UI strings externalized to locale files from Phase 1 (not retrofitted later)
+- [x] **I18N-01**: Platform supports Spanish (primary) and English via `next-intl` with `[locale]` route segment
+- [x] **I18N-02**: All UI strings externalized to locale files from Phase 1 (not retrofitted later)
 
 ## v2 Requirements
 

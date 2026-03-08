@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-08T03:22:41.610Z"
-last_activity: 2026-03-08 — Plan 01-01 complete (Next.js 16 scaffold + proxy.ts + route groups)
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-03-08T03:39:00Z"
+last_activity: 2026-03-08 — Plan 01-04 complete (next-intl i18n wiring — routing, messages, LanguageSwitcher, all strings externalized)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 4
-  percent: 60
+  completed_plans: 5
+  percent: 72
 ---
 
 # Project State
@@ -26,32 +26,33 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 1 of 5 (Foundation)
-Plan: 3 of 5 completed (next: 01-03)
+Plan: 4 of 5 completed (next: 01-05)
 Status: In Progress
-Last activity: 2026-03-08 — Plan 01-01 complete (Next.js 16 scaffold + proxy.ts + route groups)
+Last activity: 2026-03-08 — Plan 01-04 complete (next-intl i18n — routing config, ES/EN messages, LanguageSwitcher, all strings externalized)
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 72%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3 min
-- Total execution time: 10 min
+- Total plans completed: 4
+- Average duration: 5 min
+- Total execution time: 20 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 3/5 | 10 min | 3 min |
+| 01-foundation | 4/5 | 20 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 2 min, 4 min
+- Last 5 plans: 4 min, 2 min, 4 min, 10 min
 - Trend: stable
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 4 | 2 tasks | 14 files |
 | Phase 01-foundation P03 | 7 | 3 tasks | 17 files |
+| Phase 01-foundation P04 | 10 | 2 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Server Action signature: (_prevState, formData) required for React 19 useActionState — forms using these actions must use useActionState hook
 - [Phase 01-foundation]: normalizeName uses split/map instead of \b\w regex — regex treats accented char boundaries incorrectly (maría → MaríA vs María)
 - [Phase 01-foundation]: WelcomeBanner triggered via ?welcome=1 redirect param from signUpAction — server reads param and profile, passes firstName to client banner component
+- [Phase 01-foundation, 01-04]: noHardcodedStrings test checks for 'TODO: i18n' (not '// TODO: i18n') — JSX comment syntax {/* */} means the // prefix is absent in .tsx files
+- [Phase 01-foundation, 01-04]: Server Components (page.tsx files) call useTranslations() directly without 'use client' — next-intl 4 supports both RSC and Client Component usage
+- [Phase 01-foundation, 01-04]: Brand namespace extracted for 'NELL' and 'Pickleball Club' strings — reused across all auth pages avoiding duplication
 
 ### Pending Todos
 
@@ -90,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T03:22:41.608Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-03-08T03:39:00Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
