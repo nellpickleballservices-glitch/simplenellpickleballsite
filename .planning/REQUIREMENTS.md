@@ -58,9 +58,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Member Dashboard
 
-- [ ] **DASH-01**: Member can view current membership status (plan, renewal date, status)
-- [ ] **DASH-02**: Member can view upcoming reservations with court, date, time, and cancellation option
-- [ ] **DASH-03**: Member can cancel a reservation (if within cancellation window)
+- [x] **DASH-01**: Member can view current membership status (plan, renewal date, status)
+- [x] **DASH-02**: Member can view upcoming reservations with court, date, time, and cancellation option
+- [x] **DASH-03**: Member can cancel a reservation (if within cancellation window)
 - [x] **DASH-04**: Member can update profile: first name, last name, phone number
 - [x] **DASH-05**: Member can change password: enter current password, new password, confirm new password
 
