@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation-01-PLAN.md
-last_updated: "2026-03-08T03:08:21.458Z"
-last_activity: 2026-03-08 — Plan 01-02 complete (Supabase clients + full DB schema with RLS)
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-03-08T03:22:41.610Z"
+last_activity: 2026-03-08 — Plan 01-01 complete (Next.js 16 scaffold + proxy.ts + route groups)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 4
   percent: 60
 ---
 
@@ -51,6 +51,7 @@ Progress: [██████░░░░] 60%
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 4 | 2 tasks | 14 files |
+| Phase 01-foundation P03 | 7 | 3 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation, 01-02]: Unique policy names per table (e.g. "Service role full access on memberships") — avoids ambiguity in Supabase dashboard
 - [Phase 01-foundation]: proxy.ts comments avoid literal 'getSession()' string — source-code grep test would false-positive on comments
 - [Phase 01-foundation]: create-next-app unusable in non-empty directory — dependencies installed manually, identical outcome
+- [Phase 01-foundation]: Server Action signature: (_prevState, formData) required for React 19 useActionState — forms using these actions must use useActionState hook
+- [Phase 01-foundation]: normalizeName uses split/map instead of \b\w regex — regex treats accented char boundaries incorrectly (maría → MaríA vs María)
+- [Phase 01-foundation]: WelcomeBanner triggered via ?welcome=1 redirect param from signUpAction — server reads param and profile, passes firstName to client banner component
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T03:08:21.456Z
-Stopped at: Completed 01-foundation-01-PLAN.md
+Last session: 2026-03-08T03:22:41.608Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None

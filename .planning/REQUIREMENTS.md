@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with first name, last name, email, phone number, password, and membership plan selection
-- [ ] **AUTH-02**: First and last name fields validated separately — no numbers allowed, whitespace trimmed, capitalization normalized (e.g., jose urizar → Jose Urizar)
-- [ ] **AUTH-03**: Password requires minimum 8 characters with confirmation match
-- [ ] **AUTH-04**: User can log in with email and password
-- [ ] **AUTH-05**: User session persists across browser refresh (SSR cookie-based, using `@supabase/ssr`)
-- [ ] **AUTH-06**: User can request password reset via email link and set a new confirmed password
+- [x] **AUTH-01**: User can sign up with first name, last name, email, phone number, password, and membership plan selection
+- [x] **AUTH-02**: First and last name fields validated separately — no numbers allowed, whitespace trimmed, capitalization normalized (e.g., jose urizar → Jose Urizar)
+- [x] **AUTH-03**: Password requires minimum 8 characters with confirmation match
+- [x] **AUTH-04**: User can log in with email and password
+- [x] **AUTH-05**: User session persists across browser refresh (SSR cookie-based, using `@supabase/ssr`)
+- [x] **AUTH-06**: User can request password reset via email link and set a new confirmed password
 - [x] **AUTH-07**: Admin role stored in `app_metadata` (not `user_metadata`) — cannot be self-assigned
 
 ### Memberships & Billing
