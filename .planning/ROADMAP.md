@@ -30,13 +30,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. An admin cannot be created by self-assigning a role — admin role lives in `app_metadata` and requires privileged assignment
   4. Every page renders correctly in both Spanish and English via locale URL segment (`/es/` and `/en/`) with no hardcoded UI strings
   5. All Supabase tables (`profiles`, `memberships`, `reservations`, `courts`, `locations`, `events`, `content_blocks`) exist with Row Level Security enabled and members can only read/write their own rows
-**Plans**: 4 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: Next.js 16 project scaffold — App Router, TailwindCSS v4, TypeScript, `proxy.ts` auth middleware with `getUser()`, route group structure `(marketing)/(auth)/(member)/(admin)`
-- [ ] 01-02: Supabase setup — server and browser client split (`lib/supabase/server.ts`, `lib/supabase/client.ts`), full database schema migration with all tables, RLS policies for every table, admin role via `app_metadata`
-- [ ] 01-03: Auth flows — signup (with name validation and normalization), login, logout, password reset via Supabase PKCE email link; session persistence via `@supabase/ssr` cookies
-- [ ] 01-04: i18n infrastructure — `next-intl` with `app/[locale]/` route segment, `messages/es.json` and `messages/en.json`, Spanish as default locale, all existing UI strings externalized
+- [ ] 01-00-PLAN.md — Test framework install + all Wave 0 test stubs (Nyquist gate)
+- [ ] 01-01-PLAN.md — Next.js 16 scaffold, TailwindCSS v4, route groups, proxy.ts with getUser()
+- [ ] 01-02-PLAN.md — Supabase client split, full DB schema migration, RLS, admin role utility
+- [ ] 01-03-PLAN.md — Auth flows: signup, login, logout, password reset, Google OAuth
+- [ ] 01-04-PLAN.md — next-intl i18n routing, message files, string externalization, LanguageSwitcher
 
 ### Phase 2: Billing
 **Goal**: A user who signs up can pay for a membership via Stripe, and that membership status is immediately reflected in Supabase — including all lifecycle events (cancellation, payment failure) — so court reservation gating is trustworthy.
@@ -114,7 +115,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/4 | Not started | - |
+| 1. Foundation | 0/5 | Not started | - |
 | 2. Billing | 0/3 | Not started | - |
 | 3. Reservations | 0/4 | Not started | - |
 | 4. Admin and CMS | 0/4 | Not started | - |
