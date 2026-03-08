@@ -214,6 +214,19 @@
     "guestNamePlaceholder": "Nombre completo del invitado",
     "closeModal": "Cerrar",
     "selectTimeSlot": "Selecciona un horario",
+    "reservingSpot": "Reservando...",
+    "bookingConfirmed": "Reserva confirmada!",
+    "bookingConfirmedSubtext": "Revisa tu correo para los detalles de confirmacion.",
+    "payment": {
+      "title": "Completa Tu Pago",
+      "payWithStripe": "Pagar con Tarjeta",
+      "payWithCash": "Pagar en Efectivo en el Local",
+      "or": "o",
+      "cashReserved": "Reserva Retenida",
+      "cashInstructions": "Tu reserva esta retenida. Por favor paga en la recepcion antes de tu sesion."
+    },
+    "paidSuccess": "Pago exitoso! Tu reserva esta confirmada.",
+    "paymentCancelled": "El pago fue cancelado. Puedes pagar desde tu panel.",
     "errors": {
       "pending_payment_block": "Tienes una reserva con pago pendiente. Por favor completa el pago antes de hacer otra reserva.",
       "beyond_booking_window": "Este horario esta fuera de tu ventana de reserva anticipada.",

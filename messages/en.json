@@ -214,6 +214,19 @@
     "guestNamePlaceholder": "Guest full name",
     "closeModal": "Close",
     "selectTimeSlot": "Select a time slot",
+    "reservingSpot": "Reserving...",
+    "bookingConfirmed": "Reservation confirmed!",
+    "bookingConfirmedSubtext": "Check your email for confirmation details.",
+    "payment": {
+      "title": "Complete Your Payment",
+      "payWithStripe": "Pay with Card",
+      "payWithCash": "Pay Cash at Location",
+      "or": "or",
+      "cashReserved": "Reservation Held",
+      "cashInstructions": "Your reservation is held. Please pay at the front desk before your session."
+    },
+    "paidSuccess": "Payment successful! Your reservation is confirmed.",
+    "paymentCancelled": "Payment was cancelled. You can still pay from your dashboard.",
     "errors": {
       "pending_payment_block": "You have a pending payment reservation. Please complete payment before booking again.",
       "beyond_booking_window": "This time slot is beyond your advance booking window.",
