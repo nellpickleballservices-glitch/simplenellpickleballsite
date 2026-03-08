@@ -52,17 +52,17 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Reservation Notifications
 
 - [x] **NOTIF-01**: Confirmation email sent immediately when a reservation is made (via Resend)
-- [ ] **NOTIF-02**: Session end reminder triggered 10 minutes before session ends via Supabase Edge Function + pg_cron
-- [ ] **NOTIF-03**: Reminder message (bilingual): "Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin."
-- [ ] **NOTIF-04**: Reminder system tracks `reminder_sent` boolean per reservation to prevent duplicates
+- [x] **NOTIF-02**: Session end reminder triggered 10 minutes before session ends via Supabase Edge Function + pg_cron
+- [x] **NOTIF-03**: Reminder message (bilingual): "Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin."
+- [x] **NOTIF-04**: Reminder system tracks `reminder_sent` boolean per reservation to prevent duplicates
 
 ### Member Dashboard
 
 - [ ] **DASH-01**: Member can view current membership status (plan, renewal date, status)
 - [ ] **DASH-02**: Member can view upcoming reservations with court, date, time, and cancellation option
 - [ ] **DASH-03**: Member can cancel a reservation (if within cancellation window)
-- [ ] **DASH-04**: Member can update profile: first name, last name, phone number
-- [ ] **DASH-05**: Member can change password: enter current password, new password, confirm new password
+- [x] **DASH-04**: Member can update profile: first name, last name, phone number
+- [x] **DASH-05**: Member can change password: enter current password, new password, confirm new password
 
 ### Public Website
 

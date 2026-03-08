@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-08T16:59:37.558Z"
-last_activity: 2026-03-08 — Plan 03-02 complete (Court cards page, availability queries, Server Action re-fetch, court diagram modal)
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-03-08T17:03:42Z"
+last_activity: 2026-03-08 — Plan 03-05 complete (Dashboard settings, session reminder Edge Function, pg_cron)
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 14
-  completed_plans: 12
-  percent: 86
+  completed_plans: 13
+  percent: 93
 ---
 
 # Project State
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 3 of 5 (Reservations)
-Plan: 2 of 5 completed
-Status: In Progress
-Last activity: 2026-03-08 — Plan 03-02 complete (Court cards page, availability queries, Server Action re-fetch, court diagram modal)
+Plan: 5 of 5 completed
+Status: Complete
+Last activity: 2026-03-08 — Plan 03-05 complete (Dashboard settings, session reminder Edge Function, pg_cron)
 
-Progress: [████████░░] 86%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 13
 - Average duration: 3 min
-- Total execution time: 33 min
+- Total execution time: 36 min
 
 **By Phase:**
 
@@ -45,7 +45,7 @@ Progress: [████████░░] 86%
 |-------|-------|-------|----------|
 | 01-foundation | 4/5 | 20 min | 5 min |
 | 02-billing | 4/4 | 9 min | 2 min |
-| 03-reservations | 3/5 | 7 min | 2 min |
+| 03-reservations | 5/5 | 10 min | 2 min |
 
 **Recent Trend:**
 - Last 5 plans: 10 min, 1 min, 3 min, 4 min, 1 min
@@ -63,6 +63,7 @@ Progress: [████████░░] 86%
 | Phase 03-reservations P02 | 2 | 2 tasks | 6 files |
 | Phase 03-reservations P03 | 2 | 2 tasks | 6 files |
 | Phase 03-reservations P02 | 4 | 3 tasks | 10 files |
+| Phase 03-reservations P05 | 3 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,9 @@ Recent decisions affecting current work:
 - [Phase 03-reservations, 03-03]: Webhook route dispatches checkout.session.completed based on session.mode to separate subscription from one-time payment handling
 - [Phase 03-reservations]: Server Action (getAvailabilityAction) for date tab re-fetch instead of searchParams or full page reload
 - [Phase 03-reservations]: Abstract 2x2 quadrant layout for court diagram (over realistic doubles positions)
+- [Phase 03-reservations, 03-05]: Current password verified via signInWithPassword before allowing password change
+- [Phase 03-reservations, 03-05]: Edge Function uses 1-minute time window (10-11 min) matching cron frequency to avoid duplicate sends
+- [Phase 03-reservations, 03-05]: Expired hold cleanup piggybacks on reminder function (no separate cron job)
 
 ### Pending Todos
 
@@ -119,6 +123,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-08T16:59:37.555Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-08T17:03:42Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
