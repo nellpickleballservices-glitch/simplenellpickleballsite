@@ -45,6 +45,15 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Layer 1 admin route protection: non-admin users accessing /admin/* are redirected home.
+  if (user && pathname.includes('/admin')) {
+    if (user.app_metadata?.role !== 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
+  }
+
   // LOCKED DECISION (CONTEXT.md): Reservation routes are open to ALL authenticated users.
   // Non-members pay per session. Skip membership gate for /reservations and /checkout-session.
   const isReservationRoute =

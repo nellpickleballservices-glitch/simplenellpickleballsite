@@ -272,6 +272,24 @@
       "unexpected_error": "Algo salio mal. Por favor intenta de nuevo."
     }
   },
+  "Admin": {
+    "dashboard": "Panel",
+    "users": "Usuarios",
+    "courts": "Canchas",
+    "reservations": "Reservas",
+    "events": "Eventos",
+    "cms": "CMS",
+    "stripe": "Stripe",
+    "totalUsers": "Total de Usuarios",
+    "activeMembers": "Miembros Activos",
+    "todayReservations": "Reservas de Hoy",
+    "upcomingEvents": "Proximos Eventos",
+    "confirmDelete": "Estas seguro de que quieres eliminar este elemento?",
+    "confirmDisable": "Estas seguro de que quieres deshabilitar este elemento?",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "adminNav": "Admin"
+  },
   "Settings": {
     "pageTitle": "Configuracion",
     "breadcrumbDashboard": "Panel",

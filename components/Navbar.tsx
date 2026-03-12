@@ -8,6 +8,7 @@ export async function Navbar() {
   const t = await getTranslations('Nav')
   const tBilling = await getTranslations('Billing')
   const tReservations = await getTranslations('Reservations')
+  const tAdmin = await getTranslations('Admin')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -50,6 +51,14 @@ export async function Navbar() {
             >
               {firstName ?? t('dashboard')}
             </Link>
+            {user.app_metadata?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className="text-sm text-offwhite hover:text-lime transition-colors"
+              >
+                {tAdmin('adminNav')}
+              </Link>
+            )}
             <form action={logoutAction}>
               <button
                 type="submit"

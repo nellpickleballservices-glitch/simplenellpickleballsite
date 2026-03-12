@@ -272,6 +272,24 @@
       "unexpected_error": "Something went wrong. Please try again."
     }
   },
+  "Admin": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "courts": "Courts",
+    "reservations": "Reservations",
+    "events": "Events",
+    "cms": "CMS",
+    "stripe": "Stripe",
+    "totalUsers": "Total Users",
+    "activeMembers": "Active Members",
+    "todayReservations": "Today's Reservations",
+    "upcomingEvents": "Upcoming Events",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "confirmDisable": "Are you sure you want to disable this item?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "adminNav": "Admin"
+  },
   "Settings": {
     "pageTitle": "Settings",
     "breadcrumbDashboard": "Dashboard",
