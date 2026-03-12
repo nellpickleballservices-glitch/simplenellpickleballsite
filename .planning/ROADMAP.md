@@ -88,10 +88,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: Admin user management — search by name/email/phone, view membership status and reservation history, disable/enable accounts, trigger password reset, admin route protection at all three layers
-- [ ] 04-02: Admin court and reservation management — CRUD for court locations with GPS coordinates, maintenance blocking, view all reservations, cancel any reservation, create reservation on behalf of member
-- [ ] 04-03: Admin events management and Stripe view — CRUD for events (tournaments, training sessions, social events), Stripe payment data view (webhook-synced table or embedded Stripe dashboard)
-- [ ] 04-04: CMS content blocks — `content_blocks` table with `block_key`, `block_type`, `content_es`, `content_en`, `sort_order`; admin editor UI for all content blocks; ISR cache invalidation on save
+- [ ] 04-01-PLAN.md — Admin foundation: migration 0005 (events columns, maintenance columns, content_blocks seed data), three-layer route protection (proxy + layout + requireAdmin), admin layout with sidebar, dashboard stat cards, shared components
+- [ ] 04-02-PLAN.md — User management: search by name/email/phone, paginated table, slide-out detail panel with membership and reservation history, disable/enable accounts, trigger password reset
+- [ ] 04-03-PLAN.md — Court and reservation management: add court locations with GPS, maintenance blocking with cascade cancellation, filterable reservation table, admin cancel, create on behalf of user or guest, mark cash paid
+- [ ] 04-04-PLAN.md — Events CRUD (tournaments/training/social with bilingual fields), CMS content editor with Tiptap rich text, bilingual tab switching, inline preview, block reordering, ISR revalidation, Stripe Dashboard link
 
 ### Phase 5: Public Website and AI Chatbot
 **Goal**: Prospective members land on a bilingual public website that explains the club, shows events, and converts visitors to signups — and an AI chatbot answers questions in the visitor's language using site content as its knowledge base.
