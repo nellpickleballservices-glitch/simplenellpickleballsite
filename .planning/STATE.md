@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-12T03:32:52.263Z"
-last_activity: 2026-03-08 — Plan 03-04 complete (Booking UI wiring, dashboard reservations table, cancellation dialog)
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-12T03:58:13.522Z"
+last_activity: "2026-03-12 — Plan 04-01 complete (Admin foundation: route protection, layout, dashboard, migration)"
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 18
+  completed_plans: 15
   percent: 93
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-07)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Phase 3 — Reservations
+**Current focus:** Phase 4 — Admin and CMS
 
 ## Current Position
 
-Phase: 3 of 5 (Reservations)
-Plan: 4 of 5 completed
+Phase: 4 of 5 (Admin and CMS)
+Plan: 1 of 4 completed
 Status: In Progress
-Last activity: 2026-03-08 — Plan 03-04 complete (Booking UI wiring, dashboard reservations table, cancellation dialog)
+Last activity: 2026-03-12 — Plan 04-01 complete (Admin foundation: route protection, layout, dashboard, migration)
 
 Progress: [█████████░] 93%
 
@@ -65,6 +65,7 @@ Progress: [█████████░] 93%
 | Phase 03-reservations P02 | 4 | 3 tasks | 10 files |
 | Phase 03-reservations P05 | 3 | 2 tasks | 8 files |
 | Phase 03-reservations P04 | 4 | 3 tasks | 10 files |
+| Phase 04-admin-and-cms P01 | 3 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - [Phase 03-reservations, 03-05]: Expired hold cleanup piggybacks on reminder function (no separate cron job)
 - [Phase 03-reservations]: ReservationForm as composable component embedded in both CourtDiagram (open play) and TimeSlotGrid (full court) contexts
 - [Phase 03-reservations]: Dashboard namespace created for i18n, keeping reservation management keys separate from Billing namespace
+- [Phase 04-admin-and-cms]: Three-layer admin protection: proxy.ts (Layer 1), layout.tsx (Layer 2), requireAdmin() in Server Actions (Layer 3)
+- [Phase 04-admin-and-cms]: Admin stats query profiles table for total users count (avoids auth.admin.listUsers pagination overhead)
 
 ### Pending Todos
 
@@ -126,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T03:32:52.252Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-admin-and-cms/04-CONTEXT.md
+Last session: 2026-03-12T03:58:13.520Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

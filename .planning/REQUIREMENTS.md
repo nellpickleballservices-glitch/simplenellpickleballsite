@@ -83,13 +83,13 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ADMIN-06**: Admin can block courts for maintenance (sets court status to closed)
 - [ ] **ADMIN-07**: Admin can view all reservations and cancel any reservation
 - [ ] **ADMIN-08**: Admin can create, edit, and delete events (tournaments, training, social)
-- [ ] **ADMIN-09**: Admin can view Stripe payment data (via embedded Stripe dashboard or webhook-synced table)
+- [x] **ADMIN-09**: Admin can view Stripe payment data (via embedded Stripe dashboard or webhook-synced table)
 - [ ] **ADMIN-10**: Admin CMS: edit content blocks for Home, About, Learn Pickleball, and FAQ pages (bilingual: `content_es`, `content_en`)
-- [ ] **ADMIN-11**: Admin routes protected at three layers: middleware (proxy.ts), layout, and API/Server Action level
+- [x] **ADMIN-11**: Admin routes protected at three layers: middleware (proxy.ts), layout, and API/Server Action level
 
 ### Content Management System
 
-- [ ] **CMS-01**: `content_blocks` table stores: `block_key`, `block_type`, `content_es`, `content_en`, `sort_order`
+- [x] **CMS-01**: `content_blocks` table stores: `block_key`, `block_type`, `content_es`, `content_en`, `sort_order`
 - [ ] **CMS-02**: Public pages fetch content blocks from Supabase at render time (ISR for performance)
 - [ ] **CMS-03**: Admin can update any content block via rich text or plain text editor in admin panel
 
