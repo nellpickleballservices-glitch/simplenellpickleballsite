@@ -79,37 +79,39 @@ ALTER TABLE reservations
   ADD COLUMN price_cents     INT NOT NULL DEFAULT 0;
 
 -- ============================================================
--- 6. Exclusion constraints — prevent double-booking
+-- 6. Enforce status values and booking mode / spot_number consistency
 -- ============================================================
 
--- Open play: same court + same spot + overlapping time = conflict
 ALTER TABLE reservations
-  ADD CONSTRAINT no_double_booking_open_play
-  EXCLUDE USING GIST (
-    court_id WITH =,
-    spot_number WITH =,
-    tstzrange(starts_at, ends_at) WITH &&
-  )
-  WHERE (
-    status NOT IN ('cancelled', 'expired')
-    AND booking_mode = 'open_play'
-    AND spot_number IS NOT NULL
-  );
+  ADD CONSTRAINT valid_reservation_status
+  CHECK (status IN ('confirmed', 'pending_payment', 'cancelled', 'expired'));
 
--- Full court: same court + overlapping time = conflict (blocks all spots)
 ALTER TABLE reservations
-  ADD CONSTRAINT no_double_booking_full_court
-  EXCLUDE USING GIST (
-    court_id WITH =,
-    tstzrange(starts_at, ends_at) WITH &&
-  )
-  WHERE (
-    status NOT IN ('cancelled', 'expired')
-    AND booking_mode = 'full_court'
-  );
+  ADD CONSTRAINT open_play_requires_spot
+  CHECK (booking_mode = 'full_court' OR spot_number IS NOT NULL);
 
 -- ============================================================
--- 7. Update RLS — all authenticated users can see reservations (for availability)
+-- 7. Exclusion constraint — prevent double-booking (all modes)
+-- ============================================================
+-- Uses int4range to unify full_court and open_play into one constraint:
+--   full_court  → int4range(1, 5) covers all 4 spots
+--   open_play   → int4range(spot, spot+1) covers just that spot
+-- Overlapping ranges = conflict, so full_court blocks all open_play and vice versa.
+
+ALTER TABLE reservations
+  ADD CONSTRAINT no_double_booking
+  EXCLUDE USING GIST (
+    court_id WITH =,
+    int4range(
+      CASE WHEN booking_mode = 'full_court' THEN 1 ELSE spot_number END,
+      CASE WHEN booking_mode = 'full_court' THEN 5 ELSE spot_number + 1 END
+    ) WITH &&,
+    tstzrange(starts_at, ends_at) WITH &&
+  )
+  WHERE (status NOT IN ('cancelled', 'expired'));
+
+-- ============================================================
+-- 8. Update RLS — all authenticated users can see reservations (for availability)
 -- ============================================================
 
 -- Drop owner-only SELECT policy (availability display needs all reservations visible)
@@ -120,14 +122,15 @@ CREATE POLICY "All authenticated can read court reservations"
   ON reservations FOR SELECT TO authenticated USING (true);
 
 -- ============================================================
--- 8. Seed data — 1 location, 3 courts, configs, pricing
+-- 9. Seed data — 1 location, 3 courts, configs, pricing
 -- ============================================================
 
 -- Location: NELL Pickleball Club (Santo Domingo area)
 INSERT INTO locations (id, name, address, lat, lng) VALUES
   ('a0000000-0000-0000-0000-000000000001', 'NELL Pickleball Club',
    'Av. Abraham Lincoln, Santo Domingo, Dominican Republic',
-   18.47186100, -69.93955700);
+   18.47186100, -69.93955700)
+ON CONFLICT (id) DO NOTHING;
 
 -- 3 Courts at the location
 INSERT INTO courts (id, location_id, name, status, lat, lng) VALUES
@@ -136,7 +139,8 @@ INSERT INTO courts (id, location_id, name, status, lat, lng) VALUES
   ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001',
    'Court 2', 'open', 18.47186200, -69.93955800),
   ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001',
-   'Court 3', 'open', 18.47186300, -69.93955900);
+   'Court 3', 'open', 18.47186300, -69.93955900)
+ON CONFLICT (id) DO NOTHING;
 
 -- Court config: weekday and weekend schedules for each court
 INSERT INTO court_config (court_id, day_type, open_time, close_time, full_court_start, full_court_end, open_play_start, open_play_end) VALUES
@@ -145,7 +149,8 @@ INSERT INTO court_config (court_id, day_type, open_time, close_time, full_court_
   ('c0000000-0000-0000-0000-000000000002', 'weekday', '07:00', '22:00', '07:00', '17:00', '17:00', '22:00'),
   ('c0000000-0000-0000-0000-000000000002', 'weekend', '07:00', '22:00', '07:00', '15:00', '15:00', '22:00'),
   ('c0000000-0000-0000-0000-000000000003', 'weekday', '07:00', '22:00', '07:00', '17:00', '17:00', '22:00'),
-  ('c0000000-0000-0000-0000-000000000003', 'weekend', '07:00', '22:00', '07:00', '15:00', '15:00', '22:00');
+  ('c0000000-0000-0000-0000-000000000003', 'weekend', '07:00', '22:00', '07:00', '15:00', '15:00', '22:00')
+ON CONFLICT (court_id, day_type) DO NOTHING;
 
 -- Court pricing: full_court and open_play for each court at $10 (1000 cents)
 INSERT INTO court_pricing (court_id, mode, price_cents) VALUES
@@ -154,4 +159,5 @@ INSERT INTO court_pricing (court_id, mode, price_cents) VALUES
   ('c0000000-0000-0000-0000-000000000002', 'full_court', 1000),
   ('c0000000-0000-0000-0000-000000000002', 'open_play', 1000),
   ('c0000000-0000-0000-0000-000000000003', 'full_court', 1000),
-  ('c0000000-0000-0000-0000-000000000003', 'open_play', 1000);
+  ('c0000000-0000-0000-0000-000000000003', 'open_play', 1000)
+ON CONFLICT (court_id, mode) DO NOTHING;

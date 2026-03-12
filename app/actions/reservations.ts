@@ -86,8 +86,8 @@ export async function createReservationAction(
     ? (configMap['member_advance_booking_hours'] ?? 72)
     : (configMap['non_member_advance_booking_hours'] ?? 24)
 
-  const startsAt = new Date(`${date}T${startTime}`)
-  const endsAt = new Date(`${date}T${endTime}`)
+  const startsAt = new Date(startTime)
+  const endsAt = new Date(endTime)
   const now = new Date()
   const maxBookingTime = new Date(now.getTime() + advanceHours * 60 * 60 * 1000)
 
@@ -192,8 +192,8 @@ export async function createReservationAction(
     .single()
 
   if (insertError) {
-    // 23505 = unique_violation from exclusion constraint
-    if (insertError.code === '23505') {
+    // 23P01 = exclusion_violation from EXCLUDE constraint
+    if (insertError.code === '23P01') {
       return { error: 'slot_taken' }
     }
     console.error('Reservation insert error:', insertError)
