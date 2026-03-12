@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-12T03:58:13.522Z"
-last_activity: "2026-03-12 — Plan 04-01 complete (Admin foundation: route protection, layout, dashboard, migration)"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-03-12T04:04:50.323Z"
+last_activity: 2026-03-12 — Plan 04-04 complete (Events CRUD, CMS Tiptap editor, Stripe dashboard link)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 18
-  completed_plans: 15
-  percent: 93
+  completed_plans: 16
+  percent: 89
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 4 of 5 (Admin and CMS)
-Plan: 1 of 4 completed
+Plan: 4 of 4 completed
 Status: In Progress
-Last activity: 2026-03-12 — Plan 04-01 complete (Admin foundation: route protection, layout, dashboard, migration)
+Last activity: 2026-03-12 — Plan 04-04 complete (Events CRUD, CMS Tiptap editor, Stripe dashboard link)
 
-Progress: [█████████░] 93%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [█████████░] 93%
 | Phase 03-reservations P05 | 3 | 2 tasks | 8 files |
 | Phase 03-reservations P04 | 4 | 3 tasks | 10 files |
 | Phase 04-admin-and-cms P01 | 3 | 2 tasks | 12 files |
+| Phase 04-admin-and-cms P04 | 4 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,10 @@ Recent decisions affecting current work:
 - [Phase 03-reservations]: Dashboard namespace created for i18n, keeping reservation management keys separate from Billing namespace
 - [Phase 04-admin-and-cms]: Three-layer admin protection: proxy.ts (Layer 1), layout.tsx (Layer 2), requireAdmin() in Server Actions (Layer 3)
 - [Phase 04-admin-and-cms]: Admin stats query profiles table for total users count (avoids auth.admin.listUsers pagination overhead)
+- [Phase 04-admin-and-cms]: Tiptap useEditor with immediatelyRender: false for SSR compatibility
+- [Phase 04-admin-and-cms]: Content blocks grouped by page prefix (home_, about_, learn_, faq_) on server side
+- [Phase 04-admin-and-cms]: Stripe page uses direct external link (no embedded components, no Stripe Connect required)
+- [Phase 04-admin-and-cms]: ISR revalidation via revalidatePath on CMS content save for Phase 5 public pages
 
 ### Pending Todos
 
@@ -129,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T03:58:13.520Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-12T04:04:50.320Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
