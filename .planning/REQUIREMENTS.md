@@ -75,10 +75,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Admin Panel
 
-- [ ] **ADMIN-01**: Admin can search users by first name, last name, email, or phone number
-- [ ] **ADMIN-02**: Admin can view any user's membership status and reservation history
-- [ ] **ADMIN-03**: Admin can disable/enable user accounts
-- [ ] **ADMIN-04**: Admin can trigger password reset for any user
+- [x] **ADMIN-01**: Admin can search users by first name, last name, email, or phone number
+- [x] **ADMIN-02**: Admin can view any user's membership status and reservation history
+- [x] **ADMIN-03**: Admin can disable/enable user accounts
+- [x] **ADMIN-04**: Admin can trigger password reset for any user
 - [ ] **ADMIN-05**: Admin can add court locations with name, GPS coordinates, and capacity
 - [ ] **ADMIN-06**: Admin can block courts for maintenance (sets court status to closed)
 - [ ] **ADMIN-07**: Admin can view all reservations and cancel any reservation
