@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Bebas_Neue, Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+import { Navbar } from '@/components/Navbar'
 import '../globals.css'
 
 const bebasNeue = Bebas_Neue({
@@ -36,6 +37,7 @@ export default async function RootLayout({
     <html lang={locale} className={`${bebasNeue.variable} ${inter.variable}`}>
       <body>
         <NextIntlClientProvider messages={messages}>
+          <Navbar />
           {children}
         </NextIntlClientProvider>
       </body>
