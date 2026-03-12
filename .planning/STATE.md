@@ -121,6 +121,9 @@ Recent decisions affecting current work:
 - [Phase 04-admin-and-cms]: ISR revalidation via revalidatePath on CMS content save for Phase 5 public pages
 - [Phase 04-admin-and-cms]: Two-pronged search: profiles table for name/phone + auth.admin.listUsers for email (Supabase lacks server-side email filter)
 - [Phase 04-admin-and-cms]: enrichProfilesWithAuthAndMembership helper batches auth lookups to avoid N+1 queries per user
+- [Phase 04-admin-and-cms, 04-03]: Guest reservations use admin's user_id with guest_name and created_by_admin=true (per research recommendation)
+- [Phase 04-admin-and-cms, 04-03]: Maintenance cascade sends cancellation emails via Resend fire-and-forget (try/catch per user)
+- [Phase 04-admin-and-cms, 04-03]: Location upsert on court creation reuses existing location by name or creates new one
 
 ### Pending Todos
 
@@ -138,6 +141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T04:07:15.264Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-03-12T04:05:38Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None

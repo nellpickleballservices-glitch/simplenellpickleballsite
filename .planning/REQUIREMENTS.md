@@ -79,9 +79,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ADMIN-02**: Admin can view any user's membership status and reservation history
 - [x] **ADMIN-03**: Admin can disable/enable user accounts
 - [x] **ADMIN-04**: Admin can trigger password reset for any user
-- [ ] **ADMIN-05**: Admin can add court locations with name, GPS coordinates, and capacity
-- [ ] **ADMIN-06**: Admin can block courts for maintenance (sets court status to closed)
-- [ ] **ADMIN-07**: Admin can view all reservations and cancel any reservation
+- [x] **ADMIN-05**: Admin can add court locations with name, GPS coordinates, and capacity
+- [x] **ADMIN-06**: Admin can block courts for maintenance (sets court status to closed)
+- [x] **ADMIN-07**: Admin can view all reservations and cancel any reservation
 - [x] **ADMIN-08**: Admin can create, edit, and delete events (tournaments, training, social)
 - [x] **ADMIN-09**: Admin can view Stripe payment data (via embedded Stripe dashboard or webhook-synced table)
 - [x] **ADMIN-10**: Admin CMS: edit content blocks for Home, About, Learn Pickleball, and FAQ pages (bilingual: `content_es`, `content_en`)
