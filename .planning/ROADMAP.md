@@ -102,7 +102,7 @@ Plans:
   2. The Home page hero, About page values, and Learn Pickleball content all reflect whatever text the admin has set in the CMS — an admin edit appears on the next page render without a code deploy
   3. The Events page shows current tournaments, training sessions, and social events pulled from the database — no events are hardcoded
   4. A visitor types a question in Spanish and receives a Spanish response; a visitor types in English and receives an English response — the chatbot uses club content (pickleball rules, membership options, reservation process, locations) as its knowledge base
-  5. The Contact page shows a working contact form, WhatsApp link, and social handles
+  5. The Contact page shows a WhatsApp link as primary CTA, club phone, email, and social handles
 **Plans**: 3 plans
 
 Plans:
