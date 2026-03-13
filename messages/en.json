@@ -484,6 +484,17 @@
     "contactMetaTitle": "Contact | NELL Pickleball Club",
     "contactMetaDescription": "Get in touch with NELL Pickleball Club. WhatsApp, email, phone, and social media."
   },
+  "Chatbot": {
+    "greeting": "Hi! I'm Nelly, your NELL Pickleball Club assistant. How can I help you?",
+    "chipMembership": "Membership plans",
+    "chipLocations": "Court locations",
+    "chipLearn": "How to play pickleball",
+    "chipEvents": "Upcoming events",
+    "inputPlaceholder": "Ask Nelly...",
+    "tooltipText": "Have questions? Ask Nelly!",
+    "rateLimitMessage": "I've answered a lot of questions! Visit our Contact page or WhatsApp for more help.",
+    "unavailableMessage": "Nelly is unavailable right now. Please try again later."
+  },
   "Contact": {
     "pageTitle": "Contact Us",
     "subtitle": "Have a question? We'd love to hear from you.",

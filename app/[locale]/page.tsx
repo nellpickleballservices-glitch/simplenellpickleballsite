@@ -8,6 +8,7 @@ import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { WhatsAppBubble } from '@/components/public/WhatsAppBubble'
+import { ChatWidget } from '@/components/chatbot/ChatWidget'
 import type { Metadata } from 'next'
 
 interface HomePageProps {
@@ -391,6 +392,7 @@ async function HomePage({ searchParams }: HomePageProps) {
       </main>
       <Footer />
       <WhatsAppBubble locale={locale} />
+      <ChatWidget locale={locale} />
     </MotionProvider>
   )
 }
