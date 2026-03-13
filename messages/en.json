@@ -6,7 +6,11 @@
     "login": "Login",
     "signup": "Sign Up",
     "logout": "Logout",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "about": "About",
+    "learn": "Learn Pickleball",
+    "events": "Events",
+    "contact": "Contact"
   },
   "Auth": {
     "signup": {
@@ -458,5 +462,37 @@
       "passwords_dont_match": "Passwords do not match",
       "not_authenticated": "You must be logged in"
     }
+  },
+  "Footer": {
+    "home": "Home",
+    "about": "About",
+    "learn": "Learn Pickleball",
+    "events": "Events",
+    "contact": "Contact",
+    "pricing": "Pricing",
+    "quickNav": "Quick Links",
+    "socialLabel": "Follow Us",
+    "copyright": "\u00a9 {year} NELL Pickleball Club. All rights reserved."
+  },
+  "Public": {
+    "aboutMetaTitle": "About NELL Pickleball Club | Bavaro, DR",
+    "aboutMetaDescription": "Learn about NELL Pickleball Club, the premier pickleball destination in Bavaro, Dominican Republic.",
+    "learnMetaTitle": "Learn Pickleball | NELL Pickleball Club",
+    "learnMetaDescription": "Everything you need to know about pickleball: rules, court dimensions, scoring, and tips for beginners.",
+    "eventsMetaTitle": "Events | NELL Pickleball Club",
+    "eventsMetaDescription": "Tournaments, training sessions, and social events at NELL Pickleball Club in Bavaro, Dominican Republic.",
+    "contactMetaTitle": "Contact | NELL Pickleball Club",
+    "contactMetaDescription": "Get in touch with NELL Pickleball Club. WhatsApp, email, phone, and social media."
+  },
+  "Contact": {
+    "pageTitle": "Contact Us",
+    "subtitle": "Have a question? We'd love to hear from you.",
+    "whatsappCta": "Chat on WhatsApp",
+    "whatsappDescription": "Our preferred contact method. We typically respond within minutes.",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "socialLabel": "Social Media",
+    "hoursTitle": "Hours of Operation",
+    "hoursDescription": "Monday - Sunday, 7:00 AM - 10:00 PM"
   }
 }

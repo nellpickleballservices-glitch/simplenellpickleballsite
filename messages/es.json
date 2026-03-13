@@ -3,10 +3,14 @@
     "languageSwitcher": "Idioma",
     "es": "Español",
     "en": "English",
-    "login": "Iniciar sesión",
-    "signup": "Regístrate",
-    "logout": "Cerrar sesión",
-    "dashboard": "Panel"
+    "login": "Iniciar sesion",
+    "signup": "Registrate",
+    "logout": "Cerrar sesion",
+    "dashboard": "Panel",
+    "about": "Nosotros",
+    "learn": "Aprende Pickleball",
+    "events": "Eventos",
+    "contact": "Contacto"
   },
   "Auth": {
     "signup": {
@@ -458,5 +462,37 @@
       "passwords_dont_match": "Las contrasenas no coinciden",
       "not_authenticated": "Debes iniciar sesion"
     }
+  },
+  "Footer": {
+    "home": "Inicio",
+    "about": "Nosotros",
+    "learn": "Aprende Pickleball",
+    "events": "Eventos",
+    "contact": "Contacto",
+    "pricing": "Precios",
+    "quickNav": "Enlaces Rapidos",
+    "socialLabel": "Siguenos",
+    "copyright": "\u00a9 {year} NELL Pickleball Club. Todos los derechos reservados."
+  },
+  "Public": {
+    "aboutMetaTitle": "Sobre NELL Pickleball Club | Bavaro, RD",
+    "aboutMetaDescription": "Conoce NELL Pickleball Club, el destino de pickleball mas exclusivo de Bavaro, Republica Dominicana.",
+    "learnMetaTitle": "Aprende Pickleball | NELL Pickleball Club",
+    "learnMetaDescription": "Todo lo que necesitas saber sobre pickleball: reglas, dimensiones de la cancha, puntuacion y consejos para principiantes.",
+    "eventsMetaTitle": "Eventos | NELL Pickleball Club",
+    "eventsMetaDescription": "Torneos, sesiones de entrenamiento y eventos sociales en NELL Pickleball Club en Bavaro, Republica Dominicana.",
+    "contactMetaTitle": "Contacto | NELL Pickleball Club",
+    "contactMetaDescription": "Contacta a NELL Pickleball Club. WhatsApp, correo, telefono y redes sociales."
+  },
+  "Contact": {
+    "pageTitle": "Contactanos",
+    "subtitle": "Tienes una pregunta? Nos encantaria saber de ti.",
+    "whatsappCta": "Chatea por WhatsApp",
+    "whatsappDescription": "Nuestro metodo de contacto preferido. Normalmente respondemos en minutos.",
+    "emailLabel": "Correo",
+    "phoneLabel": "Telefono",
+    "socialLabel": "Redes Sociales",
+    "hoursTitle": "Horario de Operacion",
+    "hoursDescription": "Lunes - Domingo, 7:00 AM - 10:00 PM"
   }
 }

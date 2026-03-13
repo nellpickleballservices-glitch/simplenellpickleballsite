@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { MobileNav } from '@/components/public/MobileNav'
 import { logoutAction } from '@/app/actions/auth'
 
 export async function Navbar() {
@@ -13,6 +14,7 @@ export async function Navbar() {
   const { data: { user } } = await supabase.auth.getUser()
 
   let firstName: string | null = null
+  const isAdmin = user?.app_metadata?.role === 'admin'
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -23,20 +25,46 @@ export async function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-midnight border-b border-charcoal px-6 py-3 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-6 py-3 flex items-center justify-between">
       {/* Brand */}
       <Link href="/" className="font-bebas-neue text-2xl text-lime tracking-widest">
         NELL
       </Link>
 
-      {/* Right side */}
-      <div className="flex items-center gap-6">
+      {/* Desktop nav */}
+      <div className="hidden md:flex items-center gap-6">
+        {/* Public page links */}
+        <Link
+          href="/about"
+          className="text-sm text-offwhite hover:text-lime transition-colors"
+        >
+          {t('about')}
+        </Link>
+        <Link
+          href="/learn"
+          className="text-sm text-offwhite hover:text-lime transition-colors"
+        >
+          {t('learn')}
+        </Link>
+        <Link
+          href="/events"
+          className="text-sm text-offwhite hover:text-lime transition-colors"
+        >
+          {t('events')}
+        </Link>
+        <Link
+          href="/contact"
+          className="text-sm text-offwhite hover:text-lime transition-colors"
+        >
+          {t('contact')}
+        </Link>
         <Link
           href="/pricing"
           className="text-sm text-offwhite hover:text-lime transition-colors"
         >
           {tBilling('pricingNav')}
         </Link>
+
         {user ? (
           <>
             <Link
@@ -51,7 +79,7 @@ export async function Navbar() {
             >
               {firstName ?? t('dashboard')}
             </Link>
-            {user.app_metadata?.role === 'admin' && (
+            {isAdmin && (
               <Link
                 href="/admin"
                 className="text-sm text-offwhite hover:text-lime transition-colors"
@@ -86,6 +114,9 @@ export async function Navbar() {
         )}
         <LanguageSwitcher />
       </div>
+
+      {/* Mobile nav */}
+      <MobileNav user={user} firstName={firstName} isAdmin={isAdmin} />
     </nav>
   )
 }
