@@ -71,7 +71,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PUB-03**: Learn Pickleball page: sport origin (1965, Bainbridge Island, Joel Pritchard / Bill Bell / Barney McCallum), rules, scoring, court dimensions, equipment — copy from CMS
 - [ ] **PUB-04**: Events page: lists tournaments, training sessions, social events (admin-controlled, from database)
 - [ ] **PUB-05**: Contact page: contact form, WhatsApp link, social handles
-- [ ] **PUB-06**: All page copy editable via Admin CMS (no hardcoded marketing text)
+- [x] **PUB-06**: All page copy editable via Admin CMS (no hardcoded marketing text)
 
 ### Admin Panel
 

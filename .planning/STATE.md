@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-13T05:22:12.533Z"
-last_activity: "2026-03-12 — Plan 04-02 complete (User management: search, paginated table, slide-out panel, disable/enable/reset)"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-13T05:56:05.501Z"
+last_activity: "2026-03-13 — Plan 05-01 complete (Shared infrastructure: motion wrappers, content helper, Footer, WhatsApp bubble, MobileNav, enhanced Navbar)"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 18
-  completed_plans: 18
-  percent: 94
+  total_plans: 21
+  completed_plans: 19
+  percent: 90
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-07)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Phase 4 — Admin and CMS
+**Current focus:** Phase 5 — Public Website and AI Chatbot
 
 ## Current Position
 
-Phase: 4 of 5 (Admin and CMS)
-Plan: 4 of 4 completed
+Phase: 5 of 5 (Public Website and AI Chatbot)
+Plan: 1 of 3 completed
 Status: In Progress
-Last activity: 2026-03-12 — Plan 04-02 complete (User management: search, paginated table, slide-out panel, disable/enable/reset)
+Last activity: 2026-03-13 — Plan 05-01 complete (Shared infrastructure: motion wrappers, content helper, Footer, WhatsApp bubble, MobileNav, enhanced Navbar)
 
-Progress: [█████████░] 94%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [█████████░] 94%
 | Phase 04-admin-and-cms P04 | 4 | 2 tasks | 9 files |
 | Phase 04-admin-and-cms P02 | 6 | 2 tasks | 7 files |
 | Phase 04-admin-and-cms P03 | 5 | 2 tasks | 8 files |
+| Phase 05 P01 | 4 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,10 @@ Recent decisions affecting current work:
 - [Phase 04-admin-and-cms, 04-03]: Guest reservations use admin's user_id with guest_name and created_by_admin=true (per research recommendation)
 - [Phase 04-admin-and-cms, 04-03]: Maintenance cascade sends cancellation emails via Resend fire-and-forget (try/catch per user)
 - [Phase 04-admin-and-cms, 04-03]: Location upsert on court creation reuses existing location by name or creates new one
+- [Phase 05]: motion/react imports (not framer-motion) -- motion v12 renamed package
+- [Phase 05]: Content helper uses dynamic column selection for locale (content_es/content_en)
+- [Phase 05]: WhatsApp bubble z-40 bottom-left, chatbot z-50 bottom-right (no overlap)
+- [Phase 05]: Excluded supabase/functions from tsconfig (Deno types incompatible with Node tsc)
 
 ### Pending Todos
 
@@ -141,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T05:22:12.530Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-public-website-and-ai-chatbot/05-CONTEXT.md
+Last session: 2026-03-13T05:56:05.499Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
