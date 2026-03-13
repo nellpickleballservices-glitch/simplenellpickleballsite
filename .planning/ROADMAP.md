@@ -106,14 +106,14 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Public pages — Home, About, Learn Pickleball, Events, Contact rendered as RSC with ISR; all copy from `content_blocks` via Supabase; bilingual via `next-intl`; Framer Motion animations in Client Component wrappers
-- [ ] 05-02: AI chatbot — bilingual streaming Route Handler (OpenAI `gpt-4o-mini` or Anthropic Claude); language detection from user input; system prompt fed by `content_blocks` content at query time (prompt-stuffing, not RAG); chat UI embedded on platform
-- [ ] 05-03: Polish and launch prep — mobile-responsive audit (375px minimum), WhatsApp link in footer, contact form submission, Vercel deployment configuration, environment variable documentation
+- [ ] 05-01-PLAN.md — Shared infrastructure: install motion + openai, migration 0006 (footer_social_links), content helper, motion wrappers (MotionProvider, ScrollReveal, StaggerChildren, HeroEntrance), Footer, WhatsApp bubble, MobileNav hamburger, Navbar public page links
+- [ ] 05-02-PLAN.md — Public pages: marketing layout, Home page CMS rewire, About (values timeline), Learn Pickleball (sticky TOC + SVG court diagram), Events (card grid with type badges), Contact (WhatsApp CTA), bilingual SEO metadata
+- [ ] 05-03-PLAN.md — AI chatbot "Nelly": streaming Route Handler (OpenAI gpt-4o-mini, prompt-stuffing with content_blocks), floating chat widget (bubble + panel), quick-reply chips, typing indicator, session rate limiting, bilingual auto-detection
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
