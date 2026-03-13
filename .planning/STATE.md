@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-13T05:56:05.501Z"
-last_activity: "2026-03-13 — Plan 05-01 complete (Shared infrastructure: motion wrappers, content helper, Footer, WhatsApp bubble, MobileNav, enhanced Navbar)"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-13T06:05:39.964Z"
+last_activity: 2026-03-13 — Plan 05-02 complete (Five bilingual public pages with CMS content, scroll animations, sticky TOC, event card grid, and SEO metadata)
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 21
-  completed_plans: 19
-  percent: 90
+  completed_plans: 20
+  percent: 95
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 5 of 5 (Public Website and AI Chatbot)
-Plan: 1 of 3 completed
+Plan: 2 of 3 completed
 Status: In Progress
-Last activity: 2026-03-13 — Plan 05-01 complete (Shared infrastructure: motion wrappers, content helper, Footer, WhatsApp bubble, MobileNav, enhanced Navbar)
+Last activity: 2026-03-13 — Plan 05-02 complete (Five bilingual public pages with CMS content, scroll animations, sticky TOC, event card grid, and SEO metadata)
 
-Progress: [█████████░] 90%
+Progress: [██████████] 95%
 
 ## Performance Metrics
 
@@ -70,6 +70,7 @@ Progress: [█████████░] 90%
 | Phase 04-admin-and-cms P02 | 6 | 2 tasks | 7 files |
 | Phase 04-admin-and-cms P03 | 5 | 2 tasks | 8 files |
 | Phase 05 P01 | 4 | 2 tasks | 14 files |
+| Phase 05 P02 | 7 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Content helper uses dynamic column selection for locale (content_es/content_en)
 - [Phase 05]: WhatsApp bubble z-40 bottom-left, chatbot z-50 bottom-right (no overlap)
 - [Phase 05]: Excluded supabase/functions from tsconfig (Deno types incompatible with Node tsc)
+- [Phase 05]: Homepage outside marketing route group gets its own MotionProvider+Footer+WhatsApp wrapping
+- [Phase 05]: Nav links updated from /learn to /learn-pickleball to match route folder name
 
 ### Pending Todos
 
@@ -146,6 +149,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T05:56:05.499Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-13T06:05:39.962Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

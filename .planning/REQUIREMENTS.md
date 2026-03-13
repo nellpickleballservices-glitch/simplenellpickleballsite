@@ -66,11 +66,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Public Website
 
-- [ ] **PUB-01**: Home page: hero section, CTA to join, pickleball overview, community messaging — all copy from CMS
-- [ ] **PUB-02**: About page: club description, vision, mission, values (Love & Passion, Accessibility, Discipline, Respect, Social Commitment, Integrity) — copy from CMS
-- [ ] **PUB-03**: Learn Pickleball page: sport origin (1965, Bainbridge Island, Joel Pritchard / Bill Bell / Barney McCallum), rules, scoring, court dimensions, equipment — copy from CMS
-- [ ] **PUB-04**: Events page: lists tournaments, training sessions, social events (admin-controlled, from database)
-- [ ] **PUB-05**: Contact page: contact form, WhatsApp link, social handles
+- [x] **PUB-01**: Home page: hero section, CTA to join, pickleball overview, community messaging — all copy from CMS
+- [x] **PUB-02**: About page: club description, vision, mission, values (Love & Passion, Accessibility, Discipline, Respect, Social Commitment, Integrity) — copy from CMS
+- [x] **PUB-03**: Learn Pickleball page: sport origin (1965, Bainbridge Island, Joel Pritchard / Bill Bell / Barney McCallum), rules, scoring, court dimensions, equipment — copy from CMS
+- [x] **PUB-04**: Events page: lists tournaments, training sessions, social events (admin-controlled, from database)
+- [x] **PUB-05**: Contact page: contact form, WhatsApp link, social handles
 - [x] **PUB-06**: All page copy editable via Admin CMS (no hardcoded marketing text)
 
 ### Admin Panel
