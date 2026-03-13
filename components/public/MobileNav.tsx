@@ -37,7 +37,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
 
   const publicLinks = [
     { href: '/about', label: t('about') },
-    { href: '/learn', label: t('learn') },
+    { href: '/learn-pickleball', label: t('learn') },
     { href: '/events', label: t('events') },
     { href: '/contact', label: t('contact') },
     { href: '/pricing', label: tBilling('pricingNav') },

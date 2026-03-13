@@ -41,7 +41,7 @@ export async function Navbar() {
           {t('about')}
         </Link>
         <Link
-          href="/learn"
+          href="/learn-pickleball"
           className="text-sm text-offwhite hover:text-lime transition-colors"
         >
           {t('learn')}

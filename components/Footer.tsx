@@ -27,7 +27,7 @@ export async function Footer() {
   const navLinks = [
     { href: '/', label: t('home') },
     { href: '/about', label: t('about') },
-    { href: '/learn', label: t('learn') },
+    { href: '/learn-pickleball', label: t('learn') },
     { href: '/events', label: t('events') },
     { href: '/contact', label: t('contact') },
     { href: '/pricing', label: t('pricing') },
