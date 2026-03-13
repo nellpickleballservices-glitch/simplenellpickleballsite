@@ -1,26 +1,16 @@
 'use client'
 
 import { useLocale, useTranslations } from 'next-intl'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from '@/i18n/navigation'
 import { useState } from 'react'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export function LanguageSwitcher() {
   const locale = useLocale()
   const pathname = usePathname()
+  const router = useRouter()
   const t = useTranslations('Nav')
   const [open, setOpen] = useState(false)
-
-  // Build the same pathname in the target locale
-  const buildLocalePath = (targetLocale: string) => {
-    if (targetLocale === 'es') {
-      // Remove /en prefix if present (es = default, no prefix)
-      return pathname.replace(/^\/en/, '') || '/'
-    }
-    // Add /en prefix for English
-    return `/en${pathname.startsWith('/en') ? pathname.slice(3) : pathname}`
-  }
 
   const saveLocalePref = async (targetLocale: string) => {
     const supabase = createClient()
@@ -31,6 +21,11 @@ export function LanguageSwitcher() {
         .update({ locale_pref: targetLocale })
         .eq('id', user.id)
     }
+  }
+
+  const handleSwitch = (targetLocale: string) => {
+    saveLocalePref(targetLocale)
+    router.replace(pathname, { locale: targetLocale })
     setOpen(false)
   }
 
@@ -52,20 +47,18 @@ export function LanguageSwitcher() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-24 bg-midnight border border-turquoise rounded-lg shadow-xl z-50">
-          <Link
-            href={buildLocalePath('es')}
-            onClick={() => saveLocalePref('es')}
-            className="block px-4 py-2 text-sm text-offwhite hover:bg-charcoal rounded-t-lg"
+          <button
+            onClick={() => handleSwitch('es')}
+            className="block w-full text-left px-4 py-2 text-sm text-offwhite hover:bg-charcoal rounded-t-lg"
           >
             {t('es')}
-          </Link>
-          <Link
-            href={buildLocalePath('en')}
-            onClick={() => saveLocalePref('en')}
-            className="block px-4 py-2 text-sm text-offwhite hover:bg-charcoal rounded-b-lg"
+          </button>
+          <button
+            onClick={() => handleSwitch('en')}
+            className="block w-full text-left px-4 py-2 text-sm text-offwhite hover:bg-charcoal rounded-b-lg"
           >
             {t('en')}
-          </Link>
+          </button>
         </div>
       )}
     </div>
