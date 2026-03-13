@@ -7,7 +7,6 @@ import { MotionProvider } from '@/components/motion/MotionProvider'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { Footer } from '@/components/Footer'
-import { WhatsAppBubble } from '@/components/public/WhatsAppBubble'
 import { ChatWidget } from '@/components/chatbot/ChatWidget'
 import type { Metadata } from 'next'
 
@@ -391,7 +390,6 @@ async function HomePage({ searchParams }: HomePageProps) {
         </ScrollReveal>
       </main>
       <Footer />
-      <WhatsAppBubble locale={locale} />
       <ChatWidget locale={locale} />
     </MotionProvider>
   )
