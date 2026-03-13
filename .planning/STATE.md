@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-13T06:05:39.964Z"
-last_activity: 2026-03-13 — Plan 05-02 complete (Five bilingual public pages with CMS content, scroll animations, sticky TOC, event card grid, and SEO metadata)
+status: completed
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-13T06:11:34.476Z"
+last_activity: 2026-03-13 — Plan 05-03 complete (Streaming AI chatbot Nelly with OpenAI gpt-4o-mini, CMS prompt-stuffing, bilingual support)
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 21
-  completed_plans: 20
-  percent: 95
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 5 of 5 (Public Website and AI Chatbot)
-Plan: 2 of 3 completed
-Status: In Progress
-Last activity: 2026-03-13 — Plan 05-02 complete (Five bilingual public pages with CMS content, scroll animations, sticky TOC, event card grid, and SEO metadata)
+Plan: 3 of 3 completed
+Status: Complete
+Last activity: 2026-03-13 — Plan 05-03 complete (Streaming AI chatbot Nelly with OpenAI gpt-4o-mini, CMS prompt-stuffing, bilingual support)
 
-Progress: [██████████] 95%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ Progress: [██████████] 95%
 | Phase 04-admin-and-cms P03 | 5 | 2 tasks | 8 files |
 | Phase 05 P01 | 4 | 2 tasks | 14 files |
 | Phase 05 P02 | 7 | 2 tasks | 13 files |
+| Phase 05 P03 | 3 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,7 @@ Recent decisions affecting current work:
 - [Phase 05]: Excluded supabase/functions from tsconfig (Deno types incompatible with Node tsc)
 - [Phase 05]: Homepage outside marketing route group gets its own MotionProvider+Footer+WhatsApp wrapping
 - [Phase 05]: Nav links updated from /learn to /learn-pickleball to match route folder name
+- [Phase 05]: ChatWidget added to both marketing layout AND homepage (homepage outside marketing route group)
 
 ### Pending Todos
 
@@ -149,6 +151,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T06:05:39.962Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-13T06:11:34.474Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None

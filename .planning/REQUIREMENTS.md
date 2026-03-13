@@ -103,9 +103,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### AI Chatbot
 
-- [ ] **AI-01**: AI assistant embedded on the platform (bilingual: Spanish/English)
-- [ ] **AI-02**: Chatbot answers questions about pickleball rules, membership options, reservations, events, and locations using site content as context
-- [ ] **AI-03**: Friendly, helpful tone; detects language from user input and responds in kind
+- [x] **AI-01**: AI assistant embedded on the platform (bilingual: Spanish/English)
+- [x] **AI-02**: Chatbot answers questions about pickleball rules, membership options, reservations, events, and locations using site content as context
+- [x] **AI-03**: Friendly, helpful tone; detects language from user input and responds in kind
 
 ### Internationalization
 
