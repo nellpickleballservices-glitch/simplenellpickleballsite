@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 05-public-website-and-ai-chatbot
 source: [05-01-SUMMARY.md, 05-02-SUMMARY.md, 05-03-SUMMARY.md]
 started: 2026-03-13T06:20:00Z
@@ -91,27 +91,41 @@ skipped: 2
   reason: "User reported: WhatsApp bubble overlaps with AI chatbot bubble. User prefers WhatsApp only on contacts page, not all public pages."
   severity: minor
   test: 4
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "WhatsAppBubble rendered in marketing layout (all pages) and homepage. Contact page already has inline WhatsApp CTA, making floating bubble redundant."
+  artifacts:
+    - path: "app/[locale]/(marketing)/layout.tsx"
+      issue: "Renders WhatsAppBubble on all marketing pages"
+    - path: "app/[locale]/page.tsx"
+      issue: "Renders WhatsAppBubble on homepage"
+  missing:
+    - "Remove WhatsAppBubble from marketing layout and homepage"
+  debug_session: ".planning/debug/whatsapp-bubble-overlap.md"
 
 - truth: "Mobile hamburger opens as a dropdown menu"
   status: failed
   reason: "User reported: Hamburger menu opens as a slide-out panel to the right instead of dropping down like a regular dropdown menu. User wants a dropdown on smaller screens."
   severity: major
   test: 5
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "MobileNav uses fixed full-height slide-out drawer (x-axis animation, fixed positioning, backdrop overlay, body scroll lock) instead of a simple dropdown."
+  artifacts:
+    - path: "components/public/MobileNav.tsx"
+      issue: "Uses fixed full-height slide-out with x-axis animation, backdrop, and scroll lock"
+  missing:
+    - "Change to absolute-positioned dropdown with y-axis/opacity animation"
+    - "Remove backdrop overlay and body scroll lock"
+    - "Convert hamburger to toggle button"
+  debug_session: ".planning/debug/mobile-nav-slideout-to-dropdown.md"
 
 - truth: "Language switcher reliably switches all public page content"
   status: failed
   reason: "User reported: Language switcher only works sometimes. Have to manually change locale in URL because the switcher isn't refreshing the content."
   severity: major
   test: 11
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "LanguageSwitcher uses next/link Link which does client-side navigation without re-triggering next-intl middleware. Missing createNavigation(routing) setup from next-intl/navigation."
+  artifacts:
+    - path: "components/LanguageSwitcher.tsx"
+      issue: "Uses next/link instead of next-intl locale-aware Link/useRouter"
+  missing:
+    - "Create i18n/navigation.ts with createNavigation(routing) exports"
+    - "Rewrite LanguageSwitcher to use useRouter from i18n/navigation with router.replace(pathname, { locale })"
+  debug_session: ".planning/debug/language-switcher-no-refresh.md"
