@@ -103,12 +103,14 @@ Plans:
   3. The Events page shows current tournaments, training sessions, and social events pulled from the database — no events are hardcoded
   4. A visitor types a question in Spanish and receives a Spanish response; a visitor types in English and receives an English response — the chatbot uses club content (pickleball rules, membership options, reservation process, locations) as its knowledge base
   5. The Contact page shows a WhatsApp link as primary CTA, club phone, email, and social handles
-**Plans**: 3 plans
+**Plans**: 5 plans
 
 Plans:
 - [ ] 05-01-PLAN.md — Shared infrastructure: install motion + openai, migration 0006 (footer_social_links), content helper, motion wrappers (MotionProvider, ScrollReveal, StaggerChildren, HeroEntrance), Footer, WhatsApp bubble, MobileNav hamburger, Navbar public page links
 - [ ] 05-02-PLAN.md — Public pages: marketing layout, Home page CMS rewire, About (values timeline), Learn Pickleball (sticky TOC + SVG court diagram), Events (card grid with type badges), Contact (WhatsApp CTA), bilingual SEO metadata
 - [ ] 05-03-PLAN.md — AI chatbot "Nelly": streaming Route Handler (OpenAI gpt-4o-mini, prompt-stuffing with content_blocks), floating chat widget (bubble + panel), quick-reply chips, typing indicator, session rate limiting, bilingual auto-detection
+- [ ] 05-04-PLAN.md — [GAP CLOSURE] Remove WhatsApp bubble from all pages, rewrite MobileNav from slide-out drawer to dropdown menu
+- [ ] 05-05-PLAN.md — [GAP CLOSURE] Fix language switcher with next-intl createNavigation for reliable locale switching
 
 ## Progress
 
@@ -121,4 +123,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Billing | 4/4 | Complete   | 2026-03-08 |
 | 3. Reservations | 5/5 | Complete   | 2026-03-08 |
 | 4. Admin and CMS | 4/4 | Complete   | 2026-03-12 |
-| 5. Public Website and AI Chatbot | 2/3 | In Progress|  |
+| 5. Public Website and AI Chatbot | 3/5 | In Progress|  |
