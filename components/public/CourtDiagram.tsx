@@ -1,0 +1,90 @@
+interface CourtDiagramProps {
+  locale: string
+}
+
+export function CourtDiagram({ locale }: CourtDiagramProps) {
+  const labels = {
+    overall: '20\' x 44\'',
+    kitchen: locale === 'en' ? '7\' Non-Volley Zone (Kitchen)' : '7\' Zona de No Volea (Kitchen)',
+    net: locale === 'en' ? 'Net' : 'Red',
+    width: '20\'',
+    length: '44\'',
+  }
+
+  return (
+    <div className="w-full max-w-lg mx-auto">
+      <svg
+        viewBox="0 0 240 480"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-auto"
+        role="img"
+        aria-label={locale === 'en' ? 'Pickleball court diagram' : 'Diagrama de cancha de pickleball'}
+      >
+        {/* Background */}
+        <rect x="0" y="0" width="240" height="480" fill="#0B1D3A" rx="8" />
+
+        {/* Court outline */}
+        <rect
+          x="20" y="20" width="200" height="440"
+          fill="none" stroke="#39FF14" strokeWidth="2"
+        />
+
+        {/* Center line (net) */}
+        <line x1="20" y1="240" x2="220" y2="240" stroke="#F5F5F5" strokeWidth="3" />
+
+        {/* Kitchen zones */}
+        <rect
+          x="20" y="170" width="200" height="70"
+          fill="#1ED6C3" fillOpacity="0.15"
+          stroke="#1ED6C3" strokeWidth="1.5"
+        />
+        <rect
+          x="20" y="240" width="200" height="70"
+          fill="#1ED6C3" fillOpacity="0.15"
+          stroke="#1ED6C3" strokeWidth="1.5"
+        />
+
+        {/* Center service line - top half */}
+        <line x1="120" y1="20" x2="120" y2="170" stroke="#39FF14" strokeWidth="1" strokeDasharray="4 4" />
+        {/* Center service line - bottom half */}
+        <line x1="120" y1="310" x2="120" y2="460" stroke="#39FF14" strokeWidth="1" strokeDasharray="4 4" />
+
+        {/* Labels */}
+        {/* Net label */}
+        <text x="120" y="235" textAnchor="middle" fill="#F5F5F5" fontSize="11" fontWeight="bold">
+          {labels.net}
+        </text>
+
+        {/* Kitchen labels */}
+        <text x="120" y="210" textAnchor="middle" fill="#1ED6C3" fontSize="9">
+          {labels.kitchen}
+        </text>
+        <text x="120" y="280" textAnchor="middle" fill="#1ED6C3" fontSize="9">
+          {labels.kitchen}
+        </text>
+
+        {/* Width label (top) */}
+        <text x="120" y="14" textAnchor="middle" fill="#39FF14" fontSize="10" fontWeight="bold">
+          {labels.width}
+        </text>
+
+        {/* Length label (right side, rotated) */}
+        <text
+          x="235" y="240"
+          textAnchor="middle"
+          fill="#39FF14"
+          fontSize="10"
+          fontWeight="bold"
+          transform="rotate(90, 235, 240)"
+        >
+          {labels.length}
+        </text>
+
+        {/* Overall dimensions */}
+        <text x="120" y="475" textAnchor="middle" fill="#F5F5F5" fontSize="10" fontWeight="bold">
+          {labels.overall}
+        </text>
+      </svg>
+    </div>
+  )
+}
