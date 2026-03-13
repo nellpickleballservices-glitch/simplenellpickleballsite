@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-05-PLAN.md
-last_updated: "2026-03-13T22:56:03.939Z"
-last_activity: 2026-03-13 — Plan 05-05 complete (Language switcher fix using next-intl locale-aware navigation)
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-03-13T22:56:27.964Z"
+last_activity: 2026-03-13 — Plan 05-04 complete (WhatsApp bubble removal and MobileNav dropdown rewrite)
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 23
-  completed_plans: 22
+  completed_plans: 23
   percent: 100
 ---
 
@@ -73,6 +73,7 @@ Progress: [██████████] 100%
 | Phase 05 P02 | 7 | 2 tasks | 13 files |
 | Phase 05 P03 | 3 | 2 tasks | 8 files |
 | Phase 05 P05 | 1 | 1 tasks | 2 files |
+| Phase 05 P04 | 1 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Nav links updated from /learn to /learn-pickleball to match route folder name
 - [Phase 05]: ChatWidget added to both marketing layout AND homepage (homepage outside marketing route group)
 - [Phase 05]: router.replace with locale option over Link href for reliable locale switching
+- [Phase 05]: WhatsApp bubble removed globally -- Contact page inline CTA is sole WhatsApp touchpoint
+- [Phase 05]: MobileNav uses absolute top-full dropdown positioning (not slide-out drawer)
 
 ### Pending Todos
 
@@ -153,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:56:03.936Z
-Stopped at: Completed 05-05-PLAN.md
+Last session: 2026-03-13T22:56:27.961Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None

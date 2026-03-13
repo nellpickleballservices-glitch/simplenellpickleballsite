@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Billing** - Stripe subscriptions wired end-to-end with webhook sync before any reservation gating (completed 2026-03-08)
 - [x] **Phase 3: Reservations** - Core member value loop: court booking, interactive map, notifications, dashboard (completed 2026-03-08)
 - [x] **Phase 4: Admin and CMS** - Club operator tools and content management for all platform content (completed 2026-03-12)
-- [ ] **Phase 5: Public Website and AI Chatbot** - Member acquisition layer and bilingual AI support
+- [x] **Phase 5: Public Website and AI Chatbot** - Member acquisition layer and bilingual AI support (completed 2026-03-13)
 
 ## Phase Details
 
@@ -123,4 +123,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Billing | 4/4 | Complete   | 2026-03-08 |
 | 3. Reservations | 5/5 | Complete   | 2026-03-08 |
 | 4. Admin and CMS | 4/4 | Complete   | 2026-03-12 |
-| 5. Public Website and AI Chatbot | 3/5 | In Progress|  |
+| 5. Public Website and AI Chatbot | 5/5 | Complete   | 2026-03-13 |
