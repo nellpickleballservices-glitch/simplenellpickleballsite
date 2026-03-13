@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: resolved
 phase: 05-public-website-and-ai-chatbot
 source: [05-01-SUMMARY.md, 05-02-SUMMARY.md, 05-03-SUMMARY.md]
 started: 2026-03-13T06:20:00Z
-updated: 2026-03-13T22:45:00Z
+updated: 2026-03-13T23:30:00Z
 ---
 
 ## Current Test
@@ -87,7 +87,7 @@ skipped: 2
 ## Gaps
 
 - truth: "WhatsApp bubble appears on all public pages without overlapping chatbot"
-  status: failed
+  status: resolved
   reason: "User reported: WhatsApp bubble overlaps with AI chatbot bubble. User prefers WhatsApp only on contacts page, not all public pages."
   severity: minor
   test: 4
@@ -102,7 +102,7 @@ skipped: 2
   debug_session: ".planning/debug/whatsapp-bubble-overlap.md"
 
 - truth: "Mobile hamburger opens as a dropdown menu"
-  status: failed
+  status: resolved
   reason: "User reported: Hamburger menu opens as a slide-out panel to the right instead of dropping down like a regular dropdown menu. User wants a dropdown on smaller screens."
   severity: major
   test: 5
@@ -117,7 +117,7 @@ skipped: 2
   debug_session: ".planning/debug/mobile-nav-slideout-to-dropdown.md"
 
 - truth: "Language switcher reliably switches all public page content"
-  status: failed
+  status: resolved
   reason: "User reported: Language switcher only works sometimes. Have to manually change locale in URL because the switcher isn't refreshing the content."
   severity: major
   test: 11
