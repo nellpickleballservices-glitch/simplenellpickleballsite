@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-03-13T06:15:33.035Z"
-last_activity: 2026-03-13 — Plan 05-03 complete (Streaming AI chatbot Nelly with OpenAI gpt-4o-mini, CMS prompt-stuffing, bilingual support)
+stopped_at: Completed 05-05-PLAN.md
+last_updated: "2026-03-13T22:56:03.939Z"
+last_activity: 2026-03-13 — Plan 05-05 complete (Language switcher fix using next-intl locale-aware navigation)
 progress:
   total_phases: 5
-  completed_phases: 5
-  total_plans: 21
-  completed_plans: 21
+  completed_phases: 4
+  total_plans: 23
+  completed_plans: 22
   percent: 100
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 5 of 5 (Public Website and AI Chatbot)
-Plan: 3 of 3 completed
+Plan: 5 of 5 completed
 Status: Complete
-Last activity: 2026-03-13 — Plan 05-03 complete (Streaming AI chatbot Nelly with OpenAI gpt-4o-mini, CMS prompt-stuffing, bilingual support)
+Last activity: 2026-03-13 — Plan 05-05 complete (Language switcher fix using next-intl locale-aware navigation)
 
 Progress: [██████████] 100%
 
@@ -72,6 +72,7 @@ Progress: [██████████] 100%
 | Phase 05 P01 | 4 | 2 tasks | 14 files |
 | Phase 05 P02 | 7 | 2 tasks | 13 files |
 | Phase 05 P03 | 3 | 2 tasks | 8 files |
+| Phase 05 P05 | 1 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -134,6 +135,7 @@ Recent decisions affecting current work:
 - [Phase 05]: Homepage outside marketing route group gets its own MotionProvider+Footer+WhatsApp wrapping
 - [Phase 05]: Nav links updated from /learn to /learn-pickleball to match route folder name
 - [Phase 05]: ChatWidget added to both marketing layout AND homepage (homepage outside marketing route group)
+- [Phase 05]: router.replace with locale option over Link href for reliable locale switching
 
 ### Pending Todos
 
@@ -151,6 +153,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T06:11:34.474Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-03-13T22:56:03.936Z
+Stopped at: Completed 05-05-PLAN.md
 Resume file: None
