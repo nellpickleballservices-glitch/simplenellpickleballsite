@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-03-13T22:56:27.964Z"
-last_activity: 2026-03-13 — Plan 05-04 complete (WhatsApp bubble removal and MobileNav dropdown rewrite)
+last_updated: "2026-03-13T23:02:16.388Z"
+last_activity: 2026-03-13 — Plan 05-05 complete (Language switcher fix using next-intl locale-aware navigation)
 progress:
   total_phases: 5
   completed_phases: 5
