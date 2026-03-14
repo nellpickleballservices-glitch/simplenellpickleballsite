@@ -1,19 +1,12 @@
 ---
 phase: 02-billing
-verified: 2026-03-08T20:00:00Z
-status: gaps_found
-score: 4/4 success criteria verified (1 minor i18n bug found, non-blocking)
+verified: 2026-03-14T00:00:00Z
+status: passed
+score: 4/4 success criteria verified
 gaps:
   - truth: "Abandoned checkout shows correct reassurance message on /pricing"
-    status: partial
-    reason: "Duplicate cancelledMessage key in Billing i18n namespace (en.json and es.json) — second value overwrites first. Pricing page abandoned checkout banner renders MembershipCard interpolation text with unresolved {plan} and {date} instead of 'No worries — you can subscribe anytime.'"
-    artifacts:
-      - path: "messages/en.json"
-        issue: "Duplicate key 'cancelledMessage' at lines 158 and 178 within Billing namespace — JSON last-value-wins causes pricing page banner to show wrong text"
-      - path: "messages/es.json"
-        issue: "Same duplicate key 'cancelledMessage' at lines 158 and 178"
-    missing:
-      - "Rename one of the two cancelledMessage keys — e.g. use 'checkoutCancelledMessage' for the pricing banner and keep 'cancelledMessage' for the MembershipCard"
+    status: resolved
+    reason: "Duplicate cancelledMessage key renamed to checkoutCancelledMessage in both en.json and es.json"
 ---
 
 # Phase 2: Billing Verification Report

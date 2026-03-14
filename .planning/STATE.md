@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
-current_plan: 0 of 0
-status: ready-to-plan
-stopped_at: null
-last_updated: "2026-03-14"
+status: planning
+stopped_at: Roadmap created, ready to plan Phase 2
+last_updated: "2026-03-14T19:22:51.787Z"
+last_activity: 2026-03-14 — Roadmap created for v1.1
 progress:
   total_phases: 4
   completed_phases: 0
