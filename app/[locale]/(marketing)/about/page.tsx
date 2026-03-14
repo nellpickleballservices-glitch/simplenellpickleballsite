@@ -3,7 +3,9 @@ import { getContentBlocks } from '@/lib/content'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { ValueTimeline } from '@/components/public/ValueTimeline'
-import Link from 'next/link'
+import { GlowButton } from '@/components/effects/GlowButton'
+import { FloatingParticles } from '@/components/effects/FloatingParticles'
+import { SubpageHeroAccents } from '@/components/effects/SubpageHeroAccents'
 import type { Metadata } from 'next'
 
 // Value icons as inline SVGs
@@ -125,16 +127,14 @@ export default async function AboutPage() {
     <main className="min-h-screen bg-midnight">
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center py-32 px-6 text-center overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-lime opacity-[0.06]" />
-          <div className="absolute -bottom-16 -left-16 w-[300px] h-[300px] rounded-full bg-turquoise opacity-[0.07]" />
-        </div>
+        <SubpageHeroAccents />
+        <FloatingParticles count={12} />
 
         <HeroEntrance className="relative z-10 flex flex-col items-center">
-          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest text-offwhite mb-4">
+          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
             {locale === 'en' ? 'About Us' : 'Nosotros'}
           </h1>
-          <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2rem)] text-lime tracking-[0.2em] uppercase mb-4">
+          <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2rem)] gradient-text-static tracking-[0.2em] uppercase mb-4 inline-block">
             NELL Pickleball Club
           </p>
           <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
@@ -150,7 +150,7 @@ export default async function AboutPage() {
         <section className="py-20 px-6">
           <div className="max-w-3xl mx-auto">
             <ScrollReveal>
-              <h2 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-6 text-center">
+              <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-6 text-center inline-block w-full">
                 {locale === 'en' ? 'Our Vision' : 'Nuestra Vision'}
               </h2>
               <div
@@ -167,7 +167,7 @@ export default async function AboutPage() {
         <section className="py-20 px-6 bg-charcoal/30">
           <div className="max-w-3xl mx-auto">
             <ScrollReveal>
-              <h2 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-6 text-center">
+              <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-6 text-center inline-block w-full">
                 {locale === 'en' ? 'Our Mission' : 'Nuestra Mision'}
               </h2>
               <div
@@ -183,7 +183,7 @@ export default async function AboutPage() {
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <ScrollReveal>
-            <h2 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-16 text-center">
+            <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-16 text-center inline-block w-full">
               {locale === 'en' ? 'Our Values' : 'Nuestros Valores'}
             </h2>
           </ScrollReveal>
@@ -194,8 +194,8 @@ export default async function AboutPage() {
       {/* CTA */}
       <section className="py-20 px-6 bg-charcoal/30">
         <ScrollReveal>
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-6">
+          <div className="max-w-2xl mx-auto text-center flex flex-col items-center">
+            <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-6 inline-block">
               {locale === 'en' ? 'Ready to Join?' : 'Listo para Unirte?'}
             </h2>
             <p className="text-offwhite/70 text-base sm:text-lg mb-8">
@@ -203,12 +203,9 @@ export default async function AboutPage() {
                 ? 'Explore our membership plans and start playing today.'
                 : 'Explora nuestros planes de membresia y empieza a jugar hoy.'}
             </p>
-            <Link
-              href="/pricing"
-              className="inline-block bg-lime text-midnight font-bold rounded-full py-4 px-12 text-lg tracking-wide hover:bg-sunset hover:scale-105 transition-all duration-200 shadow-lg shadow-lime/20"
-            >
+            <GlowButton href="/pricing" variant="lime">
               {locale === 'en' ? 'View Plans' : 'Ver Planes'}
-            </Link>
+            </GlowButton>
           </div>
         </ScrollReveal>
       </section>

@@ -1,3 +1,6 @@
+'use client'
+
+import { GlowCard } from '@/components/effects/GlowCard'
 import type { Event } from '@/lib/types/admin'
 
 interface EventCardProps {
@@ -63,53 +66,57 @@ export function EventCard({ event, locale }: EventCardProps) {
     timeDisplay = end ? `${start} - ${end}` : start
   }
 
+  const accentColor = event.event_type === 'tournament' ? 'var(--color-sunset)' : event.event_type === 'training' ? 'var(--color-turquoise)' : 'var(--color-lime)'
+
   return (
-    <article className="bg-charcoal border border-charcoal rounded-2xl overflow-hidden hover:scale-[1.02] hover:shadow-xl hover:shadow-lime/5 transition-all duration-200 flex flex-col">
-      {/* Image or icon fallback */}
-      <div className="relative h-44 bg-midnight flex items-center justify-center overflow-hidden">
-        {event.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={event.image_url}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <FallbackIcon eventType={event.event_type} />
-        )}
-
-        {/* Type badge */}
-        <span className={`absolute top-3 right-3 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${badge}`}>
-          {label}
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 flex flex-col flex-1">
-        <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
-          {title}
-        </h3>
-
-        {description && (
-          <p className="text-offwhite/70 text-sm leading-relaxed mb-4 line-clamp-3">
-            {description}
-          </p>
-        )}
-
-        <div className="mt-auto flex items-center gap-3 pt-4 border-t border-offwhite/10">
-          {/* Calendar icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-lime shrink-0">
-            <path fillRule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clipRule="evenodd" />
-          </svg>
-          <span className="text-offwhite/70 text-sm">{formattedDate}</span>
-          {timeDisplay && (
-            <>
-              <span className="text-offwhite/50">|</span>
-              <span className="text-offwhite/70 text-sm">{timeDisplay}</span>
-            </>
+    <GlowCard accentColor={accentColor}>
+      <article className="bg-charcoal border border-charcoal rounded-2xl overflow-hidden flex flex-col">
+        {/* Image or icon fallback */}
+        <div className="relative h-44 bg-midnight flex items-center justify-center overflow-hidden">
+          {event.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={event.image_url}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <FallbackIcon eventType={event.event_type} />
           )}
+
+          {/* Type badge */}
+          <span className={`absolute top-3 right-3 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${badge}`}>
+            {label}
+          </span>
         </div>
-      </div>
-    </article>
+
+        {/* Content */}
+        <div className="p-6 flex flex-col flex-1">
+          <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
+            {title}
+          </h3>
+
+          {description && (
+            <p className="text-offwhite/70 text-sm leading-relaxed mb-4 line-clamp-3">
+              {description}
+            </p>
+          )}
+
+          <div className="mt-auto flex items-center gap-3 pt-4 border-t border-offwhite/10">
+            {/* Calendar icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-lime shrink-0">
+              <path fillRule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clipRule="evenodd" />
+            </svg>
+            <span className="text-offwhite/70 text-sm">{formattedDate}</span>
+            {timeDisplay && (
+              <>
+                <span className="text-offwhite/50">|</span>
+                <span className="text-offwhite/70 text-sm">{timeDisplay}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </article>
+    </GlowCard>
   )
 }

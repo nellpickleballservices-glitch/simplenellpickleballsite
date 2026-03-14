@@ -4,7 +4,9 @@ import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { TableOfContents } from '@/components/public/TableOfContents'
 import { CourtDiagram } from '@/components/public/CourtDiagram'
-import Link from 'next/link'
+import { GlowButton } from '@/components/effects/GlowButton'
+import { FloatingParticles } from '@/components/effects/FloatingParticles'
+import { SubpageHeroAccents } from '@/components/effects/SubpageHeroAccents'
 import type { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -67,13 +69,11 @@ export default async function LearnPickleballPage() {
     <main className="min-h-screen bg-midnight">
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center py-32 px-6 text-center overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-lime opacity-[0.06]" />
-          <div className="absolute -bottom-16 -left-16 w-[300px] h-[300px] rounded-full bg-turquoise opacity-[0.07]" />
-        </div>
+        <SubpageHeroAccents />
+        <FloatingParticles count={12} />
 
         <HeroEntrance className="relative z-10 flex flex-col items-center">
-          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest text-offwhite mb-4">
+          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
             {locale === 'en' ? 'Learn Pickleball' : 'Aprende Pickleball'}
           </h1>
           <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
@@ -98,7 +98,7 @@ export default async function LearnPickleballPage() {
               <div key={section.id} id={section.id} className="mb-16 scroll-mt-24">
                 <ScrollReveal>
                   <h2 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-6">
-                    <span className="text-lime">|</span> {section.label}
+                    <span className="gradient-text-static inline-block">|</span> {section.label}
                   </h2>
 
                   {section.key === 'learn_court_dimensions' && (
@@ -125,18 +125,15 @@ export default async function LearnPickleballPage() {
 
             {/* Bottom CTA */}
             <ScrollReveal>
-              <div className="mt-8 text-center">
+              <div className="mt-8 text-center flex flex-col items-center">
                 <p className="text-offwhite/70 text-base mb-6">
                   {locale === 'en'
                     ? 'Ready to play? Join NELL Pickleball Club today.'
                     : 'Listo para jugar? Unete a NELL Pickleball Club hoy.'}
                 </p>
-                <Link
-                  href="/pricing"
-                  className="inline-block bg-lime text-midnight font-bold rounded-full py-3 px-10 text-base tracking-wide hover:bg-sunset hover:text-offwhite hover:scale-105 transition-all duration-200 shadow-lg shadow-lime/20"
-                >
+                <GlowButton href="/pricing" variant="lime">
                   {locale === 'en' ? 'View Plans' : 'Ver Planes'}
-                </Link>
+                </GlowButton>
               </div>
             </ScrollReveal>
           </div>

@@ -32,7 +32,7 @@ export default async function PricingPage({
   return (
     <main className="min-h-screen bg-midnight py-16 px-4">
       <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="font-bebas-neue text-5xl md:text-6xl text-offwhite tracking-wide mb-4">
+        <h1 className="font-bebas-neue text-5xl md:text-6xl gradient-text tracking-wide mb-4 inline-block">
           {t('pricingTitle')}
         </h1>
         <p className="text-lg text-offwhite/70">

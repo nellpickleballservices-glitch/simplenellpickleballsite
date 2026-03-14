@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { AnimatePresence, m } from 'motion/react'
@@ -16,6 +16,7 @@ interface MobileNavProps {
 
 export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   const [open, setOpen] = useState(false)
+  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
   const t = useTranslations('Nav')
   const tBilling = useTranslations('Billing')
   const tReservations = useTranslations('Reservations')
@@ -23,23 +24,50 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  // Close on click outside
+  const updatePosition = useCallback(() => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setMenuPos({
+        top: rect.bottom,
+        right: window.innerWidth - rect.right,
+      })
+    }
+  }, [])
+
+  // Position the menu below the button
+  useEffect(() => {
+    if (!open) return
+    updatePosition()
+  }, [open, updatePosition])
+
+  // Close on click/touch outside and on scroll
   useEffect(() => {
     if (!open) return
 
-    function handleClickOutside(e: MouseEvent) {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      const target = e.target as Node
       if (
         menuRef.current &&
-        !menuRef.current.contains(e.target as Node) &&
+        !menuRef.current.contains(target) &&
         buttonRef.current &&
-        !buttonRef.current.contains(e.target as Node)
+        !buttonRef.current.contains(target)
       ) {
         setOpen(false)
       }
     }
 
+    function handleScroll() {
+      setOpen(false)
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [open])
 
   const close = () => setOpen(false)
@@ -53,7 +81,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   ]
 
   return (
-    <div className="md:hidden relative">
+    <div className="md:hidden">
       {/* Hamburger / X toggle button */}
       <button
         ref={buttonRef}
@@ -84,7 +112,8 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full right-0 z-50 w-64 bg-midnight border border-charcoal rounded-b-lg shadow-xl"
+            style={{ top: menuPos.top, right: menuPos.right }}
+            className="fixed z-[9999] w-64 bg-charcoal border border-lime/20 rounded-b-lg shadow-2xl shadow-black/50"
           >
             {/* Nav links */}
             <nav className="flex flex-col py-2">
@@ -93,7 +122,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                   key={link.href}
                   href={link.href}
                   onClick={close}
-                  className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-charcoal/50 transition-colors text-sm"
+                  className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                 >
                   {link.label}
                 </Link>
@@ -104,14 +133,14 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                   <Link
                     href="/reservations"
                     onClick={close}
-                    className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-charcoal/50 transition-colors text-sm"
+                    className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                   >
                     {tReservations('navLink')}
                   </Link>
                   <Link
                     href="/dashboard"
                     onClick={close}
-                    className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-charcoal/50 transition-colors text-sm"
+                    className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                   >
                     {firstName ?? t('dashboard')}
                   </Link>
@@ -119,7 +148,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                     <Link
                       href="/admin"
                       onClick={close}
-                      className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-charcoal/50 transition-colors text-sm"
+                      className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                     >
                       {tAdmin('adminNav')}
                     </Link>
@@ -129,7 +158,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
             </nav>
 
             {/* Language switcher + auth */}
-            <div className="border-t border-charcoal/50 px-4 py-3 flex flex-col gap-2">
+            <div className="border-t border-slate/50 px-4 py-3 flex flex-col gap-2">
               <div className="flex justify-center">
                 <LanguageSwitcher />
               </div>

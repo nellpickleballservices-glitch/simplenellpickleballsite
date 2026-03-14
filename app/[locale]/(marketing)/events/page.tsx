@@ -4,6 +4,9 @@ import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { StaggerChildren } from '@/components/motion/StaggerChildren'
 import { EventCard } from '@/components/public/EventCard'
+import { GlowButton } from '@/components/effects/GlowButton'
+import { FloatingParticles } from '@/components/effects/FloatingParticles'
+import { SubpageHeroAccents } from '@/components/effects/SubpageHeroAccents'
 import Link from 'next/link'
 import type { Event } from '@/lib/types/admin'
 import type { Metadata } from 'next'
@@ -48,13 +51,11 @@ export default async function EventsPage() {
     <main className="min-h-screen bg-midnight">
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center py-32 px-6 text-center overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-lime opacity-[0.06]" />
-          <div className="absolute -bottom-16 -left-16 w-[300px] h-[300px] rounded-full bg-sunset opacity-[0.07]" />
-        </div>
+        <SubpageHeroAccents secondaryColor="sunset" />
+        <FloatingParticles count={12} />
 
         <HeroEntrance className="relative z-10 flex flex-col items-center">
-          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest text-offwhite mb-4">
+          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
             {locale === 'en' ? 'Events' : 'Eventos'}
           </h1>
           <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
@@ -105,18 +106,15 @@ export default async function EventsPage() {
 
           {/* Bottom CTA */}
           <ScrollReveal delay={0.3}>
-            <div className="mt-16 text-center">
+            <div className="mt-16 text-center flex flex-col items-center">
               <p className="text-offwhite/70 text-base mb-6">
                 {locale === 'en'
                   ? 'Join to participate in exclusive member events.'
                   : 'Unete para participar en eventos exclusivos para miembros.'}
               </p>
-              <Link
-                href="/pricing"
-                className="inline-block bg-sunset text-offwhite font-bold rounded-full py-3 px-10 text-base tracking-wide hover:bg-lime hover:text-midnight hover:scale-105 transition-all duration-200 shadow-lg shadow-sunset/20"
-              >
+              <GlowButton href="/pricing" variant="sunset">
                 {locale === 'en' ? 'Join to Participate' : 'Unete para Participar'}
-              </Link>
+              </GlowButton>
             </div>
           </ScrollReveal>
         </div>
