@@ -41,6 +41,7 @@ export interface UserWithDetails {
   first_name: string
   last_name: string
   phone: string | null
+  country: string | null
   created_at: string
   membership_status: string | null
   membership_plan: string | null

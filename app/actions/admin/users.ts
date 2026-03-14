@@ -23,7 +23,7 @@ export async function searchUsersAction(
 
   let q = supabaseAdmin
     .from('admin_users_view')
-    .select('id, first_name, last_name, phone, email, last_sign_in_at, banned_until, created_at', { count: 'exact' })
+    .select('id, first_name, last_name, phone, country, email, last_sign_in_at, banned_until, created_at', { count: 'exact' })
 
   if (trimmed) {
     const term = `%${trimmed}%`
@@ -56,6 +56,7 @@ export async function searchUsersAction(
       first_name: u.first_name,
       last_name: u.last_name,
       phone: u.phone,
+      country: u.country ?? null,
       created_at: u.created_at,
       membership_status: membership?.status ?? null,
       membership_plan: membership?.plan ?? null,
@@ -76,7 +77,7 @@ export async function getUserDetailsAction(userId: string) {
   // Fetch user from admin_users_view (profile + auth fields in one query)
   const { data: viewUser, error: viewError } = await supabaseAdmin
     .from('admin_users_view')
-    .select('id, first_name, last_name, phone, email, banned_until, created_at')
+    .select('id, first_name, last_name, phone, country, email, banned_until, created_at')
     .eq('id', userId)
     .single()
 
@@ -103,6 +104,7 @@ export async function getUserDetailsAction(userId: string) {
     last_name: viewUser.last_name,
     email: viewUser.email ?? '',
     phone: viewUser.phone,
+    country: viewUser.country ?? null,
     created_at: viewUser.created_at,
     is_banned: viewUser.banned_until
       ? new Date(viewUser.banned_until).getTime() > Date.now()
@@ -194,6 +196,24 @@ export async function triggerPasswordResetAction(userId: string) {
     console.error('Failed to send password reset email:', error)
     throw new Error('Failed to send password reset email')
   }
+
+  return { success: true }
+}
+
+/**
+ * Update a user's country (admin only).
+ */
+export async function updateUserCountryAction(userId: string, country: string) {
+  await requireAdmin()
+
+  if (!/^[A-Z]{2}$/.test(country)) throw new Error('Invalid country code')
+
+  const { error } = await supabaseAdmin
+    .from('profiles')
+    .update({ country })
+    .eq('id', userId)
+
+  if (error) throw new Error(error.message)
 
   return { success: true }
 }

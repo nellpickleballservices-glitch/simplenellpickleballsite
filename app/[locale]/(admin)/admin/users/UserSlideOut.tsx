@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { getUserDetailsAction, disableUserAction, enableUserAction, triggerPasswordResetAction } from '@/app/actions/admin'
+import { getUserDetailsAction, disableUserAction, enableUserAction, triggerPasswordResetAction, updateUserCountryAction } from '@/app/actions/admin'
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
+import { countryByCode } from '@/lib/data/countries'
+import { CountrySelect } from '@/components/CountrySelect'
 
 interface UserSlideOutProps {
   userId: string | null
@@ -18,6 +20,8 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
   const [loading, setLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  const [editingCountry, setEditingCountry] = useState(false)
 
   // Confirm dialog state
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -148,6 +152,43 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
                       <span className="text-offwhite">{details.phone}</span>
                     </div>
                   )}
+                  <div className="flex justify-between items-start">
+                    <span className="text-gray-400">{t('userCountry')}</span>
+                    {editingCountry ? (
+                      <div className="w-48">
+                        <CountrySelect
+                          name="country"
+                          label=""
+                          locale="en"
+                          defaultValue={details.country ?? 'DO'}
+                          onChange={async (code) => {
+                            try {
+                              await updateUserCountryAction(userId!, code)
+                              setEditingCountry(false)
+                              await fetchDetails(userId!)
+                            } catch {
+                              setMessage({ type: 'error', text: 'Failed to update country' })
+                              setEditingCountry(false)
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="text-offwhite">
+                          {details.country
+                            ? `${countryByCode.get(details.country)?.flag ?? ''} ${countryByCode.get(details.country)?.nameEn ?? details.country}`
+                            : 'N/A'}
+                        </span>
+                        <button
+                          onClick={() => setEditingCountry(true)}
+                          className="text-turquoise text-xs hover:underline"
+                        >
+                          {t('edit')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">{t('joinedDate')}</span>
                     <span className="text-offwhite">

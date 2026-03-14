@@ -8,6 +8,7 @@ interface CountrySelectProps {
   label: string
   locale: 'en' | 'es'
   defaultValue?: string
+  onChange?: (code: string) => void
 }
 
 /** Filter countries matching search in BOTH languages regardless of locale */
@@ -39,6 +40,7 @@ export function CountrySelect({
   label,
   locale,
   defaultValue = 'DO',
+  onChange,
 }: CountrySelectProps) {
   const [selected, setSelected] = useState(defaultValue)
   const [search, setSearch] = useState('')
@@ -136,6 +138,7 @@ export function CountrySelect({
                       setSelected(c.code)
                       setOpen(false)
                       setSearch('')
+                      onChange?.(c.code)
                     }}
                     className={`w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-turquoise/10 transition-colors text-sm ${
                       c.code === selected

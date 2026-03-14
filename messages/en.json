@@ -438,7 +438,9 @@
     "membership": "Membership",
     "profile": "Profile",
     "loading": "Loading...",
-    "close": "Close"
+    "close": "Close",
+    "userCountry": "Country",
+    "edit": "Edit"
   },
   "Settings": {
     "pageTitle": "Settings",

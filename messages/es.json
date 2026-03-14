@@ -438,7 +438,9 @@
     "membership": "Membresia",
     "profile": "Perfil",
     "loading": "Cargando...",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "userCountry": "País",
+    "edit": "Editar"
   },
   "Settings": {
     "pageTitle": "Configuracion",
