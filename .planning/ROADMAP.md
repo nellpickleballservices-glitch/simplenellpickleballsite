@@ -31,10 +31,13 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 
 ### Phase 1: Fix critical performance issues
 
-**Goal:** [To be planned]
+**Goal:** Resolve performance bottlenecks: middleware DB queries on every request, N+1 admin queries, serverless-incompatible rate limiting, reservation over-fetching, and split the 902-line admin.ts monolith
 **Requirements**: TBD
 **Depends on:** Phase 0
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 1 to break down)
+- [ ] 01-01-PLAN.md — Database migration (view, RPC, rate limit table, index) + cookie signing utility
+- [ ] 01-02-PLAN.md — Middleware route-scoped auth and membership cookie caching
+- [ ] 01-03-PLAN.md — Admin file split and query rewrite to use Postgres view
+- [ ] 01-04-PLAN.md — Chat rate limiter DB migration and reservation query scoping
