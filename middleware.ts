@@ -2,10 +2,29 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import {
+  needsAuthCheck,
+  isProtectedRoute,
+  isAuthRedirectRoute,
+  isReservationRoute,
+} from '@/lib/middleware/route-helpers'
+import {
+  setMembershipCookie,
+  getMembershipFromCookie,
+} from '@/lib/middleware/cookie-signing'
 
 const intlMiddleware = createMiddleware(routing)
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // PUBLIC ROUTES: Only run i18n middleware, skip Supabase entirely.
+  // This eliminates the getUser() roundtrip on /, /about, /learn, /events, /contact, /pricing, etc.
+  if (!needsAuthCheck(pathname)) {
+    return intlMiddleware(request)
+  }
+
+  // PROTECTED/AUTH ROUTES: Create Supabase client and check auth
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -33,19 +52,29 @@ export async function middleware(request: NextRequest) {
   // Never use the session-based getter — it does not revalidate tokens (security vulnerability).
   const { data: { user } } = await supabase.auth.getUser()
 
-  const pathname = request.nextUrl.pathname
+  // AUTH REDIRECT ROUTES: Redirect logged-in users from /login, /signup to /member/dashboard
+  if (isAuthRedirectRoute(pathname)) {
+    if (user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/member/dashboard'
+      return NextResponse.redirect(url)
+    }
+    // Not logged in — show login/signup page with i18n + Supabase cookies
+    const intlResponse = intlMiddleware(request)
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      intlResponse.cookies.set(cookie.name, cookie.value, cookie)
+    })
+    return intlResponse
+  }
 
-  // Protect member and admin routes — unauthenticated users go to /login
-  if (
-    !user &&
-    (pathname.includes('/dashboard') || pathname.includes('/admin'))
-  ) {
+  // PROTECTED ROUTES: Unauthenticated users go to /login
+  if (!user && isProtectedRoute(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Layer 1 admin route protection: non-admin users accessing /admin/* are redirected home.
+  // ADMIN ROUTES: Non-admin users redirected to /
   if (user && pathname.includes('/admin')) {
     if (user.app_metadata?.role !== 'admin') {
       const url = request.nextUrl.clone()
@@ -56,21 +85,38 @@ export async function middleware(request: NextRequest) {
 
   // LOCKED DECISION (CONTEXT.md): Reservation routes are open to ALL authenticated users.
   // Non-members pay per session. Skip membership gate for /reservations and /checkout-session.
-  const isReservationRoute =
-    pathname.includes('/reservations') || pathname.includes('/checkout-session')
 
+  // MEMBER ROUTES: Check membership status (with cookie cache)
   // LOCKED DECISION (CONTEXT.md): Authenticated but unsubscribed users accessing /member/* go to /pricing.
-  // Only active members can access /member/ routes. Queries memberships table via RLS.
-  if (user && pathname.includes('/member/') && !isReservationRoute) {
-    const { data: membership } = await supabase
-      .from('memberships')
-      .select('status')
-      .eq('user_id', user.id)
-      .in('status', ['active'])
-      .maybeSingle()
+  if (user && pathname.includes('/member/') && !isReservationRoute(pathname)) {
+    // First: check signed cookie cache for membership status
+    const cached = await getMembershipFromCookie(request)
 
-    const isSubscribed = !!membership
-    if (!isSubscribed) {
+    if (cached && cached.active) {
+      // Cache hit — skip DB query, proceed to intl response
+    } else if (cached === null) {
+      // Cache miss or expired — query DB for membership status
+      const { data: membership } = await supabase
+        .from('memberships')
+        .select('status, plan')
+        .eq('user_id', user.id)
+        .in('status', ['active'])
+        .maybeSingle()
+
+      if (!membership) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/pricing'
+        return NextResponse.redirect(url)
+      }
+
+      // Active membership — cache in signed cookie for 5 minutes
+      await setMembershipCookie(supabaseResponse, {
+        active: true,
+        planType: membership.plan ?? null,
+        cachedAt: Date.now(),
+      })
+    } else {
+      // cached.active is false — redirect to pricing
       const url = request.nextUrl.clone()
       url.pathname = '/pricing'
       return NextResponse.redirect(url)
@@ -78,7 +124,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Compose next-intl middleware after Supabase auth check.
-  // Copy Supabase auth cookies into the intl response so session is preserved.
+  // Copy Supabase auth cookies (and membership cache cookie) into the intl response.
   const intlResponse = intlMiddleware(request)
   supabaseResponse.cookies.getAll().forEach((cookie) => {
     intlResponse.cookies.set(cookie.name, cookie.value, cookie)
