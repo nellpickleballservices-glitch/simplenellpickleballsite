@@ -10,7 +10,7 @@ const USER_PAGE_SIZE = 25
 /**
  * Search users by name, email, or phone. Returns paginated results.
  * Uses admin_users_view (Postgres view joining profiles + auth.users)
- * to eliminate N+1 listUsers(1000) pattern.
+ * to eliminate the N+1 query pattern that previously fetched all users.
  */
 export async function searchUsersAction(
   query: string,
