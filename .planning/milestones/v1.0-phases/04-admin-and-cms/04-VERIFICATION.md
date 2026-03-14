@@ -1,16 +1,15 @@
 ---
-phase: 04-admin-and-cms
-verified: 2026-03-12T12:00:00Z
+phase: 04-admin-pricing-panel
+verified: 2026-03-14T18:04:00Z
 status: passed
-score: 20/20 must-haves verified
-re_verification: false
+score: 9/9 must-haves verified
 ---
 
-# Phase 4: Admin and CMS Verification Report
+# Phase 4: Admin Pricing Panel Verification Report
 
-**Phase Goal:** A club admin can manage every operational aspect of the club -- users, courts, reservations, events -- and edit all platform content through a CMS, with every admin action protected at middleware, layout, and API handler level.
-**Verified:** 2026-03-12T12:00:00Z
-**Status:** passed
+**Phase Goal:** Admins can configure all pricing parameters -- base session prices per day of week and the global tourist surcharge percentage -- through the admin panel
+**Verified:** 2026-03-14T18:04:00Z
+**Status:** PASSED
 **Re-verification:** No -- initial verification
 
 ## Goal Achievement
@@ -19,149 +18,97 @@ re_verification: false
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Non-admin user accessing /admin/* is redirected at proxy middleware level | VERIFIED | proxy.ts:49-54 checks `user.app_metadata?.role !== 'admin'` and redirects to `/` |
-| 2 | Non-admin user passing proxy is rejected at layout level | VERIFIED | admin/layout.tsx:22 checks `user.app_metadata?.role !== 'admin'` and redirects |
-| 3 | Admin user sees sidebar navigation with all admin sections | VERIFIED | AdminSidebar.tsx has 7 navItems (Dashboard, Users, Courts, Reservations, Events, CMS, Stripe) |
-| 4 | Admin dashboard shows stat cards with total users, active members, today reservations, upcoming events | VERIFIED | admin/page.tsx renders 4 StatCard components calling getAdminStatsAction() |
-| 5 | Admin link appears in Navbar only for admin-role users | VERIFIED | Navbar.tsx:54 conditionally renders admin link with `user.app_metadata?.role === 'admin'` |
-| 6 | Admin can search users by first name, last name, email, or phone from a single search bar | VERIFIED | searchUsersAction (admin.ts:651) does two-pronged search: profiles for name/phone, auth for email |
-| 7 | Admin sees a paginated table of 20 users per page with name, email, plan, and status | VERIFIED | UserTable.tsx (4976 bytes), USER_PAGE_SIZE=20 in admin.ts:645 |
-| 8 | Admin can click a user row to see full details in a slide-out panel | VERIFIED | UserSlideOut.tsx (11964 bytes) calls getUserDetailsAction, shows profile/membership/reservations |
-| 9 | Admin can disable a user account, which blocks login and auto-cancels future reservations | VERIFIED | disableUserAction (admin.ts:832) bans for 876000h + cancels future reservations |
-| 10 | Admin can re-enable a disabled user account | VERIFIED | enableUserAction (admin.ts:855) sets ban_duration to 'none' |
-| 11 | Admin can trigger a password reset email for any user | VERIFIED | triggerPasswordResetAction (admin.ts:869) generates recovery link + sends via Resend |
-| 12 | Every admin Server Action independently verifies admin role (Layer 3) | VERIFIED | 22 exported actions, 22 `await requireAdmin()` calls -- 100% coverage |
-| 13 | Admin can add a new court location with name, GPS coordinates, and capacity | VERIFIED | addCourtAction (admin.ts:288) upserts location + inserts court + creates default config/pricing |
-| 14 | Admin can set a court to maintenance with a date range, auto-cancelling overlapping reservations | VERIFIED | setMaintenanceAction (admin.ts:369) sets status + cancels overlapping + sends emails |
-| 15 | Admin can view all reservations with date, court, and status filters | VERIFIED | getAllReservationsAction (admin.ts:468) supports dateFrom/dateTo/courtId/status filters |
-| 16 | Admin can cancel any reservation with a confirmation dialog | VERIFIED | adminCancelReservationAction wired in reservations/page.tsx:69, ConfirmDialog used |
-| 17 | Admin can create a reservation on behalf of a registered user or a guest walk-in | VERIFIED | adminCreateReservationAction (admin.ts:526) supports userId or guestName modes |
-| 18 | Admin can mark cash payments as received | VERIFIED | markCashPaidAction (admin.ts:596) updates payment_status='paid', payment_method='cash' |
-| 19 | Admin can create, edit, and delete events (tournaments, training, social) | VERIFIED | Events page imports all 4 CRUD actions; EventForm supports create and edit modes |
-| 20 | Admin can edit content blocks in both Spanish and English via Tiptap rich text editor | VERIFIED | ContentEditor.tsx uses @tiptap/react with StarterKit, immediatelyRender:false; CMS page has ES/EN tabs |
+| 1 | session_pricing table exists with rows for each day-of-week per court | VERIFIED | `0009_session_pricing.sql` creates table with court_id, day_of_week (0-6), price_cents columns, UNIQUE constraint, RLS policies, and seeds 21 rows (3 courts x 7 days at 1000 cents) |
+| 2 | tourist_surcharge_pct config value exists in app_config | VERIFIED | Migration inserts `tourist_surcharge_pct` = 25 into app_config with ON CONFLICT DO NOTHING |
+| 3 | Server actions can read and write session pricing rows | VERIFIED | `getSessionPricingAction` queries session_pricing joined with courts; `upsertSessionPricingAction` upserts on court_id+day_of_week with validation |
+| 4 | Server actions can read and update the tourist surcharge percentage | VERIFIED | `getTouristSurchargeAction` reads from app_config; `updateTouristSurchargeAction` updates with 0-100 validation |
+| 5 | Admin can view base session prices for each day of the week per court | VERIFIED | `PricingGrid.tsx` (211 lines) renders table with court rows and 7 day columns (Monday-first ordering), displaying price in dollars |
+| 6 | Admin can edit a day's price for a specific court and save it | VERIFIED | PricingGrid has inline editing: click to edit, blur/Enter to save via `upsertSessionPricingAction`, with success/error feedback states |
+| 7 | Admin can view and update the global tourist surcharge percentage | VERIFIED | `SurchargeEditor.tsx` (73 lines) has number input (0-100), save button calling `updateTouristSurchargeAction`, success/error feedback |
+| 8 | Admin pricing page is accessible from the admin sidebar navigation | VERIFIED | `AdminSidebar.tsx` line 13: `{ key: 'pricing', href: '/admin/pricing', icon: '$' }` between reservations and events |
+| 9 | Price changes take effect immediately (no deploy needed) | VERIFIED | All changes go through server actions to Supabase DB; no build-time data, no static generation |
 
-**Score:** 20/20 truths verified
+**Score:** 9/9 truths verified
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `supabase/migrations/0005_admin_events_cms.sql` | Events columns, maintenance columns, content_blocks seed data | VERIFIED | 62 lines, ALTER TABLE events/courts/reservations + 13 content_block seeds |
-| `proxy.ts` | Layer 1 admin route protection | VERIFIED | Lines 48-55 check app_metadata.role for /admin/* paths |
-| `app/[locale]/(admin)/admin/layout.tsx` | Layer 2 admin role gate + sidebar shell | VERIFIED | Server component, getUser() + role check + AdminSidebar |
-| `app/actions/admin.ts` | All admin Server Actions with requireAdmin | VERIFIED | 903 lines, 22 exported actions, all protected by requireAdmin |
-| `lib/types/admin.ts` | TypeScript types for admin domain | VERIFIED | EventType, Event, ContentBlock, AdminStats, UserWithDetails |
-| `components/admin/AdminSidebar.tsx` | Fixed left sidebar with nav links | VERIFIED | 7 nav items, active state, mobile hamburger/overlay |
-| `components/admin/StatCard.tsx` | Reusable stat display | VERIFIED | 524 bytes, title/value/icon props |
-| `components/admin/ConfirmDialog.tsx` | Reusable confirmation dialog | VERIFIED | 2444 bytes, open/onClose/onConfirm/destructive/loading props |
-| `app/[locale]/(admin)/admin/users/page.tsx` | User management page | VERIFIED | Orchestrates SearchBar + Table + SlideOut |
-| `app/[locale]/(admin)/admin/users/UserSlideOut.tsx` | Slide-out detail panel | VERIFIED | 11964 bytes, profile/membership/reservations/actions |
-| `app/[locale]/(admin)/admin/courts/page.tsx` | Court management page | VERIFIED | Court list + add form + maintenance controls |
-| `app/[locale]/(admin)/admin/reservations/page.tsx` | Reservation management page | VERIFIED | Filterable table + cancel + create-on-behalf + mark-paid |
-| `app/[locale]/(admin)/admin/events/page.tsx` | Events CRUD page | VERIFIED | Upcoming/past tabs + create/edit/delete with confirmation |
-| `app/[locale]/(admin)/admin/cms/page.tsx` | CMS content blocks editor | VERIFIED | Page tabs + expandable cards + ES/EN editing + reordering |
-| `app/[locale]/(admin)/admin/cms/ContentEditor.tsx` | Tiptap rich text editor | VERIFIED | useEditor with StarterKit, toolbar (B/I/H2/H3/UL/OL/Undo/Redo), immediatelyRender:false |
-| `app/[locale]/(admin)/admin/cms/ContentPreview.tsx` | HTML preview component | VERIFIED | dangerouslySetInnerHTML in styled container |
-| `app/[locale]/(admin)/admin/stripe/page.tsx` | Stripe Dashboard link | VERIFIED | External link to dashboard.stripe.com with target=_blank |
+| `supabase/migrations/0009_session_pricing.sql` | session_pricing table, surcharge seed, default pricing | VERIFIED | 38 lines, CREATE TABLE, RLS, INSERT seeds |
+| `app/actions/admin/pricing.ts` | CRUD server actions for pricing | VERIFIED | 123 lines, exports 4 actions, all use requireAdmin + supabaseAdmin |
+| `lib/types/pricing.ts` | TypeScript pricing types | VERIFIED | 21 lines, exports SessionPricing, PricingByDay, CourtPricingGrid, DAY_NAMES_EN/ES |
+| `lib/utils/pricingValidation.ts` | Pure validation helpers | VERIFIED | 16 lines, 3 validators (deviation from plan, needed for testability) |
+| `app/[locale]/(admin)/admin/pricing/page.tsx` | Admin pricing page | VERIFIED | 26 lines, server component fetching data via Promise.all, renders SurchargeEditor + PricingGrid |
+| `app/[locale]/(admin)/admin/pricing/PricingGrid.tsx` | Day-of-week pricing grid | VERIFIED | 211 lines, inline-editable cells with save/error states, Monday-first ordering, locale-aware day names |
+| `app/[locale]/(admin)/admin/pricing/SurchargeEditor.tsx` | Tourist surcharge editor | VERIFIED | 73 lines, number input 0-100, save button, success/error feedback |
+| `components/admin/AdminSidebar.tsx` | Sidebar with pricing nav | VERIFIED | Contains pricing entry at position 5 (after reservations, before events) |
+| `tests/unit/pricingActions.test.ts` | Validation tests | VERIFIED | 16 tests, all passing |
+| `messages/en.json` | 8 pricing i18n keys (EN) | VERIFIED | All 8 keys present under Admin namespace |
+| `messages/es.json` | 8 pricing i18n keys (ES) | VERIFIED | All 8 keys present with Spanish translations |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 |------|----|-----|--------|---------|
-| proxy.ts | supabase.auth.getUser() | app_metadata.role check for /admin/* | WIRED | Lines 34, 49-54 |
-| admin/layout.tsx | supabase.auth.getUser() | Server-side role check | WIRED | Lines 16, 22 |
-| admin.ts | lib/supabase/admin.ts | supabaseAdmin for service-role ops | WIRED | Import line 6, used throughout all actions |
-| users/page.tsx | admin.ts | searchUsersAction | WIRED | Import + call in fetchUsers callback |
-| UserSlideOut.tsx | admin.ts | disable/enable/triggerPasswordReset | WIRED | Import line 5, called on button clicks |
-| courts/page.tsx | admin.ts | getCourtsAction | WIRED | Import + call on mount |
-| CourtForm.tsx | admin.ts | addCourtAction | WIRED | useActionState binding |
-| MaintenanceForm.tsx | admin.ts | setMaintenance/clearMaintenance | WIRED | Direct calls on form submit |
-| reservations/page.tsx | admin.ts | getAllReservations/adminCancel/markCashPaid | WIRED | Import + calls throughout |
-| AdminReservationForm.tsx | admin.ts | adminCreateReservation/searchUsersForReservation | WIRED | useActionState + search call |
-| events/page.tsx | admin.ts | CRUD event actions | WIRED | All 4 imported and called |
-| cms/page.tsx | admin.ts | CMS actions | WIRED | All 3 imported and called |
-| admin.ts (updateContentBlock) | next/cache | revalidatePath('/') for ISR | WIRED | Import line 4, call at line 239 |
+| `PricingGrid.tsx` | `pricing.ts` actions | `upsertSessionPricingAction` import | WIRED | Line 5: imports and calls in `saveEdit` function |
+| `SurchargeEditor.tsx` | `pricing.ts` actions | `updateTouristSurchargeAction` import | WIRED | Line 5: imports and calls in `handleSave` function |
+| `page.tsx` | `pricing.ts` actions | `getSessionPricingAction`, `getTouristSurchargeAction` | WIRED | Line 2: imports both, calls via Promise.all |
+| `pricing.ts` | `session_pricing` table | `supabaseAdmin.from('session_pricing')` | WIRED | Lines 30, 78: SELECT and UPSERT queries |
+| `pricing.ts` | `app_config` table | `supabaseAdmin.from('app_config')` | WIRED | Lines 95, 117: SELECT and UPDATE queries |
+| `AdminSidebar.tsx` | `/admin/pricing` | nav link | WIRED | Line 13: href: '/admin/pricing' rendered as Link |
+| `pricing.ts` | `pricingValidation.ts` | import validators | WIRED | Line 8: imports all 3 validators |
+| `app/actions/admin.ts` | `pricing.ts` | barrel re-export | WIRED | Line 12: re-exports all 4 server actions |
 
 ### Requirements Coverage
 
 | Requirement | Source Plan | Description | Status | Evidence |
 |-------------|------------|-------------|--------|----------|
-| ADMIN-01 | 04-02 | Admin can search users by first name, last name, email, or phone | SATISFIED | searchUsersAction two-pronged search |
-| ADMIN-02 | 04-02 | Admin can view any user's membership status and reservation history | SATISFIED | getUserDetailsAction returns membership + last 20 reservations |
-| ADMIN-03 | 04-02 | Admin can disable/enable user accounts | SATISFIED | disableUserAction + enableUserAction |
-| ADMIN-04 | 04-02 | Admin can trigger password reset for any user | SATISFIED | triggerPasswordResetAction with Resend email |
-| ADMIN-05 | 04-03 | Admin can add court locations with name, GPS coordinates, and capacity | SATISFIED | addCourtAction with location upsert + GPS |
-| ADMIN-06 | 04-03 | Admin can block courts for maintenance | SATISFIED | setMaintenanceAction with cascade cancellation |
-| ADMIN-07 | 04-03 | Admin can view all reservations and cancel any reservation | SATISFIED | getAllReservationsAction + adminCancelReservationAction |
-| ADMIN-08 | 04-04 | Admin can create, edit, and delete events | SATISFIED | createEventAction + updateEventAction + deleteEventAction |
-| ADMIN-09 | 04-01, 04-04 | Admin can view Stripe payment data | SATISFIED | stripe/page.tsx links to Stripe Dashboard |
-| ADMIN-10 | 04-04 | Admin CMS: edit content blocks for Home, About, Learn, FAQ (bilingual) | SATISFIED | CMS page with Tiptap editor, ES/EN tabs, 4 page groups |
-| ADMIN-11 | 04-01 | Admin routes protected at three layers | SATISFIED | proxy.ts (L1), layout.tsx (L2), requireAdmin (L3) |
-| CMS-01 | 04-01, 04-04 | content_blocks table stores block_key, block_type, content_es, content_en, sort_order | SATISFIED | Migration 0005 seeds 13 blocks; ContentBlock type matches schema |
-| CMS-02 | 04-04 | Public pages fetch content blocks at render time (ISR) | SATISFIED | revalidatePath('/') called on CMS save |
-| CMS-03 | 04-04 | Admin can update any content block via rich text editor | SATISFIED | Tiptap ContentEditor + updateContentBlockAction |
+| PRIC-01 | 04-01 | Admin can set base session price per day of week per court | SATISFIED | session_pricing table + upsertSessionPricingAction + PricingGrid inline editing |
+| PRIC-03 | 04-01 | Admin can set a global tourist surcharge percentage | SATISFIED | tourist_surcharge_pct in app_config + updateTouristSurchargeAction + SurchargeEditor UI |
+| ADMN-01 | 04-02 | Admin can manage day-of-week session prices per court via pricing panel | SATISFIED | Full pricing page with grid at /admin/pricing |
+| ADMN-02 | 04-02 | Admin can edit the global tourist surcharge percentage | SATISFIED | SurchargeEditor component with save functionality |
 
-No orphaned requirements found.
+No orphaned requirements found -- REQUIREMENTS.md maps PRIC-01, PRIC-03, ADMN-01, ADMN-02 to Phase 4, and all are claimed by plans.
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| None | - | - | - | No anti-patterns detected |
+| (none) | - | - | - | No anti-patterns detected |
 
-No TODOs, FIXMEs, placeholders, empty implementations, or console.log-only handlers found in any admin files. All `return null` instances are valid guards (Tiptap editor loading, switch default).
+No TODOs, FIXMEs, placeholders, empty implementations, or console.log-only handlers found in any phase 4 artifacts.
 
 ### Human Verification Required
 
-### 1. Admin Dashboard Stats Accuracy
+### 1. Visual Pricing Grid Layout
 
-**Test:** Log in as admin, navigate to /admin, verify stat cards show correct numbers
-**Expected:** Total Users, Active Members, Today's Reservations, and Upcoming Events show accurate counts
-**Why human:** Database query correctness cannot be verified without live data
+**Test:** Navigate to /admin/pricing as admin. Verify the day-of-week grid renders correctly with all 3 courts and 7 day columns (Monday-first).
+**Expected:** Dark-themed table with court names on left, day columns showing $10.00 defaults, lime accent on active edit cell.
+**Why human:** Layout, spacing, and visual styling cannot be verified programmatically.
 
-### 2. User Search and Slide-Out Panel
+### 2. Inline Price Editing Flow
 
-**Test:** Search for a user by name, email, and phone; click a user row to open slide-out
-**Expected:** Search results update with debounce; slide-out shows profile, membership, and reservation history
-**Why human:** Debounce UX timing, slide-out animation, and data rendering need visual confirmation
+**Test:** Click a price cell, change to $15.00, press Enter. Observe feedback. Refresh page.
+**Expected:** Green success flash on save, $15.00 persists after refresh.
+**Why human:** Requires running app with live database to verify persistence and UI feedback timing.
 
-### 3. Court Maintenance Cascade
+### 3. Surcharge Save and Persist
 
-**Test:** Set a court to maintenance with a date range overlapping existing reservations
-**Expected:** Court status changes to maintenance; overlapping reservations are cancelled; affected users receive emails
-**Why human:** Cascade behavior and email delivery require end-to-end testing
+**Test:** Change tourist surcharge from 25% to 30%, click Save. Refresh page.
+**Expected:** Value persists at 30% after refresh. Success message appears briefly.
+**Why human:** Requires live database interaction to verify persistence.
 
-### 4. CMS Tiptap Editor
+### 4. Spanish Locale
 
-**Test:** Edit a content block, use toolbar buttons (Bold, Italic, H2, lists), switch ES/EN tabs, preview
-**Expected:** Rich text editing works; language tab switching preserves content; preview shows formatted HTML
-**Why human:** Tiptap rendering, toolbar interactions, and hydration behavior need browser testing
+**Test:** Switch to /es/admin/pricing.
+**Expected:** Day names in Spanish (Lunes, Martes...), labels in Spanish.
+**Why human:** Locale switching and translation rendering need visual confirmation.
 
-### 5. Admin Reservation Creation
+## Gaps Summary
 
-**Test:** Create a reservation for a registered user (search + select) and a guest walk-in
-**Expected:** Registered user reservation uses their profile; guest uses admin's ID with guest_name; walk-in gets cash_pending status
-**Why human:** Multi-step form flow with mode switching needs visual verification
-
-### 6. Mobile Sidebar Responsiveness
-
-**Test:** Access /admin on a mobile viewport
-**Expected:** Sidebar hidden by default; hamburger button visible; sidebar slides in as overlay; closes on link click or backdrop
-**Why human:** Responsive behavior and CSS transitions need visual testing
-
-## Summary
-
-Phase 4 goal is fully achieved. All 20 observable truths verified against the actual codebase. Every artifact exists, is substantive (no stubs or placeholders), and is correctly wired. The three-layer admin protection pattern (proxy.ts, layout.tsx, requireAdmin) is consistently enforced across all 22 Server Actions. All 14 requirement IDs (ADMIN-01 through ADMIN-11, CMS-01 through CMS-03) are satisfied with concrete implementation evidence.
-
-Key strengths:
-- 903-line admin.ts with comprehensive Server Actions covering all admin operations
-- Consistent Layer 3 protection: every single action calls requireAdmin()
-- Tiptap integration with SSR-safe configuration (immediatelyRender: false)
-- ISR revalidation on CMS save for public page freshness
-- Migration seeds 13 content blocks for 4 page groups
-- Full bilingual support throughout all admin UI
+No gaps found. All 9 observable truths are verified. All 4 requirements (PRIC-01, PRIC-03, ADMN-01, ADMN-02) are satisfied. All artifacts exist, are substantive (no stubs), and are properly wired. All 16 unit tests pass. No anti-patterns detected.
 
 ---
 
-_Verified: 2026-03-12T12:00:00Z_
+_Verified: 2026-03-14T18:04:00Z_
 _Verifier: Claude (gsd-verifier)_
