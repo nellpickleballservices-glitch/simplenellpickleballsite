@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
 current_plan: 0 of 0
-status: defining-requirements
+status: ready-to-plan
 stopped_at: null
 last_updated: "2026-03-14"
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,29 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Local vs Tourist Pricing (v1.1)
+**Current focus:** Phase 2 - Schema and Pricing Engine (v1.1)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-14 — Milestone v1.1 started
+Phase: 2 of 5 (Schema and Pricing Engine)
+Plan: Ready to plan
+Status: Ready to plan Phase 2
+Last activity: 2026-03-14 — Roadmap created for v1.1
+
+Progress: [░░░░░░░░░░] 0%
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 0 (v1.1)
+- Average duration: -
+- Total execution time: -
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
 
 ## Accumulated Context
 
@@ -36,7 +51,7 @@ Last activity: 2026-03-14 — Milestone v1.1 started
 
 - v1.0 MVP shipped (5 phases, 23 plans)
 - Performance fix phase completed (4 plans)
-- v1.1 milestone started: Local vs Tourist Pricing
+- v1.1 roadmap created: 4 phases, 15 requirements mapped
 
 ### Decisions
 
@@ -47,8 +62,15 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [01-02] Used regex locale stripping for auth redirect matching to prevent false positives on nested routes
 - [01-02] Membership cache cookie read before DB query -- DB only on cache miss/expiry
 - [01-03] Barrel re-export preserves all existing imports -- no admin page changes needed
-- [01-03] triggerPasswordResetAction also uses admin_users_view for email lookup (consistent pattern)
-- [Phase 01-04]: Extracted checkRateLimit as pure function with injected Supabase client for testability
+- [01-04] Extracted checkRateLimit as pure function with injected Supabase client for testability
+
+### Key Research Findings (v1.1)
+
+- Zero new packages needed -- existing stack covers everything
+- `calculateSessionPrice()` is the critical shared function (used in 3 places)
+- Walk-in `price_cents: 0` bug must be fixed in Phase 5
+- Day-of-week must use `America/Santo_Domingo` timezone, not UTC
+- Country field must be immutable after signup (RLS or trigger)
 
 ### Pending Todos
 
@@ -61,5 +83,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: null
+Stopped at: Roadmap created, ready to plan Phase 2
 Resume file: None

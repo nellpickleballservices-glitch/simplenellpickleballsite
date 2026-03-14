@@ -18,7 +18,7 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 - [ ] **PRIC-01**: Admin can set base session price per day of week per court
 - [ ] **PRIC-02**: Days without specific pricing fall back to a default base price
 - [ ] **PRIC-03**: Admin can set a global tourist surcharge percentage
-- [ ] **PRIC-04**: Tourist session price is calculated as base price × (1 + surcharge%)
+- [ ] **PRIC-04**: Tourist session price is calculated as base price x (1 + surcharge%)
 - [ ] **PRIC-05**: All price calculations happen server-side only
 
 ### Reservations
@@ -49,7 +49,7 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 | Feature | Reason |
 |---------|--------|
 | Separate price tables for locals vs tourists | Surcharge-on-base is simpler, one change propagates everywhere |
-| User self-classification checkbox | Gameable — country field is harder to fake |
+| User self-classification checkbox | Gameable -- country field is harder to fake |
 | Per-court surcharge percentages | Over-engineering for single-club use; global surcharge sufficient |
 | IP-based geolocation | Unreliable (VPNs, hotel WiFi), privacy concerns, external dependency |
 | Hourly peak/off-peak pricing | Day-of-week covers immediate needs; hourly is v2+ |
@@ -59,31 +59,29 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UCLS-01 | Pending | Pending |
-| UCLS-02 | Pending | Pending |
-| UCLS-03 | Pending | Pending |
-| PRIC-01 | Pending | Pending |
-| PRIC-02 | Pending | Pending |
-| PRIC-03 | Pending | Pending |
-| PRIC-04 | Pending | Pending |
-| PRIC-05 | Pending | Pending |
-| RESV-01 | Pending | Pending |
-| RESV-02 | Pending | Pending |
-| RESV-03 | Pending | Pending |
-| RESV-04 | Pending | Pending |
-| ADMN-01 | Pending | Pending |
-| ADMN-02 | Pending | Pending |
-| ADMN-03 | Pending | Pending |
+| UCLS-01 | Phase 3 | Pending |
+| UCLS-02 | Phase 3 | Pending |
+| UCLS-03 | Phase 3 | Pending |
+| PRIC-01 | Phase 4 | Pending |
+| PRIC-02 | Phase 2 | Pending |
+| PRIC-03 | Phase 4 | Pending |
+| PRIC-04 | Phase 2 | Pending |
+| PRIC-05 | Phase 2 | Pending |
+| RESV-01 | Phase 5 | Pending |
+| RESV-02 | Phase 5 | Pending |
+| RESV-03 | Phase 5 | Pending |
+| RESV-04 | Phase 5 | Pending |
+| ADMN-01 | Phase 4 | Pending |
+| ADMN-02 | Phase 4 | Pending |
+| ADMN-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15 ⚠️
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-14*
-*Last updated: 2026-03-14 after initial definition*
+*Last updated: 2026-03-14 after roadmap creation*

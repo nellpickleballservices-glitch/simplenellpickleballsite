@@ -3,6 +3,9 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-5 (shipped 2026-03-14)
+- 🚧 **v1.1 Local vs Tourist Pricing** — Phases 2-5 (in progress)
+
+**Note:** Phase 1 was the performance fix phase (completed). v1.1 phases start at 2.
 
 ## Phases
 
@@ -19,25 +22,90 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 
 </details>
 
+<details>
+<summary>✅ Post-v1.0 Performance Fixes (Phase 1) — COMPLETED 2026-03-14</summary>
+
+- [x] Phase 1: Fix critical performance issues (4/4 plans) — completed 2026-03-14
+
+</details>
+
+### v1.1 Local vs Tourist Pricing
+
+- [ ] **Phase 2: Schema and Pricing Engine** - Database schema for pricing tables and shared price calculation function
+- [ ] **Phase 3: Signup Country Collection** - Country field on signup to classify users as local or tourist
+- [ ] **Phase 4: Admin Pricing Panel** - Admin UI for day-of-week base prices and tourist surcharge percentage
+- [ ] **Phase 5: Reservation Flow Integration** - Wire pricing into user booking and admin walk-in flows
+
+## Phase Details
+
+### Phase 2: Schema and Pricing Engine
+**Goal**: A working pricing calculation function backed by the correct database schema, so all downstream flows have a single source of truth for session prices
+**Depends on**: Phase 1 (performance fixes)
+**Requirements**: PRIC-02, PRIC-04, PRIC-05
+**Success Criteria** (what must be TRUE):
+  1. A `session_pricing` table exists with rows for day-of-week base prices per court
+  2. A `tourist_surcharge_pct` config value exists in `app_config`
+  3. `profiles` table has a `country` column (ISO alpha-2) and `reservations` has an `is_tourist_price` boolean
+  4. `calculateSessionPrice()` returns the correct price in cents given a court, date, and user classification -- using Dominican timezone for day-of-week extraction
+  5. Days without specific pricing fall back to a default base price
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: TBD
+- [ ] 02-02: TBD
+
+### Phase 3: Signup Country Collection
+**Goal**: Users provide their country during signup so the platform can classify them as local (Dominican) or tourist for pricing purposes
+**Depends on**: Phase 2 (country column must exist)
+**Requirements**: UCLS-01, UCLS-02, UCLS-03
+**Success Criteria** (what must be TRUE):
+  1. User sees a bilingual country dropdown during signup and can select their country
+  2. Selected country is stored as an ISO 3166-1 alpha-2 code on the user's profile
+  3. Users with country "DO" are treated as local; all others are treated as tourist
+  4. Users cannot modify their own country field after signup (RLS or trigger enforcement)
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: TBD
+
+### Phase 4: Admin Pricing Panel
+**Goal**: Admins can configure all pricing parameters -- base session prices per day of week and the global tourist surcharge percentage -- through the admin panel
+**Depends on**: Phase 2 (pricing schema must exist)
+**Requirements**: PRIC-01, PRIC-03, ADMN-01, ADMN-02
+**Success Criteria** (what must be TRUE):
+  1. Admin can view and edit base session prices for each day of the week per court
+  2. Admin can set and update the global tourist surcharge percentage
+  3. Price changes take effect for new reservations immediately (no deploy needed)
+  4. Admin pricing page is accessible from the admin sidebar navigation
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: TBD
+
+### Phase 5: Reservation Flow Integration
+**Goal**: Both user-facing reservations and admin walk-in reservations use the pricing engine to calculate and display correct prices based on local/tourist classification
+**Depends on**: Phase 2 (pricing engine), Phase 3 (country data), Phase 4 (pricing config exists)
+**Requirements**: RESV-01, RESV-02, RESV-03, RESV-04, ADMN-03
+**Success Criteria** (what must be TRUE):
+  1. User sees the correct calculated price (with tourist surcharge if applicable) before confirming a reservation
+  2. Reservation stores the calculated price at booking time as an immutable snapshot
+  3. Admin walk-in form includes a local/tourist toggle that affects the displayed and stored price
+  4. Walk-in reservations use the calculated price instead of hardcoded $0 (bug fix)
+  5. Tourist reservations are flagged with `is_tourist_price = true` for audit purposes
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
+
 ## Progress
+
+**Execution Order:** Phase 2 -> Phase 3 (can parallel with Phase 4) -> Phase 4 -> Phase 5
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 1. Foundation | v1.0 | 5/5 | Complete | 2026-03-08 |
-| 2. Billing | v1.0 | 4/4 | Complete | 2026-03-08 |
-| 3. Reservations | v1.0 | 5/5 | Complete | 2026-03-08 |
-| 4. Admin and CMS | v1.0 | 4/4 | Complete | 2026-03-12 |
-| 5. Public Website and AI Chatbot | v1.0 | 5/5 | Complete | 2026-03-13 |
-
-### Phase 1: Fix critical performance issues
-
-**Goal:** Resolve performance bottlenecks: middleware DB queries on every request, N+1 admin queries, serverless-incompatible rate limiting, reservation over-fetching, and split the 902-line admin.ts monolith
-**Requirements**: TBD
-**Depends on:** Phase 0
-**Plans:** 4 plans
-
-Plans:
-- [ ] 01-01-PLAN.md — Database migration (view, RPC, rate limit table, index) + cookie signing utility
-- [ ] 01-02-PLAN.md — Middleware route-scoped auth and membership cookie caching
-- [ ] 01-03-PLAN.md — Admin file split and query rewrite to use Postgres view
-- [ ] 01-04-PLAN.md — Chat rate limiter DB migration and reservation query scoping
+| 1. Performance Fixes | post-v1.0 | 4/4 | Complete | 2026-03-14 |
+| 2. Schema and Pricing Engine | v1.1 | 0/? | Not started | - |
+| 3. Signup Country Collection | v1.1 | 0/? | Not started | - |
+| 4. Admin Pricing Panel | v1.1 | 0/? | Not started | - |
+| 5. Reservation Flow Integration | v1.1 | 0/? | Not started | - |
