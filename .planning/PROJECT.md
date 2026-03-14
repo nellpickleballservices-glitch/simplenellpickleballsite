@@ -35,7 +35,11 @@ Members can sign up, pay their monthly subscription via Stripe, and immediately 
 
 ### Active
 
-(None — planning next milestone)
+- [ ] Add country field to signup form to determine if user is local (Dominican) or tourist
+- [ ] Per-session pricing differentiates locals vs tourists via a surcharge percentage
+- [ ] Admin panel section for managing base session prices per day of week (specials like "$5 Mondays")
+- [ ] Admin-configurable tourist surcharge percentage applied on top of base price
+- [ ] Walk-in processing allows admin to designate local vs tourist for pricing
 
 ### Out of Scope
 
@@ -92,5 +96,15 @@ Members can sign up, pay their monthly subscription via Stripe, and immediately 
 - 22 test stubs (test.skip/test.todo) across unit tests
 - ISR revalidatePath('/') only invalidates home page explicitly
 
+## Current Milestone: v1.1 Local vs Tourist Pricing
+
+**Goal:** Add differential per-session pricing for locals vs tourists, with admin controls for base prices, day-of-week specials, and tourist surcharge percentage.
+
+**Target features:**
+- Country-based user classification (local vs tourist) on signup
+- Dynamic per-session pricing with tourist surcharge percentage
+- Admin pricing management with day-of-week specials
+- Walk-in tourist/local designation at point of sale
+
 ---
-*Last updated: 2026-03-14 after v1.0 milestone*
+*Last updated: 2026-03-14 after v1.1 milestone start*

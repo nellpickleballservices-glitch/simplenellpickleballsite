@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-current_plan: 4 of 4
-status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-14T07:28:31.205Z"
+milestone: v1.1
+milestone_name: Local vs Tourist Pricing
+current_plan: 0 of 0
+status: defining-requirements
+stopped_at: null
+last_updated: "2026-03-14"
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 75
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,21 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Fix critical performance issues (Phase 1)
+**Current focus:** Local vs Tourist Pricing (v1.1)
 
 ## Current Position
 
-Phase: 01-fix-critical-performance-issues
-Current Plan: 4 of 4
-Status: In Progress
-
-Progress: [████████░░] 75%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-14 — Milestone v1.1 started
 
 ## Accumulated Context
 
 ### Roadmap Evolution
 
-- Phase 1 added: Fix critical performance issues
+- v1.0 MVP shipped (5 phases, 23 plans)
+- Performance fix phase completed (4 plans)
+- v1.1 milestone started: Local vs Tourist Pricing
 
 ### Decisions
 
@@ -55,10 +56,10 @@ None.
 
 ### Blockers/Concerns
 
-None — milestone complete.
+None.
 
 ## Session Continuity
 
-Last session: 2026-03-14T07:23:54.923Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-03-14
+Stopped at: null
 Resume file: None
