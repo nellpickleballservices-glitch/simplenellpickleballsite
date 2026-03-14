@@ -1,111 +1,99 @@
 ---
-phase: 04-admin-and-cms
+phase: 04-admin-pricing-panel
 plan: 02
-subsystem: admin
-tags: [supabase-admin-api, user-management, search, pagination, slide-out, resend]
+subsystem: ui
+tags: [react, next-intl, admin, pricing, inline-edit, server-actions]
 
+# Dependency graph
 requires:
-  - phase: 04-admin-and-cms/01
-    provides: admin layout, requireAdmin, supabaseAdmin, UserWithDetails type
+  - phase: 04-admin-pricing-panel-01
+    provides: session_pricing table, server actions for CRUD, pricing types
 provides:
-  - searchUsersAction with two-pronged name/email/phone search
-  - getUserDetailsAction with profile, membership, and reservation history
-  - disableUserAction with auto-cancel of future reservations
-  - enableUserAction to unban users
-  - triggerPasswordResetAction via Resend email
-  - /admin/users page with search bar, paginated table, slide-out detail panel
-affects: [04-admin-and-cms]
+  - Admin pricing page with day-of-week grid per court
+  - Tourist surcharge percentage editor
+  - Sidebar navigation link to pricing page
+affects: [05-pricing-engine]
 
+# Tech tracking
 tech-stack:
   added: []
-  patterns: [debounced-search, slide-out-panel, enrichment-pattern]
+  patterns: [inline-editable grid cells with optimistic UI feedback]
 
 key-files:
   created:
-    - app/[locale]/(admin)/admin/users/page.tsx
-    - app/[locale]/(admin)/admin/users/UserSearchBar.tsx
-    - app/[locale]/(admin)/admin/users/UserTable.tsx
-    - app/[locale]/(admin)/admin/users/UserSlideOut.tsx
+    - app/[locale]/(admin)/admin/pricing/page.tsx
+    - app/[locale]/(admin)/admin/pricing/PricingGrid.tsx
+    - app/[locale]/(admin)/admin/pricing/SurchargeEditor.tsx
   modified:
-    - app/actions/admin.ts
+    - components/admin/AdminSidebar.tsx
     - messages/en.json
     - messages/es.json
 
 key-decisions:
-  - "Two-pronged search: profiles table for name/phone + auth.admin.listUsers for email (Supabase lacks server-side email filter)"
-  - "enrichProfilesWithAuthAndMembership helper batches auth lookups to avoid N+1 queries per user"
+  - "Monday-first day ordering in grid for business convention (DAY_ORDER reorders Sun=0 to last position)"
 
 patterns-established:
-  - "Slide-out panel: fixed right panel with translate-x transition, backdrop click to close"
-  - "Debounced search: 300ms delay via useEffect + setTimeout in client component"
+  - "Inline-editable grid cells: click to edit, blur/Enter to save, transition feedback colors"
 
-requirements-completed: [ADMIN-01, ADMIN-02, ADMIN-03, ADMIN-04]
+requirements-completed: [ADMN-01, ADMN-02]
 
-duration: 6min
-completed: 2026-03-12
+# Metrics
+duration: 2min
+completed: 2026-03-14
 ---
 
-# Phase 4 Plan 02: User Management Summary
+# Phase 04 Plan 02: Admin Pricing UI Summary
 
-**Admin user management with debounced search across name/email/phone, paginated table (20/page), and slide-out detail panel with disable/enable/password-reset actions**
+**Admin pricing page with inline-editable day-of-week grid per court and tourist surcharge percentage editor, accessible from sidebar**
 
 ## Performance
 
-- **Duration:** 6 min
-- **Started:** 2026-03-12T03:59:26Z
-- **Completed:** 2026-03-12T04:05:48Z
-- **Tasks:** 2
-- **Files modified:** 7
+- **Duration:** 2 min
+- **Started:** 2026-03-14T20:25:09Z
+- **Completed:** 2026-03-14T20:27:30Z
+- **Tasks:** 2 auto tasks completed (1 checkpoint pending)
+- **Files modified:** 6
 
 ## Accomplishments
-- Five Server Actions for user management (search, details, disable, enable, password reset) all protected by requireAdmin (Layer 3)
-- Search works across first name, last name, email, and phone from a single search bar with 300ms debounce
-- Paginated table showing 20 users per page with name, email, plan, status badge, and join date
-- Slide-out panel with profile info, membership details, reservation history (last 20), and action buttons
-- Disable action auto-cancels all future reservations and bans for 100 years
-- Password reset generates Supabase recovery link and sends bilingual email via Resend
-- Full i18n support (English and Spanish) for all user management UI strings
+- Built pricing page as server component fetching initial data via server actions
+- PricingGrid with inline-editable cells per court x 7 days (Monday-first ordering)
+- SurchargeEditor with number input, save button, and success/error feedback
+- Added pricing nav item to admin sidebar between reservations and events
+- Full bilingual support (EN/ES) with 8 new i18n keys per locale
 
 ## Task Commits
 
 Each task was committed atomically:
 
-1. **Task 1: User search and management Server Actions** - `ba17078` (feat)
-2. **Task 2: User management UI** - `d8e6513` (feat)
+1. **Task 1: Admin pricing page with grid and surcharge editor** - `8622a81` (feat)
+2. **Task 2: Add pricing link to admin sidebar** - `085731d` (feat)
 
 ## Files Created/Modified
-- `app/[locale]/(admin)/admin/users/page.tsx` - User management page orchestrating search, pagination, and slide-out
-- `app/[locale]/(admin)/admin/users/UserSearchBar.tsx` - Debounced search input with search icon
-- `app/[locale]/(admin)/admin/users/UserTable.tsx` - Paginated user table with status badges and clickable rows
-- `app/[locale]/(admin)/admin/users/UserSlideOut.tsx` - Right slide-out panel with profile, membership, reservations, actions
-- `app/actions/admin.ts` - Added searchUsersAction, getUserDetailsAction, disableUserAction, enableUserAction, triggerPasswordResetAction
-- `messages/en.json` - Added 36 Admin namespace i18n keys for user management
-- `messages/es.json` - Added 36 Admin namespace i18n keys (Spanish translations)
+- `app/[locale]/(admin)/admin/pricing/page.tsx` - Server component pricing page with data fetching
+- `app/[locale]/(admin)/admin/pricing/PricingGrid.tsx` - Day-of-week pricing grid with inline editing per court
+- `app/[locale]/(admin)/admin/pricing/SurchargeEditor.tsx` - Tourist surcharge percentage input with save
+- `components/admin/AdminSidebar.tsx` - Added pricing nav item with $ icon
+- `messages/en.json` - 8 new Admin pricing keys
+- `messages/es.json` - 8 new Admin pricing keys (Spanish)
 
 ## Decisions Made
-- Two-pronged search strategy: profiles table for name/phone, auth.admin.listUsers for email (Supabase admin API lacks server-side email filter)
-- enrichProfilesWithAuthAndMembership helper function batches auth and membership lookups to avoid N+1 query pattern
-- Slide-out panel uses CSS translate-x transition with backdrop overlay for smooth open/close
+- Monday-first day ordering in the grid for business convention, despite JS Date 0=Sunday convention
+- Used $ character as pricing icon in sidebar (consistent with simple character approach)
 
 ## Deviations from Plan
 
-None - plan executed exactly as written. Server Actions for user management already existed from a prior plan execution (04-03), so Task 1 primarily added i18n keys.
+None - plan executed exactly as written.
 
 ## Issues Encountered
-None
+None.
 
 ## User Setup Required
-None - no external service configuration required.
+None - uses existing server actions and database from Plan 01.
 
 ## Next Phase Readiness
-- User management page is fully functional at /admin/users
-- All 5 Server Actions available for any future admin features that need user data
-- Pattern established for slide-out panels reusable in other admin sections
-
-## Self-Check: PASSED
-
-All 4 UI files exist. Both commit hashes (ba17078, d8e6513) verified in git log.
+- Admin pricing UI complete, Phase 5 pricing engine can build on these interfaces
+- All pricing CRUD is operational via admin panel
 
 ---
-*Phase: 04-admin-and-cms*
-*Completed: 2026-03-12*
+*Phase: 04-admin-pricing-panel*
+*Completed: 2026-03-14*

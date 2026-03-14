@@ -30,8 +30,8 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 
 ### Admin
 
-- [ ] **ADMN-01**: Admin can manage day-of-week session prices per court via pricing panel
-- [ ] **ADMN-02**: Admin can edit the global tourist surcharge percentage
+- [x] **ADMN-01**: Admin can manage day-of-week session prices per court via pricing panel
+- [x] **ADMN-02**: Admin can edit the global tourist surcharge percentage
 - [ ] **ADMN-03**: Admin walk-in form includes local/tourist toggle that affects price
 
 ## Future Requirements
@@ -73,8 +73,8 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 | RESV-02 | Phase 5 | Pending |
 | RESV-03 | Phase 5 | Pending |
 | RESV-04 | Phase 5 | Pending |
-| ADMN-01 | Phase 4 | Pending |
-| ADMN-02 | Phase 4 | Pending |
+| ADMN-01 | Phase 4 | Complete |
+| ADMN-02 | Phase 4 | Complete |
 | ADMN-03 | Phase 5 | Pending |
 
 **Coverage:**

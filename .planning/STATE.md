@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
-status: in-progress
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-14T20:22:26Z"
-last_activity: 2026-03-14 — Completed Plan 04-01 (pricing data layer)
+status: verifying
+stopped_at: Completed 04-02-PLAN.md (awaiting human-verify)
+last_updated: "2026-03-14T20:28:45.978Z"
+last_activity: 2026-03-14 — Completed Plan 04-02 auto tasks (pricing UI)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 3
-  percent: 43
+  total_plans: 2
+  completed_plans: 2
+  percent: 57
 ---
 
 # Project State
@@ -26,25 +26,25 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 4 of 6 (Admin Pricing Panel)
-Plan: 1 of 2 complete
-Status: Phase 4 in progress
-Last activity: 2026-03-14 — Completed Plan 04-01 (pricing data layer)
+Plan: 2 of 2 complete (awaiting human-verify checkpoint)
+Status: Phase 4 auto tasks complete, pending verification
+Last activity: 2026-03-14 — Completed Plan 04-02 auto tasks (pricing UI)
 
-Progress: [████░░░░░░] 43%
+Progress: [█████░░░░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3 (v1.1)
-- Average duration: ~3min
-- Total execution time: ~8min
+- Total plans completed: 4 (v1.1)
+- Average duration: ~2.5min
+- Total execution time: ~10min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 03-signup-country-collection | 2/2 | ~6min | ~3min |
-| 04-admin-pricing-panel | 1/2 | ~2min | ~2min |
+| 04-admin-pricing-panel | 2/2 | ~4min | ~2min |
 
 ## Accumulated Context
 
@@ -67,6 +67,7 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [03-02] Added onChange prop to CountrySelect for admin inline edit
 - [03-02] Country validation uses pure functions (extractCountry, validateCountryCode) for testability
 - [04-01] Extracted pricing validation helpers to lib/utils/pricingValidation.ts to avoid Supabase client import in unit tests
+- [04-02] Monday-first day ordering in pricing grid for business convention
 
 ### Key Research Findings (v1.1)
 
@@ -86,6 +87,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-14T20:22:26Z
-Stopped at: Completed 04-01-PLAN.md
-Resume file: .planning/milestones/v1.0-phases/04-admin-and-cms/04-01-SUMMARY.md
+Last session: 2026-03-14T20:28:45.976Z
+Stopped at: Completed 04-02-PLAN.md (awaiting human-verify)
+Resume file: None
