@@ -59,7 +59,7 @@ export default function ReservationsTable({
         <p className="text-gray-400 text-sm mb-3">{t('noReservations')}</p>
         <Link
           href="/reservations"
-          className="text-[#39FF14] text-sm font-semibold hover:underline"
+          className="text-[#A3FF12] text-sm font-semibold hover:underline"
         >
           {t('bookNow')}
         </Link>
@@ -86,7 +86,7 @@ export default function ReservationsTable({
       {/* Mobile card layout */}
       <div className="space-y-3 sm:hidden">
         {reservations.map((r) => (
-          <div key={r.id} className="bg-[#0a1628] rounded-lg p-3 space-y-2">
+          <div key={r.id} className="bg-[#0F172A] rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-white text-sm font-medium">{r.court_name}</span>
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColors[r.status] || statusColors.confirmed}`}>

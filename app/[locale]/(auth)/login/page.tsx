@@ -18,7 +18,7 @@ async function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-[#0B1D3A] border border-[#1ED6C3] rounded-2xl shadow-xl p-8">
+        <div className="bg-[#0F172A] border border-[#38BDF8] rounded-2xl shadow-xl p-8">
           <h2 className="text-offwhite font-bold text-2xl mb-6 text-center">
             {t('title')}
           </h2>

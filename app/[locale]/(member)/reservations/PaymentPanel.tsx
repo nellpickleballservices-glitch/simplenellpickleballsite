@@ -53,7 +53,7 @@ export default function PaymentPanel({
           {t('payment.title')}
         </p>
         {priceDisplay && (
-          <p className="text-[#39FF14] text-lg font-bold">{priceDisplay}</p>
+          <p className="text-[#A3FF12] text-lg font-bold">{priceDisplay}</p>
         )}
       </div>
 
@@ -91,7 +91,7 @@ export default function PaymentPanel({
       {/* Cash payment option */}
       <button
         onClick={() => setCashConfirmed(true)}
-        className="w-full bg-[#1a2744] text-gray-300 font-semibold py-2.5 rounded-lg border border-gray-600 hover:bg-[#243352] transition-colors"
+        className="w-full bg-[#334155] text-gray-300 font-semibold py-2.5 rounded-lg border border-gray-600 hover:bg-[#243352] transition-colors"
       >
         {t('payment.payWithCash')}
       </button>

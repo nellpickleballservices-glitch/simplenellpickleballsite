@@ -73,9 +73,9 @@ export default function CourtDiagram({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="bg-[#111b2e] rounded-xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl">
+      <div className="bg-[#1E293B] rounded-xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl">
         {/* Modal header */}
-        <div className="bg-[#0B1D3A] px-5 py-4 flex items-center justify-between">
+        <div className="bg-[#0F172A] px-5 py-4 flex items-center justify-between">
           <div>
             <h3 className="text-white font-bebas-neue text-lg tracking-wide">
               {t('selectTimeSlot')}
@@ -95,7 +95,7 @@ export default function CourtDiagram({
 
         {/* Time slot navigation */}
         {allSlots.length > 1 && (
-          <div className="flex items-center justify-between px-5 py-2 bg-[#0a1628]">
+          <div className="flex items-center justify-between px-5 py-2 bg-[#0F172A]">
             <button
               onClick={handlePrevSlot}
               disabled={currentIndex <= 0}
@@ -118,10 +118,10 @@ export default function CourtDiagram({
 
         {/* Court diagram: 2x2 quadrant grid */}
         <div className="p-5">
-          <div className="relative border-2 border-[#1ED6C3]/30 rounded-lg p-3">
+          <div className="relative border-2 border-[#38BDF8]/30 rounded-lg p-3">
             {/* Court net line */}
-            <div className="absolute left-1/2 top-3 bottom-3 w-px bg-[#1ED6C3]/40" />
-            <div className="absolute top-1/2 left-3 right-3 h-px bg-[#1ED6C3]/40" />
+            <div className="absolute left-1/2 top-3 bottom-3 w-px bg-[#38BDF8]/40" />
+            <div className="absolute top-1/2 left-3 right-3 h-px bg-[#38BDF8]/40" />
 
             <div className="grid grid-cols-2 gap-3">
               {currentSlot.spots.map((spot, idx) => {
@@ -147,8 +147,8 @@ export default function CourtDiagram({
                       ${
                         isAvailable
                           ? isSelected
-                            ? 'bg-[#39FF14] text-[#0B1D3A] ring-2 ring-white scale-105'
-                            : 'bg-[#39FF14]/20 text-[#39FF14] hover:bg-[#39FF14]/40 cursor-pointer'
+                            ? 'bg-[#A3FF12] text-[#0F172A] ring-2 ring-white scale-105'
+                            : 'bg-[#A3FF12]/20 text-[#A3FF12] hover:bg-[#A3FF12]/40 cursor-pointer'
                           : 'bg-red-500/20 text-red-400 cursor-not-allowed'
                       }
                     `}

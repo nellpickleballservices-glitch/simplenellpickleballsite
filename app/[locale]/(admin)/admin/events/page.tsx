@@ -108,7 +108,7 @@ export default function AdminEventsPage() {
       )}
 
       {showForm ? (
-        <div className="bg-[#111b2e] rounded-lg p-6 mb-6">
+        <div className="bg-[#1E293B] rounded-lg p-6 mb-6">
           <EventForm
             event={editingEvent}
             onSubmit={editingEvent ? handleUpdate : handleCreate}
@@ -153,7 +153,7 @@ export default function AdminEventsPage() {
                   {events.map((event) => (
                     <tr
                       key={event.id}
-                      className="border-b border-gray-800 hover:bg-[#111b2e]/50"
+                      className="border-b border-gray-800 hover:bg-[#1E293B]/50"
                     >
                       <td className="py-3 pr-4 text-offwhite font-medium">
                         {event.title_en}

@@ -21,12 +21,12 @@ export function CourtDiagram({ locale }: CourtDiagramProps) {
         aria-label={locale === 'en' ? 'Pickleball court diagram' : 'Diagrama de cancha de pickleball'}
       >
         {/* Background */}
-        <rect x="0" y="0" width="240" height="480" fill="#0B1D3A" rx="8" />
+        <rect x="0" y="0" width="240" height="480" fill="#0F172A" rx="8" />
 
         {/* Court outline */}
         <rect
           x="20" y="20" width="200" height="440"
-          fill="none" stroke="#39FF14" strokeWidth="2"
+          fill="none" stroke="#A3FF12" strokeWidth="2"
         />
 
         {/* Center line (net) */}
@@ -35,19 +35,19 @@ export function CourtDiagram({ locale }: CourtDiagramProps) {
         {/* Kitchen zones */}
         <rect
           x="20" y="170" width="200" height="70"
-          fill="#1ED6C3" fillOpacity="0.15"
-          stroke="#1ED6C3" strokeWidth="1.5"
+          fill="#38BDF8" fillOpacity="0.15"
+          stroke="#38BDF8" strokeWidth="1.5"
         />
         <rect
           x="20" y="240" width="200" height="70"
-          fill="#1ED6C3" fillOpacity="0.15"
-          stroke="#1ED6C3" strokeWidth="1.5"
+          fill="#38BDF8" fillOpacity="0.15"
+          stroke="#38BDF8" strokeWidth="1.5"
         />
 
         {/* Center service line - top half */}
-        <line x1="120" y1="20" x2="120" y2="170" stroke="#39FF14" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="120" y1="20" x2="120" y2="170" stroke="#A3FF12" strokeWidth="1" strokeDasharray="4 4" />
         {/* Center service line - bottom half */}
-        <line x1="120" y1="310" x2="120" y2="460" stroke="#39FF14" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="120" y1="310" x2="120" y2="460" stroke="#A3FF12" strokeWidth="1" strokeDasharray="4 4" />
 
         {/* Labels */}
         {/* Net label */}
@@ -56,15 +56,15 @@ export function CourtDiagram({ locale }: CourtDiagramProps) {
         </text>
 
         {/* Kitchen labels */}
-        <text x="120" y="210" textAnchor="middle" fill="#1ED6C3" fontSize="9">
+        <text x="120" y="210" textAnchor="middle" fill="#38BDF8" fontSize="9">
           {labels.kitchen}
         </text>
-        <text x="120" y="280" textAnchor="middle" fill="#1ED6C3" fontSize="9">
+        <text x="120" y="280" textAnchor="middle" fill="#38BDF8" fontSize="9">
           {labels.kitchen}
         </text>
 
         {/* Width label (top) */}
-        <text x="120" y="14" textAnchor="middle" fill="#39FF14" fontSize="10" fontWeight="bold">
+        <text x="120" y="14" textAnchor="middle" fill="#A3FF12" fontSize="10" fontWeight="bold">
           {labels.width}
         </text>
 
@@ -72,7 +72,7 @@ export function CourtDiagram({ locale }: CourtDiagramProps) {
         <text
           x="235" y="240"
           textAnchor="middle"
-          fill="#39FF14"
+          fill="#A3FF12"
           fontSize="10"
           fontWeight="bold"
           transform="rotate(90, 235, 240)"

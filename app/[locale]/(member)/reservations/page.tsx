@@ -51,7 +51,7 @@ export default async function ReservationsPage({
   const maxAdvanceDays = Math.floor(advanceHours / 24)
 
   return (
-    <main className="min-h-screen bg-[#0a1628] py-12 px-4">
+    <main className="min-h-screen bg-[#0F172A] py-12 px-4">
       <div className="max-w-7xl mx-auto">
         <h1 className="font-bebas-neue text-4xl text-white mb-8 tracking-wide">
           {t('pageTitle')}

@@ -13,14 +13,14 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <form action={formAction} className="bg-[#111b2e] rounded-lg p-6 space-y-4 mt-4">
+    <form action={formAction} className="bg-[#1E293B] rounded-lg p-6 space-y-4 mt-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-400 mb-1">{t('locationName')}</label>
           <input
             name="locationName"
             required
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -28,7 +28,7 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
           <input
             name="courtName"
             required
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
       </div>
@@ -37,7 +37,7 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
         <label className="block text-sm text-gray-400 mb-1">{t('address')}</label>
         <input
           name="address"
-          className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+          className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
         />
       </div>
 
@@ -48,7 +48,7 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
             name="lat"
             type="number"
             step="any"
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -57,7 +57,7 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
             name="lng"
             type="number"
             step="any"
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
       </div>

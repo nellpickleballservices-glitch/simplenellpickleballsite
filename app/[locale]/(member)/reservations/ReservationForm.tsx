@@ -87,7 +87,7 @@ export default function ReservationForm({
             type="text"
             name="guestName"
             placeholder={t('guestNamePlaceholder')}
-            className="w-full bg-[#0a1628] border border-[#1a2744] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#39FF14] transition-colors"
+            className="w-full bg-[#0F172A] border border-[#334155] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#A3FF12] transition-colors"
           />
         </div>
       )}
@@ -105,10 +105,10 @@ export default function ReservationForm({
       <button
         type="submit"
         disabled={isPending}
-        className="w-full bg-[#39FF14] text-[#0B1D3A] font-semibold py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full bg-[#A3FF12] text-[#0F172A] font-semibold py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isPending && (
-          <div className="animate-spin h-4 w-4 border-2 border-[#0B1D3A] border-t-transparent rounded-full" />
+          <div className="animate-spin h-4 w-4 border-2 border-[#0F172A] border-t-transparent rounded-full" />
         )}
         {isPending ? t('reservingSpot') : t('reserveSpot')}
       </button>

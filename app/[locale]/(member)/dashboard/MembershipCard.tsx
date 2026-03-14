@@ -95,7 +95,7 @@ export default function MembershipCard({ membership, userName }: MembershipProps
       <form action={createPortalSessionAction}>
         <button
           type="submit"
-          className="w-full py-3 rounded-lg bg-[#BFFF00] text-[#0a1628] font-semibold hover:bg-[#a8e600] transition-colors"
+          className="w-full py-3 rounded-lg bg-[#BFFF00] text-[#0F172A] font-semibold hover:bg-[#a8e600] transition-colors"
         >
           {membership.status === 'cancelled' ? t('reactivateCta') : t('manageCta')}
         </button>

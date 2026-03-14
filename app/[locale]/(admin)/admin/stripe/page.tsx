@@ -7,7 +7,7 @@ export default async function AdminStripePage() {
     <div>
       <h1 className="text-2xl font-bold text-offwhite mb-6">{t('stripePayments')}</h1>
 
-      <div className="bg-[#111b2e] rounded-lg p-8 max-w-lg">
+      <div className="bg-[#1E293B] rounded-lg p-8 max-w-lg">
         <div className="flex items-center gap-3 mb-4">
           {/* Stripe accent bar */}
           <div className="w-1 h-10 rounded-full bg-[#635BFF]" />

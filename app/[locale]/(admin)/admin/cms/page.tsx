@@ -137,7 +137,7 @@ export default function AdminCmsPage() {
             const isEditing = editingBlockId === block.id
 
             return (
-              <div key={block.id} className="bg-[#111b2e] rounded-lg overflow-hidden">
+              <div key={block.id} className="bg-[#1E293B] rounded-lg overflow-hidden">
                 {/* Card header */}
                 <div className="flex items-center justify-between p-4">
                   <div>

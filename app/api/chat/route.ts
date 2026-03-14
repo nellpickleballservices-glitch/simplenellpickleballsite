@@ -57,7 +57,8 @@ export async function POST(req: NextRequest) {
 
   try {
     body = await req.json()
-  } catch {
+  } catch (e) {
+    console.error('[chat] JSON parse error:', e)
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 })
   }
 
@@ -117,7 +118,8 @@ export async function POST(req: NextRequest) {
         })
         .join('\n')
     }
-  } catch {
+  } catch (e) {
+    console.error('[chat] CMS fetch error:', e)
     // If CMS fetch fails, continue with empty knowledge — Nelly still works
   }
 
@@ -191,7 +193,8 @@ ${eventsText}`
         Connection: 'keep-alive',
       },
     })
-  } catch {
+  } catch (e) {
+    console.error('[chat] OpenAI error:', e)
     return NextResponse.json(
       { error: 'api_error', message: 'Nelly is unavailable right now. Please try again later.' },
       { status: 500 },

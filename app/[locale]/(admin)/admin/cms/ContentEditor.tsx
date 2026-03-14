@@ -49,7 +49,7 @@ export function ContentEditor({ content, onChange }: ContentEditorProps) {
   return (
     <div className="border border-gray-700 rounded-lg overflow-hidden">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 p-2 bg-[#111b2e] border-b border-gray-700">
+      <div className="flex flex-wrap gap-1 p-2 bg-[#1E293B] border-b border-gray-700">
         {btn('B', () => editor.chain().focus().toggleBold().run(), editor.isActive('bold'))}
         {btn('I', () => editor.chain().focus().toggleItalic().run(), editor.isActive('italic'))}
         {btn('H2', () => editor.chain().focus().toggleHeading({ level: 2 }).run(), editor.isActive('heading', { level: 2 }))}

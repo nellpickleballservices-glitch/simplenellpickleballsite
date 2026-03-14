@@ -95,7 +95,7 @@ export default function CheckoutSuccessClient() {
   // Pending state
   if (status === 'pending') {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#0a1628]">
+      <main className="min-h-screen flex items-center justify-center bg-[#0F172A]">
         <div className="text-center px-6">
           <div className="mx-auto mb-8 h-16 w-16 rounded-full border-4 border-[#BFFF00] border-t-transparent animate-spin" />
           <h1 className="text-2xl font-bold text-white mb-2">
@@ -114,7 +114,7 @@ export default function CheckoutSuccessClient() {
   // Active state — success celebration
   if (status === 'active') {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#0a1628] overflow-hidden relative">
+      <main className="min-h-screen flex items-center justify-center bg-[#0F172A] overflow-hidden relative">
         {/* CSS-only confetti burst */}
         <div className="absolute inset-0 pointer-events-none">
           {Array.from({ length: 20 }).map((_, i) => (
@@ -135,7 +135,7 @@ export default function CheckoutSuccessClient() {
         <div className="text-center px-6 relative z-10">
           {/* Success checkmark */}
           <div className="mx-auto mb-6 h-20 w-20 rounded-full bg-[#BFFF00] flex items-center justify-center animate-scale-in">
-            <svg className="h-10 w-10 text-[#0a1628]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <svg className="h-10 w-10 text-[#0F172A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -153,13 +153,13 @@ export default function CheckoutSuccessClient() {
               className="px-6 py-3 rounded-lg bg-gray-700 text-gray-400 cursor-not-allowed relative"
             >
               {t('reserveCourtCta')}
-              <span className="absolute -top-2 -right-2 text-xs bg-[#BFFF00] text-[#0a1628] px-2 py-0.5 rounded-full font-semibold">
+              <span className="absolute -top-2 -right-2 text-xs bg-[#BFFF00] text-[#0F172A] px-2 py-0.5 rounded-full font-semibold">
                 {t('comingSoon')}
               </span>
             </button>
             <button
               onClick={() => router.push('/dashboard')}
-              className="px-6 py-3 rounded-lg bg-[#BFFF00] text-[#0a1628] font-semibold hover:bg-[#a8e600] transition-colors"
+              className="px-6 py-3 rounded-lg bg-[#BFFF00] text-[#0F172A] font-semibold hover:bg-[#a8e600] transition-colors"
             >
               {t('goToDashboard')}
             </button>
@@ -189,7 +189,7 @@ export default function CheckoutSuccessClient() {
 
   // Timeout state
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#0a1628]">
+    <main className="min-h-screen flex items-center justify-center bg-[#0F172A]">
       <div className="text-center px-6 max-w-md">
         <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-yellow-500/20 flex items-center justify-center">
           <svg className="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -204,7 +204,7 @@ export default function CheckoutSuccessClient() {
         </p>
         <button
           onClick={handleCheckStatus}
-          className="px-6 py-3 rounded-lg border-2 border-[#BFFF00] text-[#BFFF00] font-semibold hover:bg-[#BFFF00] hover:text-[#0a1628] transition-colors"
+          className="px-6 py-3 rounded-lg border-2 border-[#BFFF00] text-[#BFFF00] font-semibold hover:bg-[#BFFF00] hover:text-[#0F172A] transition-colors"
         >
           {t('checkoutTimeoutCta')}
         </button>

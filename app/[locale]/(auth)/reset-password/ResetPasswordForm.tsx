@@ -46,7 +46,7 @@ export default function ResetPasswordForm() {
           type="email"
           autoComplete="email"
           required
-          className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
 

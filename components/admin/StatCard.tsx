@@ -6,7 +6,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon }: StatCardProps) {
   return (
-    <div className="bg-[#111b2e] rounded-lg p-6 relative">
+    <div className="bg-[#1E293B] rounded-lg p-6 relative">
       {icon && (
         <span className="absolute top-4 right-4 text-2xl text-offwhite/20">
           {icon}

@@ -38,7 +38,7 @@ export default function CancelDialog({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="bg-[#111b2e] rounded-xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl">
+      <div className="bg-[#1E293B] rounded-xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl">
         <div className="p-6">
           <h3 className="text-white font-semibold text-lg mb-2">
             {t('cancelTitle')}
@@ -48,7 +48,7 @@ export default function CancelDialog({
           </p>
 
           {/* Reservation details */}
-          <div className="bg-[#0a1628] rounded-lg p-3 mb-4 space-y-1">
+          <div className="bg-[#0F172A] rounded-lg p-3 mb-4 space-y-1">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">{t('court')}</span>
               <span className="text-white">{courtName}</span>
@@ -88,7 +88,7 @@ export default function CancelDialog({
             <button
               type="button"
               onClick={onClose}
-              className="w-full bg-[#1a2744] text-gray-300 font-semibold py-2.5 rounded-lg hover:bg-[#243352] transition-colors"
+              className="w-full bg-[#334155] text-gray-300 font-semibold py-2.5 rounded-lg hover:bg-[#243352] transition-colors"
             >
               {t('cancelNo')}
             </button>

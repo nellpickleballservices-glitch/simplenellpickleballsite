@@ -38,7 +38,7 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
       <div
         className="absolute left-6 lg:left-1/2 lg:-translate-x-px top-0 bottom-0 w-0.5"
         style={{
-          background: 'linear-gradient(to bottom, #39FF14, #1ED6C3, #FF6B2C)',
+          background: 'linear-gradient(to bottom, #A3FF12, #38BDF8, #FF6B2C)',
         }}
       />
 

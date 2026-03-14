@@ -171,14 +171,14 @@ export default function AdminReservationsPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-[#111b2e] rounded-lg p-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-[#1E293B] rounded-lg p-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
           <label className="block text-xs text-gray-400 mb-1">{t('startDate')}</label>
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -187,7 +187,7 @@ export default function AdminReservationsPage() {
             type="date"
             value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -195,7 +195,7 @@ export default function AdminReservationsPage() {
           <select
             value={courtId}
             onChange={(e) => { setCourtId(e.target.value); setPage(1) }}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           >
             <option value="">{t('allCourts')}</option>
             {courts.map((c) => (
@@ -208,7 +208,7 @@ export default function AdminReservationsPage() {
           <select
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           >
             <option value="">{t('allStatuses')}</option>
             <option value="confirmed">{t('confirmed')}</option>

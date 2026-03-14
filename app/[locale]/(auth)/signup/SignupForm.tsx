@@ -42,7 +42,7 @@ export default function SignupForm() {
             autoComplete="given-name"
             required
             onBlur={(e) => handleNameBlur('firstName', e.target.value, setFirstNameError)}
-            className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+            className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
           />
           {firstErr && <p className="text-red-400 text-sm mt-1">{firstErr}</p>}
         </div>
@@ -58,7 +58,7 @@ export default function SignupForm() {
             autoComplete="family-name"
             required
             onBlur={(e) => handleNameBlur('lastName', e.target.value, setLastNameError)}
-            className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+            className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
           />
           {lastErr && <p className="text-red-400 text-sm mt-1">{lastErr}</p>}
         </div>
@@ -75,7 +75,7 @@ export default function SignupForm() {
           type="email"
           autoComplete="email"
           required
-          className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
 
@@ -89,7 +89,7 @@ export default function SignupForm() {
           name="phone"
           type="tel"
           autoComplete="tel"
-          className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
 
@@ -105,7 +105,7 @@ export default function SignupForm() {
           autoComplete="new-password"
           required
           minLength={8}
-          className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
         {state.errors?.password && (
           <p className="text-red-400 text-sm mt-1">{state.errors.password}</p>
@@ -123,7 +123,7 @@ export default function SignupForm() {
           type="password"
           autoComplete="new-password"
           required
-          className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
         {state.errors?.confirmPassword && (
           <p className="text-red-400 text-sm mt-1">{state.errors.confirmPassword}</p>
@@ -143,7 +143,7 @@ export default function SignupForm() {
             className={`flex-1 rounded-2xl border p-4 text-left transition-all ${
               selectedPlan === 'vip'
                 ? 'border-lime bg-lime/10'
-                : 'border-[#1ED6C3] bg-[#0B1D3A]'
+                : 'border-[#38BDF8] bg-[#0F172A]'
             }`}
           >
             <p className="text-offwhite font-bold text-lg">
@@ -164,7 +164,7 @@ export default function SignupForm() {
             className={`flex-1 rounded-2xl border p-4 text-left transition-all ${
               selectedPlan === 'basic'
                 ? 'border-lime bg-lime/10'
-                : 'border-[#1ED6C3] bg-[#0B1D3A]'
+                : 'border-[#38BDF8] bg-[#0F172A]'
             }`}
           >
             <p className="text-offwhite font-bold text-lg">

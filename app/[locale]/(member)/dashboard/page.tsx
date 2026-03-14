@@ -78,7 +78,7 @@ export default async function DashboardPage() {
   // No membership — show subscribe banner
   if (!membership) {
     return (
-      <main className="min-h-screen bg-[#0a1628] flex items-center justify-center px-4">
+      <main className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4">
         <div className="text-center max-w-md">
           <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-[#BFFF00]/10 flex items-center justify-center">
             <svg className="h-8 w-8 text-[#BFFF00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-white mb-2">{t('noMembershipBanner')}</h1>
           <Link
             href="/pricing"
-            className="inline-block mt-4 px-6 py-3 rounded-lg bg-[#BFFF00] text-[#0a1628] font-semibold hover:bg-[#a8e600] transition-colors"
+            className="inline-block mt-4 px-6 py-3 rounded-lg bg-[#BFFF00] text-[#0F172A] font-semibold hover:bg-[#a8e600] transition-colors"
           >
             {t('viewPlans')}
           </Link>
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a1628] py-12 px-4 flex flex-col items-center">
+    <main className="min-h-screen bg-[#0F172A] py-12 px-4 flex flex-col items-center">
       <div className="w-full max-w-lg">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-white">

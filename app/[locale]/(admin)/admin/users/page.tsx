@@ -62,7 +62,7 @@ export default function UsersPage() {
         <UserSearchBar onSearch={handleSearch} />
       </div>
 
-      <div className="bg-[#111b2e] rounded-lg border border-gray-700">
+      <div className="bg-[#1E293B] rounded-lg border border-gray-700">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin h-6 w-6 border-2 border-lime border-t-transparent rounded-full" />

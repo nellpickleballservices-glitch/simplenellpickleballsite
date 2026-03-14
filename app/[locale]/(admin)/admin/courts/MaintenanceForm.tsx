@@ -60,7 +60,7 @@ export function MaintenanceForm({
 
   if (isInMaintenance) {
     return (
-      <div className="bg-[#111b2e] rounded-lg p-4 mt-2 space-y-3">
+      <div className="bg-[#1E293B] rounded-lg p-4 mt-2 space-y-3">
         <p className="text-yellow-400 text-sm font-medium">
           {courtName} — {t('maintenanceActive')}
         </p>
@@ -77,7 +77,7 @@ export function MaintenanceForm({
   }
 
   return (
-    <div className="bg-[#111b2e] rounded-lg p-4 mt-2 space-y-3">
+    <div className="bg-[#1E293B] rounded-lg p-4 mt-2 space-y-3">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-400 mb-1">{t('startDate')}</label>
@@ -85,7 +85,7 @@ export function MaintenanceForm({
             type="datetime-local"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -94,7 +94,7 @@ export function MaintenanceForm({
             type="datetime-local"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
       </div>

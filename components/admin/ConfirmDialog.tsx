@@ -45,7 +45,7 @@ export function ConfirmDialog({
       onClick={onClose}
     >
       <div
-        className="bg-[#111b2e] rounded-lg p-6 max-w-md w-full"
+        className="bg-[#1E293B] rounded-lg p-6 max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-semibold text-offwhite">{title}</h3>

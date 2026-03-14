@@ -66,10 +66,10 @@ export function ChatWidget({ locale }: ChatWidgetProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="fixed right-24 bottom-8 z-50 max-w-[200px] rounded-lg bg-[#0B1D3A] px-3 py-2 text-xs text-white shadow-lg"
+            className="fixed right-24 bottom-8 z-50 max-w-[200px] rounded-lg bg-[#0F172A] px-3 py-2 text-xs text-white shadow-lg"
           >
             {tooltipText}
-            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 border-y-4 border-l-6 border-y-transparent border-l-[#0B1D3A]" />
+            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 border-y-4 border-l-6 border-y-transparent border-l-[#0F172A]" />
           </m.div>
         )}
       </AnimatePresence>

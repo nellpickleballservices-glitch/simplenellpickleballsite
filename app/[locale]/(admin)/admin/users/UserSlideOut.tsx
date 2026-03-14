@@ -100,7 +100,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
 
       {/* Slide-out panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-96 bg-[#111b2e] border-l border-gray-700 z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-96 bg-[#1E293B] border-l border-gray-700 z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${
           userId ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

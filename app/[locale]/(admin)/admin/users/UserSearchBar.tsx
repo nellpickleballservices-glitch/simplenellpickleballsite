@@ -39,7 +39,7 @@ export function UserSearchBar({ onSearch }: UserSearchBarProps) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={t('searchPlaceholder')}
-        className="w-full pl-10 pr-4 py-2.5 bg-[#111b2e] border border-gray-700 rounded-lg text-offwhite placeholder-gray-500 focus:outline-none focus:border-lime/50 transition-colors"
+        className="w-full pl-10 pr-4 py-2.5 bg-[#1E293B] border border-gray-700 rounded-lg text-offwhite placeholder-gray-500 focus:outline-none focus:border-lime/50 transition-colors"
       />
     </div>
   )

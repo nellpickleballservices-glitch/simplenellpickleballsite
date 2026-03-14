@@ -117,8 +117,8 @@ export default function TimeSlotGrid({
             onClick={() => handleDateChange(tab.date)}
             className={`px-3 py-1.5 text-xs rounded-full whitespace-nowrap transition-colors ${
               selectedDate === tab.date
-                ? 'bg-[#39FF14] text-[#0B1D3A] font-semibold'
-                : 'bg-[#1a2744] text-gray-300 hover:bg-[#243352]'
+                ? 'bg-[#A3FF12] text-[#0F172A] font-semibold'
+                : 'bg-[#334155] text-gray-300 hover:bg-[#243352]'
             }`}
           >
             {tab.label}
@@ -130,7 +130,7 @@ export default function TimeSlotGrid({
       <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
         {isPending ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin h-5 w-5 border-2 border-[#39FF14] border-t-transparent rounded-full" />
+            <div className="animate-spin h-5 w-5 border-2 border-[#A3FF12] border-t-transparent rounded-full" />
             <span className="ml-2 text-gray-400 text-sm">{t('loadingSlots')}</span>
           </div>
         ) : timeSlots.length === 0 ? (
@@ -144,19 +144,19 @@ export default function TimeSlotGrid({
               const isAvailable = slot.spots[0]?.isAvailable ?? false
               return (
                 <div key={slot.startTime} className="space-y-1">
-                  <div className="flex items-center justify-between bg-[#0a1628] rounded-lg px-3 py-2.5">
+                  <div className="flex items-center justify-between bg-[#0F172A] rounded-lg px-3 py-2.5">
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-white font-medium">
                         {timeRange}
                       </span>
-                      <span className="text-[10px] bg-[#1ED6C3]/20 text-[#1ED6C3] px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] bg-[#38BDF8]/20 text-[#38BDF8] px-2 py-0.5 rounded-full">
                         {t('modeFullCourt')}
                       </span>
                     </div>
                     {isAvailable ? (
                       <button
                         onClick={() => handleFullCourtBook(slot)}
-                        className="text-xs bg-[#39FF14] text-[#0B1D3A] font-semibold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
+                        className="text-xs bg-[#A3FF12] text-[#0F172A] font-semibold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
                       >
                         {t('bookCourt')}
                       </button>
@@ -169,7 +169,7 @@ export default function TimeSlotGrid({
 
                   {/* Inline reservation form for full court */}
                   {fullCourtBookingSlot?.startTime === slot.startTime && (
-                    <div className="bg-[#111b2e] rounded-lg px-3 py-3">
+                    <div className="bg-[#1E293B] rounded-lg px-3 py-3">
                       <ReservationForm
                         courtId={courtId}
                         date={selectedDate}
@@ -192,7 +192,7 @@ export default function TimeSlotGrid({
             return (
               <div
                 key={slot.startTime}
-                className="flex items-center justify-between bg-[#0a1628] rounded-lg px-3 py-2.5"
+                className="flex items-center justify-between bg-[#0F172A] rounded-lg px-3 py-2.5"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-white font-medium">
@@ -206,7 +206,7 @@ export default function TimeSlotGrid({
                       <span
                         key={spot.spotNumber}
                         className={`h-2 w-2 rounded-full ${
-                          spot.isAvailable ? 'bg-[#39FF14]' : 'bg-red-500'
+                          spot.isAvailable ? 'bg-[#A3FF12]' : 'bg-red-500'
                         }`}
                       />
                     ))}
@@ -221,7 +221,7 @@ export default function TimeSlotGrid({
                 {availableSpots > 0 ? (
                   <button
                     onClick={() => handleViewSpots(slot)}
-                    className="text-xs bg-[#1ED6C3] text-[#0B1D3A] font-semibold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
+                    className="text-xs bg-[#38BDF8] text-[#0F172A] font-semibold px-3 py-1 rounded-full hover:opacity-90 transition-opacity"
                   >
                     {t('viewSpots')}
                   </button>

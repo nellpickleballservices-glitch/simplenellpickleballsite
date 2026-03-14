@@ -21,7 +21,7 @@ export default async function SettingsPage() {
     .single()
 
   return (
-    <main className="min-h-screen bg-[#0a1628] py-12 px-4 flex flex-col items-center">
+    <main className="min-h-screen bg-[#0F172A] py-12 px-4 flex flex-col items-center">
       <div className="w-full max-w-lg">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm text-gray-400">
@@ -37,7 +37,7 @@ export default async function SettingsPage() {
         {/* Personal Information Section */}
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-white mb-4">{t('personalInfoTitle')}</h2>
-          <div className="bg-[#111b2e] rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-[#1E293B] rounded-xl p-6 border border-gray-700/50">
             <ProfileForm
               initialFirstName={profile?.first_name ?? ''}
               initialLastName={profile?.last_name ?? ''}
@@ -49,7 +49,7 @@ export default async function SettingsPage() {
         {/* Change Password Section */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-4">{t('changePasswordTitle')}</h2>
-          <div className="bg-[#111b2e] rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-[#1E293B] rounded-xl p-6 border border-gray-700/50">
             <PasswordForm />
           </div>
         </section>

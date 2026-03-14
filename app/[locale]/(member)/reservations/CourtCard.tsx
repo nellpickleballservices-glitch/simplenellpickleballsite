@@ -88,7 +88,7 @@ export default function CourtCard({
 
   return (
     <div
-      className={`bg-[#111b2e] rounded-xl shadow-lg border-l-4 ${borderColors[level]} overflow-hidden`}
+      className={`bg-[#1E293B] rounded-xl shadow-lg border-l-4 ${borderColors[level]} overflow-hidden`}
     >
       {/* Google Maps Thumbnail */}
       {mapThumbnailUrl ? (
@@ -105,13 +105,13 @@ export default function CourtCard({
           />
         </a>
       ) : (
-        <div className="w-full h-40 bg-[#1a2744] flex items-center justify-center">
+        <div className="w-full h-40 bg-[#334155] flex items-center justify-center">
           {directionsUrl ? (
             <a
               href={directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#1ED6C3] hover:text-[#39FF14] transition-colors text-sm"
+              className="text-[#38BDF8] hover:text-[#A3FF12] transition-colors text-sm"
             >
               {t('getDirections')}
             </a>
@@ -149,7 +149,7 @@ export default function CourtCard({
           {operatingHours && (
             <span>{t('operatingHours', { open: todayConfig?.open_time, close: todayConfig?.close_time })}</span>
           )}
-          <span className="text-[#39FF14]">
+          <span className="text-[#A3FF12]">
             {isMember ? t('pricingFree') : t('pricingSession', { price: String(sessionPrice) })}
           </span>
         </div>

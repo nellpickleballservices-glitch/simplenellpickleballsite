@@ -42,7 +42,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             type="text"
             required
             defaultValue={event?.title_es ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
         <div>
@@ -52,7 +52,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             type="text"
             required
             defaultValue={event?.title_en ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
       </div>
@@ -65,7 +65,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             name="description_es"
             rows={3}
             defaultValue={event?.description_es ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
         <div>
@@ -74,7 +74,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             name="description_en"
             rows={3}
             defaultValue={event?.description_en ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
       </div>
@@ -87,7 +87,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             name="event_type"
             required
             defaultValue={event?.event_type ?? 'tournament'}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           >
             {EVENT_TYPES.map((type) => (
               <option key={type} value={type}>
@@ -103,7 +103,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             type="date"
             required
             defaultValue={event?.event_date?.split('T')[0] ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
         <div>
@@ -113,7 +113,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             type="text"
             defaultValue={event?.image_url ?? ''}
             placeholder="https://..."
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
       </div>
@@ -126,7 +126,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             name="start_time"
             type="time"
             defaultValue={event?.start_time ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
         <div>
@@ -135,7 +135,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             name="end_time"
             type="time"
             defaultValue={event?.end_time ?? ''}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite focus:border-lime focus:outline-none"
           />
         </div>
       </div>

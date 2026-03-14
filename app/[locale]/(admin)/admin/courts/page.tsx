@@ -80,7 +80,7 @@ export default function AdminCourtsPage() {
       ) : (
         <div className="space-y-4 mt-4">
           {courts.map((court) => (
-            <div key={court.id} className="bg-[#111b2e] rounded-lg p-4">
+            <div key={court.id} className="bg-[#1E293B] rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-offwhite font-semibold">{court.name}</h3>

@@ -52,7 +52,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
   }
 
   return (
-    <form action={formAction} className="bg-[#111b2e] rounded-lg p-6 space-y-4 mt-4">
+    <form action={formAction} className="bg-[#1E293B] rounded-lg p-6 space-y-4 mt-4">
       {/* Mode toggle */}
       <div className="flex gap-4">
         <label className="flex items-center gap-2 text-sm text-offwhite cursor-pointer">
@@ -89,11 +89,11 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
               handleSearch(e.target.value)
             }}
             placeholder={t('selectUser')}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
           <input type="hidden" name="userId" value={selectedUser?.id ?? ''} />
           {searchResults.length > 0 && !selectedUser && (
-            <div className="absolute z-10 w-full mt-1 bg-[#0a1628] border border-gray-700 rounded-lg overflow-hidden max-h-48 overflow-y-auto">
+            <div className="absolute z-10 w-full mt-1 bg-[#0F172A] border border-gray-700 rounded-lg overflow-hidden max-h-48 overflow-y-auto">
               {searchResults.map((user) => (
                 <button
                   key={user.id}
@@ -103,7 +103,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
                     setSearchResults([])
                     setSearchQuery('')
                   }}
-                  className="w-full text-left px-3 py-2 text-sm text-offwhite hover:bg-[#111b2e] transition-colors"
+                  className="w-full text-left px-3 py-2 text-sm text-offwhite hover:bg-[#1E293B] transition-colors"
                 >
                   {user.first_name} {user.last_name}
                   <span className="text-gray-500 ml-2">{user.email}</span>
@@ -120,7 +120,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           <label className="block text-sm text-gray-400 mb-1">{t('guestName')}</label>
           <input
             name="guestName"
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
       )}
@@ -131,7 +131,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
         <select
           name="courtId"
           required
-          className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+          className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
         >
           <option value="">{t('allCourts')}</option>
           {courts
@@ -152,7 +152,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             name="date"
             type="date"
             required
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -161,7 +161,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             name="timeStart"
             type="time"
             required
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
         <div>
@@ -170,7 +170,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             name="timeEnd"
             type="time"
             required
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
       </div>
@@ -187,7 +187,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             name="bookingMode"
             value={bookingMode}
             onChange={(e) => setBookingMode(e.target.value as 'full_court' | 'open_play')}
-            className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           >
             <option value="full_court">{t('fullCourt')}</option>
             <option value="open_play">{t('openPlay')}</option>
@@ -198,7 +198,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             <label className="block text-sm text-gray-400 mb-1">{t('spotNumber')}</label>
             <select
               name="spotNumber"
-              className="w-full bg-[#0a1628] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+              className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
             >
               <option value="1">1</option>
               <option value="2">2</option>

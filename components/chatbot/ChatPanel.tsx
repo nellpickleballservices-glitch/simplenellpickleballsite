@@ -236,14 +236,14 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
   return (
     <div className={panelClasses}>
       {/* Header */}
-      <div className="flex items-center gap-3 bg-[#0B1D3A] px-4 py-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#39FF14]">
+      <div className="flex items-center gap-3 bg-[#0F172A] px-4 py-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#A3FF12]">
           <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
-            <ellipse cx="16" cy="12" rx="9" ry="10" fill="#0B1D3A" />
-            <circle cx="13" cy="9" r="1.5" fill="#39FF14" opacity="0.6" />
-            <circle cx="19" cy="9" r="1.5" fill="#39FF14" opacity="0.6" />
-            <circle cx="16" cy="13" r="1.5" fill="#39FF14" opacity="0.6" />
-            <rect x="14" y="21" width="4" height="8" rx="2" fill="#0B1D3A" />
+            <ellipse cx="16" cy="12" rx="9" ry="10" fill="#0F172A" />
+            <circle cx="13" cy="9" r="1.5" fill="#A3FF12" opacity="0.6" />
+            <circle cx="19" cy="9" r="1.5" fill="#A3FF12" opacity="0.6" />
+            <circle cx="16" cy="13" r="1.5" fill="#A3FF12" opacity="0.6" />
+            <rect x="14" y="21" width="4" height="8" rx="2" fill="#0F172A" />
           </svg>
         </div>
         <span className="flex-1 text-sm font-semibold text-white">Nelly</span>
@@ -279,14 +279,14 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'assistant' && (
-              <div className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#0B1D3A]">
-                <span className="text-[10px] font-bold text-[#39FF14]">N</span>
+              <div className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#0F172A]">
+                <span className="text-[10px] font-bold text-[#A3FF12]">N</span>
               </div>
             )}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-[#39FF14] text-[#0B1D3A]'
+                  ? 'bg-[#A3FF12] text-[#0F172A]'
                   : 'bg-gray-200 text-gray-900'
               }`}
             >
@@ -302,7 +302,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
               <button
                 key={chip}
                 onClick={() => sendMessage(chip)}
-                className="rounded-full border border-[#39FF14]/50 bg-white px-3 py-1.5 text-xs font-medium text-[#0B1D3A] transition-colors hover:border-[#1ED6C3] hover:bg-[#1ED6C3]/10"
+                className="rounded-full border border-[#A3FF12]/50 bg-white px-3 py-1.5 text-xs font-medium text-[#0F172A] transition-colors hover:border-[#38BDF8] hover:bg-[#38BDF8]/10"
               >
                 {chip}
               </button>
@@ -313,8 +313,8 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
         {/* Typing indicator */}
         {showTyping && (
           <div className="flex justify-start">
-            <div className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#0B1D3A]">
-              <span className="text-[10px] font-bold text-[#39FF14]">N</span>
+            <div className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#0F172A]">
+              <span className="text-[10px] font-bold text-[#A3FF12]">N</span>
             </div>
             <div className="flex items-center gap-1 rounded-2xl bg-gray-200 px-4 py-3">
               <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:0ms]" />
@@ -336,13 +336,13 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
             onKeyDown={handleKeyDown}
             placeholder={strings.placeholder}
             disabled={isStreaming}
-            className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none transition-colors focus:border-[#39FF14] disabled:opacity-50"
+            className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none transition-colors focus:border-[#A3FF12] disabled:opacity-50"
           />
           <button
             onClick={() => sendMessage(input)}
             disabled={isStreaming || !input.trim()}
             aria-label="Send message"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#39FF14] text-[#0B1D3A] transition-all hover:scale-105 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#A3FF12] text-[#0F172A] transition-all hover:scale-105 disabled:opacity-40"
           >
             <svg
               width="18"

@@ -32,7 +32,7 @@ export default function LoginForm() {
       <button
         type="button"
         onClick={handleGoogleSignIn}
-        className="flex items-center justify-center gap-3 w-full border border-[#1ED6C3] text-offwhite font-semibold rounded-full py-3 px-6 hover:bg-[#1ED6C3]/10 transition-colors"
+        className="flex items-center justify-center gap-3 w-full border border-[#38BDF8] text-offwhite font-semibold rounded-full py-3 px-6 hover:bg-[#38BDF8]/10 transition-colors"
       >
         {/* Google icon placeholder */}
         <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
@@ -76,7 +76,7 @@ export default function LoginForm() {
             type="email"
             autoComplete="email"
             required
-            className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+            className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
           />
         </div>
 
@@ -96,7 +96,7 @@ export default function LoginForm() {
             type="password"
             autoComplete="current-password"
             required
-            className="bg-charcoal text-offwhite border border-[#2A2A2A] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+            className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
           />
         </div>
 

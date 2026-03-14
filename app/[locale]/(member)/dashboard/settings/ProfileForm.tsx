@@ -33,7 +33,7 @@ export default function ProfileForm({
           type="text"
           defaultValue={initialFirstName}
           required
-          className="w-full rounded-lg border border-gray-600 bg-[#0a1628] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#BFFF00] focus:outline-none focus:ring-1 focus:ring-[#BFFF00]"
+          className="w-full rounded-lg border border-gray-600 bg-[#0F172A] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#BFFF00] focus:outline-none focus:ring-1 focus:ring-[#BFFF00]"
         />
       </div>
 
@@ -47,7 +47,7 @@ export default function ProfileForm({
           type="text"
           defaultValue={initialLastName}
           required
-          className="w-full rounded-lg border border-gray-600 bg-[#0a1628] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#BFFF00] focus:outline-none focus:ring-1 focus:ring-[#BFFF00]"
+          className="w-full rounded-lg border border-gray-600 bg-[#0F172A] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#BFFF00] focus:outline-none focus:ring-1 focus:ring-[#BFFF00]"
         />
       </div>
 
@@ -60,7 +60,7 @@ export default function ProfileForm({
           name="phone"
           type="tel"
           defaultValue={initialPhone}
-          className="w-full rounded-lg border border-gray-600 bg-[#0a1628] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#BFFF00] focus:outline-none focus:ring-1 focus:ring-[#BFFF00]"
+          className="w-full rounded-lg border border-gray-600 bg-[#0F172A] px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#BFFF00] focus:outline-none focus:ring-1 focus:ring-[#BFFF00]"
         />
       </div>
 
@@ -83,7 +83,7 @@ export default function ProfileForm({
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-lg bg-[#BFFF00] px-4 py-2.5 font-semibold text-[#0a1628] hover:bg-[#a8e600] transition-colors disabled:opacity-50"
+        className="w-full rounded-lg bg-[#BFFF00] px-4 py-2.5 font-semibold text-[#0F172A] hover:bg-[#a8e600] transition-colors disabled:opacity-50"
       >
         {isPending ? t('saving') : t('saveProfile')}
       </button>
