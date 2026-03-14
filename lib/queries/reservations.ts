@@ -183,6 +183,18 @@ export async function getCourtAvailability(
     courtsQuery = courtsQuery.eq('id', courtId)
   }
 
+  // Build reservations query — scope to specific court when courtId provided
+  let reservationsQueryBuilder = supabase
+    .from('reservations')
+    .select('*')
+    .gte('starts_at', `${date}T00:00:00`)
+    .lt('starts_at', `${date}T23:59:59`)
+    .not('status', 'in', '(cancelled,expired)')
+
+  if (courtId) {
+    reservationsQueryBuilder = reservationsQueryBuilder.eq('court_id', courtId)
+  }
+
   const [courtsResult, configResult, pricingResult, reservationsResult, appConfigResult] =
     await Promise.all([
       courtsQuery,
@@ -191,12 +203,7 @@ export async function getCourtAvailability(
         .select('*')
         .eq('day_type', dayType),
       supabase.from('court_pricing').select('*'),
-      supabase
-        .from('reservations')
-        .select('*')
-        .gte('starts_at', `${date}T00:00:00`)
-        .lt('starts_at', `${date}T23:59:59`)
-        .not('status', 'in', '(cancelled,expired)'),
+      reservationsQueryBuilder,
       supabase
         .from('app_config')
         .select('*')
