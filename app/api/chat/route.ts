@@ -1,39 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-
-// ---------------------------------------------------------------------------
-// In-memory rate limiting (per session)
-// ---------------------------------------------------------------------------
-const SESSION_LIMIT = 20
-const SESSION_TTL_MS = 60 * 60 * 1000 // 1 hour
-
-interface SessionEntry {
-  count: number
-  firstMessage: number
-}
-
-const sessions = new Map<string, SessionEntry>()
-
-function cleanStaleSessions() {
-  const now = Date.now()
-  for (const [id, entry] of sessions) {
-    if (now - entry.firstMessage > SESSION_TTL_MS) {
-      sessions.delete(id)
-    }
-  }
-}
-
-function isRateLimited(sessionId: string): boolean {
-  cleanStaleSessions()
-  const entry = sessions.get(sessionId)
-  if (!entry) {
-    sessions.set(sessionId, { count: 1, firstMessage: Date.now() })
-    return false
-  }
-  entry.count += 1
-  return entry.count > SESSION_LIMIT
-}
+import { checkRateLimit } from '@/lib/chat/rate-limit'
 
 // ---------------------------------------------------------------------------
 // POST /api/chat
@@ -68,12 +36,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
   }
 
-  // Rate limiting
-  if (isRateLimited(sessionId)) {
+  // Rate limiting (DB-backed, persists across serverless cold starts)
+  const rateCheck = await checkRateLimit(supabaseAdmin, sessionId)
+  if (!rateCheck.allowed) {
     const msg =
       locale === 'es'
-        ? 'He respondido muchas preguntas! Visita nuestra pagina de Contacto o escribe por WhatsApp para mas ayuda.'
-        : "I've answered a lot of questions! Visit our Contact page or WhatsApp for more help."
+        ? `Has enviado muchos mensajes. Intenta de nuevo en ${rateCheck.retryAfterMinutes} minutos.`
+        : `You've sent too many messages. Try again in ${rateCheck.retryAfterMinutes} minutes.`
     return NextResponse.json({ error: 'rate_limited', message: msg }, { status: 429 })
   }
 
