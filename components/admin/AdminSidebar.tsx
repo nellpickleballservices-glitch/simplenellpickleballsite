@@ -10,6 +10,7 @@ const navItems = [
   { key: 'users', href: '/admin/users', icon: '\u2603' },       // Use simple text
   { key: 'courts', href: '/admin/courts', icon: '\u25A6' },     // ▦
   { key: 'reservations', href: '/admin/reservations', icon: '\u2637' }, // ☷
+  { key: 'pricing', href: '/admin/pricing', icon: '$' },         // $
   { key: 'events', href: '/admin/events', icon: '\u2605' },     // ★
   { key: 'cms', href: '/admin/cms', icon: '\u270E' },           // ✎
   { key: 'stripe', href: '/admin/stripe', icon: '\u2B21' },     // ⬡
