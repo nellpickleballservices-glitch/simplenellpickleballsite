@@ -440,7 +440,15 @@
     "loading": "Cargando...",
     "close": "Cerrar",
     "userCountry": "País",
-    "edit": "Editar"
+    "edit": "Editar",
+    "pricing": "Precios",
+    "pricingConfig": "Configuracion de Precios",
+    "dayPrices": "Precios de Sesion por Dia",
+    "touristSurcharge": "Recargo Turista",
+    "surchargeDescription": "Se aplica a todos los usuarios no dominicanos",
+    "priceSaved": "Precio guardado",
+    "surchargeSaved": "Recargo guardado",
+    "invalidPrice": "Precio invalido"
   },
   "Settings": {
     "pageTitle": "Configuracion",

@@ -440,7 +440,15 @@
     "loading": "Loading...",
     "close": "Close",
     "userCountry": "Country",
-    "edit": "Edit"
+    "edit": "Edit",
+    "pricing": "Pricing",
+    "pricingConfig": "Pricing Configuration",
+    "dayPrices": "Session Prices by Day",
+    "touristSurcharge": "Tourist Surcharge",
+    "surchargeDescription": "Applied to all non-Dominican users",
+    "priceSaved": "Price saved",
+    "surchargeSaved": "Surcharge saved",
+    "invalidPrice": "Invalid price"
   },
   "Settings": {
     "pageTitle": "Settings",
