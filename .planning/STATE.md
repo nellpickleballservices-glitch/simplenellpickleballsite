@@ -33,6 +33,10 @@ Progress: [██████████] 100%
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 1 added: Fix critical performance issues
+
 ### Decisions
 
 All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.

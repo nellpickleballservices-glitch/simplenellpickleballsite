@@ -28,3 +28,13 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 | 3. Reservations | v1.0 | 5/5 | Complete | 2026-03-08 |
 | 4. Admin and CMS | v1.0 | 4/4 | Complete | 2026-03-12 |
 | 5. Public Website and AI Chatbot | v1.0 | 5/5 | Complete | 2026-03-13 |
+
+### Phase 1: Fix critical performance issues
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 0
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 1 to break down)
