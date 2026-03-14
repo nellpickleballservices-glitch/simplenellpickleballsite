@@ -9,3 +9,4 @@ export { searchUsersAction, getUserDetailsAction, disableUserAction, enableUserA
 export { getAllReservationsAction, adminCancelReservationAction, adminCreateReservationAction, markCashPaidAction, searchUsersForReservationAction } from './admin/reservations'
 export type { AdminReservation } from './admin/reservations'
 export { getContentBlocksAction, updateContentBlockAction, reorderContentBlocksAction } from './admin/cms'
+export { getSessionPricingAction, upsertSessionPricingAction, getTouristSurchargeAction, updateTouristSurchargeAction } from './admin/pricing'

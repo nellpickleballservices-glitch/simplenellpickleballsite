@@ -3,7 +3,7 @@ import {
   validateDayOfWeek,
   validatePriceCents,
   validateSurchargePct,
-} from '@/app/actions/admin/pricing'
+} from '@/lib/utils/pricingValidation'
 
 describe('pricing validation helpers', () => {
   describe('validateDayOfWeek', () => {
