@@ -39,7 +39,7 @@ export async function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand column */}
           <div>
-            <p className="font-bebas-neue text-3xl text-lime tracking-widest">
+            <p className="font-bungee text-3xl text-lime tracking-widest">
               NELL
             </p>
             <p className="text-offwhite/70 text-sm mt-1">Pickleball Club</p>

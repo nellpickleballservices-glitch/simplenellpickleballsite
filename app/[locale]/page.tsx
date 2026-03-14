@@ -4,15 +4,12 @@ import { getContentBlocks } from '@/lib/content'
 import Link from 'next/link'
 import WelcomeBanner from './WelcomeBanner'
 import { MotionProvider } from '@/components/motion/MotionProvider'
-import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { ChatWidget } from '@/components/chatbot/ChatWidget'
-import { GrainOverlay } from '@/components/effects/GrainOverlay'
-import { FloatingParticles } from '@/components/effects/FloatingParticles'
 import { GlowButton } from '@/components/effects/GlowButton'
 import { GlowCard } from '@/components/effects/GlowCard'
-import { AnimatedHeroAccents, AnimatedCtaAccents } from '@/components/effects/AnimatedAccents'
+import { AnimatedCtaAccents } from '@/components/effects/AnimatedAccents'
 import { HeroVideo } from '@/components/effects/HeroVideo'
 import type { Metadata } from 'next'
 
@@ -73,88 +70,89 @@ async function HomePage({ searchParams }: HomePageProps) {
   return (
     <MotionProvider>
       <main className="min-h-screen bg-midnight">
-        <GrainOverlay />
         {showWelcome && firstName && <WelcomeBanner firstName={firstName} />}
 
         {/* -- HERO -- */}
-        <section className="relative flex flex-col items-center justify-center min-h-screen px-6 text-center overflow-hidden">
+        <section className="relative flex items-end min-h-screen overflow-hidden">
 
           {/* Background video with dark overlay */}
           <HeroVideo />
 
-          {/* Floating particles on top of video */}
-          <FloatingParticles count={20} />
+          {/* Content pinned to bottom-left over the video */}
+          <div className="relative z-[10] w-full px-6 sm:px-12 lg:px-20 pb-24 sm:pb-28 lg:pb-32 pt-[15vh] sm:pt-[15vh]">
+            <div className="max-w-2xl">
+              {/* Location badge */}
+              <ScrollReveal delay={0}>
+                <div className="inline-flex items-center gap-2 mb-6 px-5 py-2 rounded-full border border-offwhite/15 bg-black/40 backdrop-blur-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-4 h-4 text-lime shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.013 3.5-4.799 3.5-8.327a8.25 8.25 0 00-16.5 0c0 3.527 1.557 6.314 3.5 8.328a19.583 19.583 0 002.683 2.281 16.975 16.975 0 001.144.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-lime text-sm font-semibold tracking-widest uppercase">
+                    {t('heroLocationBadge')}
+                  </span>
+                </div>
+              </ScrollReveal>
 
-          <HeroEntrance className="relative z-10 flex flex-col items-center">
-            {/* Location badge — pill style */}
-            <div className="flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-offwhite/15 bg-midnight/40 backdrop-blur-sm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-4 h-4 text-lime shrink-0"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.013 3.5-4.799 3.5-8.327a8.25 8.25 0 00-16.5 0c0 3.527 1.557 6.314 3.5 8.328a19.583 19.583 0 002.683 2.281 16.975 16.975 0 001.144.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="text-lime text-sm font-semibold tracking-widest uppercase">
-                {t('heroLocationBadge')}
-              </span>
+              {/* Main headline */}
+              <ScrollReveal delay={0.15}>
+                <h1 className="font-bebas-neue text-[clamp(3.5rem,12vw,8rem)] leading-[1] tracking-widest text-offwhite mb-3 py-1 drop-shadow-[0_2px_20px_rgba(0,0,0,0.6)]">
+                  {t('heroHeadline')}
+                </h1>
+              </ScrollReveal>
+
+              {/* Club name */}
+              <ScrollReveal delay={0.3}>
+                <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2.5rem)] leading-[1.2] text-lime tracking-[0.3em] uppercase mb-8 pr-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                  {t('title')}&nbsp;{t('subtitle')}
+                </p>
+              </ScrollReveal>
+
+              {/* Accent divider */}
+              <ScrollReveal delay={0.45}>
+                <div className="w-16 h-px bg-gradient-to-r from-lime/60 to-transparent mb-8" />
+              </ScrollReveal>
+
+              {/* Sub-headline */}
+              <ScrollReveal delay={0.55}>
+                <p className="text-offwhite/90 text-base sm:text-lg max-w-lg leading-relaxed mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
+                  {t('heroSubheadline')}
+                </p>
+              </ScrollReveal>
+
+              {/* CMS hero content */}
+              {content.home_hero && (
+                <ScrollReveal delay={0.65}>
+                  <div
+                    className="text-offwhite/80 text-base max-w-lg leading-relaxed mb-10 prose prose-invert drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]"
+                    dangerouslySetInnerHTML={{ __html: content.home_hero }}
+                  />
+                </ScrollReveal>
+              )}
+
+              {/* CTA */}
+              <ScrollReveal delay={0.75}>
+                <GlowButton href="/signup" variant="lime">
+                  {t('heroCta')}
+                </GlowButton>
+              </ScrollReveal>
             </div>
-
-            {/* Main headline — animated gradient text */}
-            <h1 className="font-bebas-neue text-[clamp(4rem,14vw,9rem)] leading-none tracking-widest gradient-text mb-4 drop-shadow-[0_4px_30px_rgba(163,255,18,0.15)]">
-              {t('heroHeadline')}
-            </h1>
-
-            {/* Club name accent line */}
-            <p className="font-bebas-neue text-[clamp(1.5rem,5vw,3rem)] gradient-text-static tracking-[0.3em] uppercase mb-6">
-              {t('title')}&nbsp;{t('subtitle')}
-            </p>
-
-            {/* Thin accent divider */}
-            <div className="w-20 h-px bg-gradient-to-r from-transparent via-lime/60 to-transparent mb-6" />
-
-            {/* Sub-headline -- CMS content or i18n fallback */}
-            <p className="text-offwhite/80 text-base sm:text-lg max-w-xl leading-relaxed mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-              {t('heroSubheadline')}
-            </p>
-
-            {/* CMS hero content */}
-            {content.home_hero && (
-              <div
-                className="text-offwhite/80 text-base max-w-xl leading-relaxed mb-10 prose prose-invert drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-                dangerouslySetInnerHTML={{ __html: content.home_hero }}
-              />
-            )}
-
-            {/* Primary CTA — glowing */}
-            <GlowButton href="/signup" variant="lime">
-              {t('heroCta')}
-            </GlowButton>
-          </HeroEntrance>
-
-          {/* Scroll hint — animated bounce */}
-          <div
-            aria-hidden="true"
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50"
-            style={{ animation: 'scroll-hint-bounce 2s ease-in-out infinite' }}
-          >
-            <div className="w-px h-8 bg-offwhite/70" />
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-offwhite/70">
-              <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v13.19l5.47-5.47a.75.75 0 111.06 1.06l-6.75 6.75a.75.75 0 01-1.06 0l-6.75-6.75a.75.75 0 111.06-1.06l5.47 5.47V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
-            </svg>
           </div>
         </section>
 
         {/* -- CMS Overview Section -- */}
         {content.home_overview && (
           <ScrollReveal>
-            <section className="py-16 px-6 bg-charcoal/30">
+            <section className="py-20 sm:py-24 px-6 sm:px-10 bg-charcoal/30">
               <div className="max-w-3xl mx-auto text-center">
                 <div
                   className="text-offwhite/70 text-base sm:text-lg leading-relaxed prose prose-invert max-w-none"
@@ -167,18 +165,18 @@ async function HomePage({ searchParams }: HomePageProps) {
 
         {/* -- FEATURES / WHY NELL -- */}
         <ScrollReveal>
-          <section className="py-24 px-6 bg-midnight">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className="font-bebas-neue text-5xl sm:text-6xl gradient-text tracking-widest mb-3 inline-block">
+          <section className="py-28 sm:py-32 px-6 sm:px-10 bg-midnight">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-20">
+                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
                   {t('featuresHeading')}
                 </h2>
-                <p className="text-offwhite/70 text-base sm:text-lg max-w-lg mx-auto">
+                <p className="text-offwhite/70 text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
                   {t('featuresSubheading')}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
                 {/* Card 1 -- Court Reservations */}
                 <GlowCard accentColor="var(--color-lime)">
@@ -254,18 +252,18 @@ async function HomePage({ searchParams }: HomePageProps) {
 
         {/* -- MEMBERSHIP PLANS -- */}
         <ScrollReveal>
-          <section className="py-24 px-6 bg-charcoal/40">
+          <section className="py-28 sm:py-32 px-6 sm:px-10 bg-charcoal/40">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className="font-bebas-neue text-5xl sm:text-6xl gradient-text tracking-widest mb-3 inline-block">
+              <div className="text-center mb-20">
+                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
                   {t('plansHeading')}
                 </h2>
-                <p className="text-offwhite/70 text-base sm:text-lg">
+                <p className="text-offwhite/70 text-base sm:text-lg leading-relaxed">
                   {t('plansSubheading')}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-stretch pt-6 overflow-visible">
 
                 {/* VIP Plan -- highlighted with glow */}
                 <GlowCard accentColor="var(--color-lime)" className="h-full">
@@ -371,20 +369,22 @@ async function HomePage({ searchParams }: HomePageProps) {
 
         {/* -- CTA BANNER -- */}
         <ScrollReveal>
-          <section className="relative py-28 px-6 overflow-hidden bg-midnight">
+          <section className="relative py-32 sm:py-40 px-6 sm:px-10 overflow-hidden bg-midnight">
             {/* Animated background accents */}
             <AnimatedCtaAccents />
 
-            <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center gap-6">
-              <h2 className="font-bebas-neue text-[clamp(2.5rem,8vw,5.5rem)] leading-none gradient-text tracking-widest inline-block">
+            <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center gap-8">
+              <h2 className="font-bebas-neue text-[clamp(2.5rem,8vw,5.5rem)] leading-tight gradient-text tracking-widest inline-block py-1">
                 {t('ctaHeadline')}
               </h2>
-              <p className="text-offwhite/70 text-base sm:text-lg max-w-xl">
+              <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
                 {t('ctaSubheadline')}
               </p>
-              <GlowButton href="/signup" variant="sunset">
-                {t('ctaButton')}
-              </GlowButton>
+              <div className="mt-2">
+                <GlowButton href="/signup" variant="sunset">
+                  {t('ctaButton')}
+                </GlowButton>
+              </div>
             </div>
           </section>
         </ScrollReveal>

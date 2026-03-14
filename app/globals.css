@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 
 @theme {
+  /* Fonts */
+  --font-poppins: var(--font-poppins);
+  --font-bungee: var(--font-bungee);
+  --font-bebas-neue: var(--font-bebas-neue);
+
   /* Primary Brand */
   --color-lime: #A3FF12;
   --color-electric: #7ED957;

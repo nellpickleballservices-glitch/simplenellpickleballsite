@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
-import { Bebas_Neue, Inter } from 'next/font/google'
+import { Bebas_Neue, Poppins, Bungee } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { Navbar } from '@/components/Navbar'
+import { MotionProvider } from '@/components/motion/MotionProvider'
 import '../globals.css'
 
 const bebasNeue = Bebas_Neue({
@@ -12,9 +13,17 @@ const bebasNeue = Bebas_Neue({
   display: 'swap',
 })
 
-const inter = Inter({
+const poppins = Poppins({
+  weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-poppins',
+  display: 'swap',
+})
+
+const bungee = Bungee({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-bungee',
   display: 'swap',
 })
 
@@ -34,11 +43,13 @@ export default async function RootLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} className={`${bebasNeue.variable} ${inter.variable}`}>
-      <body>
+    <html lang={locale} className={`${bebasNeue.variable} ${poppins.variable} ${bungee.variable}`}>
+      <body className="font-poppins">
         <NextIntlClientProvider messages={messages}>
-          <Navbar />
-          {children}
+          <MotionProvider>
+            <Navbar />
+            {children}
+          </MotionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -16,7 +16,7 @@ interface MobileNavProps {
 
 export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   const [open, setOpen] = useState(false)
-  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
+  const [navBottom, setNavBottom] = useState(0)
   const t = useTranslations('Nav')
   const tBilling = useTranslations('Billing')
   const tReservations = useTranslations('Reservations')
@@ -25,16 +25,14 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const updatePosition = useCallback(() => {
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect()
-      setMenuPos({
-        top: rect.bottom,
-        right: window.innerWidth - rect.right,
-      })
+    // Find the parent <nav> to align with its bottom edge
+    const nav = buttonRef.current?.closest('nav')
+    if (nav) {
+      setNavBottom(nav.getBoundingClientRect().bottom)
     }
   }, [])
 
-  // Position the menu below the button
+  // Position the menu below the navbar
   useEffect(() => {
     if (!open) return
     updatePosition()
@@ -112,8 +110,8 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            style={{ top: menuPos.top, right: menuPos.right }}
-            className="fixed z-[9999] w-64 bg-charcoal border border-lime/20 rounded-b-lg shadow-2xl shadow-black/50"
+            style={{ top: navBottom }}
+            className="fixed right-0 z-[9999] w-64 bg-charcoal border border-lime/20 rounded-bl-lg shadow-2xl shadow-black/50"
           >
             {/* Nav links */}
             <nav className="flex flex-col py-2">
@@ -122,7 +120,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                   key={link.href}
                   href={link.href}
                   onClick={close}
-                  className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
+                  className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                 >
                   {link.label}
                 </Link>
@@ -133,14 +131,14 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                   <Link
                     href="/reservations"
                     onClick={close}
-                    className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
+                    className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                   >
                     {tReservations('navLink')}
                   </Link>
                   <Link
                     href="/dashboard"
                     onClick={close}
-                    className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
+                    className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                   >
                     {firstName ?? t('dashboard')}
                   </Link>
@@ -148,7 +146,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                     <Link
                       href="/admin"
                       onClick={close}
-                      className="px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
+                      className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                     >
                       {tAdmin('adminNav')}
                     </Link>

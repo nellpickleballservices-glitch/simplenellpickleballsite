@@ -36,7 +36,7 @@ export function GlowCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      className={`relative overflow-hidden rounded-2xl transition-all duration-300 ${className}`}
+      className={`relative overflow-visible rounded-2xl transition-all duration-300 ${className}`}
       style={{
         transform: isHovering ? 'translateY(-4px)' : 'translateY(0)',
       }}

@@ -10,7 +10,7 @@ async function LoginPage() {
       <div className="w-full max-w-md">
         {/* NELL Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-lime font-bebas text-5xl tracking-widest">
+          <h1 className="text-lime font-bungee text-5xl tracking-widest">
             {tBrand('name')}
           </h1>
           <p className="text-offwhite/60 text-sm mt-1">

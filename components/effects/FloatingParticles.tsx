@@ -1,7 +1,7 @@
 'use client'
 
 import { m } from 'motion/react'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 
 interface Particle {
   id: number
@@ -24,7 +24,14 @@ const COLORS = [
  * Renders lightweight animated dots that drift upward with gentle sway.
  */
 export function FloatingParticles({ count = 18 }: { count?: number }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const particles = useMemo<Particle[]>(() => {
+    if (!mounted) return []
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -34,7 +41,7 @@ export function FloatingParticles({ count = 18 }: { count?: number }) {
       delay: Math.random() * -20,
       color: COLORS[i % COLORS.length],
     }))
-  }, [count])
+  }, [count, mounted])
 
   return (
     <div

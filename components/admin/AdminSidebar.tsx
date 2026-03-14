@@ -81,7 +81,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
       >
         {/* Brand */}
         <div className="px-6 pt-6 pb-2">
-          <Link href={`/${locale}/admin`} className="font-bebas-neue text-3xl text-lime tracking-widest">
+          <Link href={`/${locale}/admin`} className="font-bungee text-3xl text-lime tracking-widest">
             NELL
           </Link>
           <p className="text-offwhite/50 text-xs mt-1">Admin Panel</p>

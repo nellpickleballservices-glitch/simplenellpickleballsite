@@ -1,6 +1,5 @@
-'use server'
-
 // Barrel re-exports — all admin actions moved to domain files in ./admin/
+// Each domain file has its own 'use server' directive
 export { requireAdmin } from './admin/auth'
 export { getAdminStatsAction } from './admin/stats'
 export { getEventsAction, createEventAction, updateEventAction, deleteEventAction } from './admin/events'

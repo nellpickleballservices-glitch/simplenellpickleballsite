@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { MobileNav } from '@/components/public/MobileNav'
+import { NavLink } from '@/components/public/NavLink'
 import { logoutAction } from '@/app/actions/auth'
 
 export async function Navbar() {
@@ -27,70 +28,30 @@ export async function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-6 py-3 flex items-center justify-between">
       {/* Brand */}
-      <Link href="/" className="font-bebas-neue text-2xl text-lime tracking-widest">
+      <Link href="/" className="font-bungee text-2xl text-lime tracking-widest">
         NELL
       </Link>
 
       {/* Desktop nav */}
       <div className="hidden md:flex items-center gap-6">
         {/* Public page links */}
-        <Link
-          href="/about"
-          className="text-sm text-offwhite hover:text-lime transition-colors"
-        >
-          {t('about')}
-        </Link>
-        <Link
-          href="/learn-pickleball"
-          className="text-sm text-offwhite hover:text-lime transition-colors"
-        >
-          {t('learn')}
-        </Link>
-        <Link
-          href="/events"
-          className="text-sm text-offwhite hover:text-lime transition-colors"
-        >
-          {t('events')}
-        </Link>
-        <Link
-          href="/contact"
-          className="text-sm text-offwhite hover:text-lime transition-colors"
-        >
-          {t('contact')}
-        </Link>
-        <Link
-          href="/pricing"
-          className="text-sm text-offwhite hover:text-lime transition-colors"
-        >
-          {tBilling('pricingNav')}
-        </Link>
+        <NavLink href="/about">{t('about')}</NavLink>
+        <NavLink href="/learn-pickleball">{t('learn')}</NavLink>
+        <NavLink href="/events">{t('events')}</NavLink>
+        <NavLink href="/contact">{t('contact')}</NavLink>
+        <NavLink href="/pricing">{tBilling('pricingNav')}</NavLink>
 
         {user ? (
           <>
-            <Link
-              href="/reservations"
-              className="text-sm text-offwhite hover:text-lime transition-colors"
-            >
-              {tReservations('navLink')}
-            </Link>
-            <Link
-              href="/dashboard"
-              className="text-sm text-offwhite hover:text-lime transition-colors"
-            >
-              {firstName ?? t('dashboard')}
-            </Link>
+            <NavLink href="/reservations">{tReservations('navLink')}</NavLink>
+            <NavLink href="/dashboard">{firstName ?? t('dashboard')}</NavLink>
             {isAdmin && (
-              <Link
-                href="/admin"
-                className="text-sm text-offwhite hover:text-lime transition-colors"
-              >
-                {tAdmin('adminNav')}
-              </Link>
+              <NavLink href="/admin">{tAdmin('adminNav')}</NavLink>
             )}
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="text-sm text-offwhite hover:text-lime transition-colors"
+                className="font-bungee text-sm text-offwhite hover:text-lime transition-colors"
               >
                 {t('logout')}
               </button>
@@ -100,13 +61,13 @@ export async function Navbar() {
           <>
             <Link
               href="/login"
-              className="text-sm text-offwhite hover:text-lime transition-colors"
+              className="font-bungee text-sm text-offwhite hover:text-lime transition-colors"
             >
               {t('login')}
             </Link>
             <Link
               href="/signup"
-              className="text-sm bg-lime text-midnight font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity"
+              className="font-bungee text-sm bg-lime text-midnight px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity"
             >
               {t('signup')}
             </Link>
