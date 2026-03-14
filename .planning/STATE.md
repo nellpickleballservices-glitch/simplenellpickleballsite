@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_plan: 4 of 4
-status: in_progress
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-03-14T07:22:34.295Z"
+status: executing
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-14T07:23:06.917Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -43,6 +43,8 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 
 - [01-01] Used plain view for admin_users_view (not security definer function) since service_role bypasses RLS
 - [01-01] Used Web Crypto API crypto.subtle for HMAC signing (Edge Runtime compatible)
+- [01-02] Used regex locale stripping for auth redirect matching to prevent false positives on nested routes
+- [01-02] Membership cache cookie read before DB query -- DB only on cache miss/expiry
 - [Phase 01-04]: Extracted checkRateLimit as pure function with injected Supabase client for testability
 
 ### Pending Todos
@@ -55,6 +57,6 @@ None — milestone complete.
 
 ## Session Continuity
 
-Last session: 2026-03-14T07:22:26.846Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-03-14T07:23:06.914Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
