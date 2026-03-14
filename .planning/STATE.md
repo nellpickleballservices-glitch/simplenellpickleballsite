@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
-status: planning
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-14T19:37:39.681Z"
-last_activity: 2026-03-14 — Roadmap created for v1.1
+status: executing
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-14T20:03:00.000Z"
+last_activity: 2026-03-14 — Completed Plan 03-02 (form integration)
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 2
+  completed_plans: 2
+  percent: 14
 ---
 
 # Project State
@@ -21,29 +21,29 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Phase 2 - Schema and Pricing Engine (v1.1)
+**Current focus:** Phase 3 - Signup Country Collection (v1.1)
 
 ## Current Position
 
-Phase: 2 of 5 (Schema and Pricing Engine)
-Plan: Ready to plan
-Status: Ready to plan Phase 2
-Last activity: 2026-03-14 — Roadmap created for v1.1
+Phase: 3 of 6 (Signup Country Collection)
+Plan: 2 of 2 complete
+Status: Phase 3 complete
+Last activity: 2026-03-14 — Completed Plan 03-02 (form integration)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 14%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0 (v1.1)
-- Average duration: -
-- Total execution time: -
+- Total plans completed: 2 (v1.1)
+- Average duration: ~3min
+- Total execution time: ~6min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 03-signup-country-collection | 2/2 | ~6min | ~3min |
 
 ## Accumulated Context
 
@@ -63,6 +63,8 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [01-02] Membership cache cookie read before DB query -- DB only on cache miss/expiry
 - [01-03] Barrel re-export preserves all existing imports -- no admin page changes needed
 - [01-04] Extracted checkRateLimit as pure function with injected Supabase client for testability
+- [03-02] Added onChange prop to CountrySelect for admin inline edit
+- [03-02] Country validation uses pure functions (extractCountry, validateCountryCode) for testability
 
 ### Key Research Findings (v1.1)
 
@@ -82,6 +84,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-14T19:37:39.671Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-signup-country-collection/03-CONTEXT.md
+Last session: 2026-03-14T20:03:00.000Z
+Stopped at: Completed 03-02-PLAN.md
+Resume file: .planning/phases/03-signup-country-collection/03-02-SUMMARY.md

@@ -32,7 +32,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 ### v1.1 Local vs Tourist Pricing
 
 - [x] **Phase 2: Schema and Pricing Engine** - Database schema for pricing tables and shared price calculation function (completed 2026-03-14)
-- [ ] **Phase 3: Signup Country Collection** - Country field on signup to classify users as local or tourist
+- [x] **Phase 3: Signup Country Collection** - Country field on signup to classify users as local or tourist (completed 2026-03-14)
 - [ ] **Phase 4: Admin Pricing Panel** - Admin UI for day-of-week base prices and tourist surcharge percentage
 - [ ] **Phase 5: Reservation Flow Integration** - Wire pricing into user booking and admin walk-in flows
 
@@ -66,8 +66,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Database migration, country data file, and CountrySelect component
-- [ ] 03-02-PLAN.md — Wire country into signup, OAuth, and admin flows
+- [x] 03-01-PLAN.md — Database migration, country data file, and CountrySelect component
+- [x] 03-02-PLAN.md — Wire country into signup, OAuth, and admin flows
 
 ### Phase 4: Admin Pricing Panel
 **Goal**: Admins can configure all pricing parameters -- base session prices per day of week and the global tourist surcharge percentage -- through the admin panel
@@ -107,6 +107,6 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1. Performance Fixes | post-v1.0 | 4/4 | Complete | 2026-03-14 |
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
-| 3. Signup Country Collection | v1.1 | 0/2 | Planned | - |
+| 3. Signup Country Collection | v1.1 | 2/2 | Complete | 2026-03-14 |
 | 4. Admin Pricing Panel | v1.1 | 0/? | Not started | - |
 | 5. Reservation Flow Integration | v1.1 | 0/? | Not started | - |

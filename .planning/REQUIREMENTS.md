@@ -9,9 +9,9 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 
 ### User Classification
 
-- [ ] **UCLS-01**: User can select their country from a bilingual dropdown during signup
-- [ ] **UCLS-02**: Country field stores ISO 3166-1 alpha-2 code on user profile
-- [ ] **UCLS-03**: Users with country "DO" are classified as local; all others as tourist
+- [x] **UCLS-01**: User can select their country from a bilingual dropdown during signup
+- [x] **UCLS-02**: Country field stores ISO 3166-1 alpha-2 code on user profile
+- [x] **UCLS-03**: Users with country "DO" are classified as local; all others as tourist
 
 ### Pricing
 
@@ -61,9 +61,9 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UCLS-01 | Phase 3 | Pending |
-| UCLS-02 | Phase 3 | Pending |
-| UCLS-03 | Phase 3 | Pending |
+| UCLS-01 | Phase 3 | Complete |
+| UCLS-02 | Phase 3 | Complete |
+| UCLS-03 | Phase 3 | Complete |
 | PRIC-01 | Phase 4 | Pending |
 | PRIC-02 | Phase 2 | Pending |
 | PRIC-03 | Phase 4 | Pending |
