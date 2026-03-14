@@ -63,10 +63,11 @@ Plans:
   2. Selected country is stored as an ISO 3166-1 alpha-2 code on the user's profile
   3. Users with country "DO" are treated as local; all others are treated as tourist
   4. Users cannot modify their own country field after signup (RLS or trigger enforcement)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Database migration, country data file, and CountrySelect component
+- [ ] 03-02-PLAN.md — Wire country into signup, OAuth, and admin flows
 
 ### Phase 4: Admin Pricing Panel
 **Goal**: Admins can configure all pricing parameters -- base session prices per day of week and the global tourist surcharge percentage -- through the admin panel
@@ -106,6 +107,6 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1. Performance Fixes | post-v1.0 | 4/4 | Complete | 2026-03-14 |
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
-| 3. Signup Country Collection | v1.1 | 0/? | Not started | - |
+| 3. Signup Country Collection | v1.1 | 0/2 | Planned | - |
 | 4. Admin Pricing Panel | v1.1 | 0/? | Not started | - |
 | 5. Reservation Flow Integration | v1.1 | 0/? | Not started | - |
