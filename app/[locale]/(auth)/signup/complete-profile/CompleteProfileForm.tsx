@@ -1,14 +1,16 @@
 'use client'
 
 import { useActionState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { AuthActionResult } from '@/app/actions/auth'
 import { completeOAuthProfileAction } from './actions'
+import { CountrySelect } from '@/components/CountrySelect'
 
 const initialState: AuthActionResult = {}
 
 export default function CompleteProfileForm() {
   const t = useTranslations('Auth.completeProfile')
+  const locale = useLocale()
   const [state, formAction, isPending] = useActionState(completeOAuthProfileAction, initialState)
 
   return (
@@ -34,6 +36,16 @@ export default function CompleteProfileForm() {
           <p className="text-red-400 text-sm mt-1">{state.errors.phone}</p>
         )}
       </div>
+
+      <CountrySelect
+        name="country"
+        label={t('country')}
+        locale={locale as 'en' | 'es'}
+        defaultValue="DO"
+      />
+      {state.errors?.country && (
+        <p className="text-red-400 text-sm mt-1">{state.errors.country}</p>
+      )}
 
       {state.message && (
         <p className="text-red-400 text-sm text-center">{state.message}</p>

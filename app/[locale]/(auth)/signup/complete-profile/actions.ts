@@ -3,15 +3,22 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AuthActionResult } from '@/app/actions/auth'
+import { extractCountry, validateCountryCode } from '@/lib/utils/countryValidation'
 
 export async function completeOAuthProfileAction(
   _prevState: AuthActionResult,
   formData: FormData,
 ): Promise<AuthActionResult> {
   const phone = formData.get('phone') as string
+  const country = extractCountry(formData)
 
   if (!phone || phone.trim().length === 0) {
     return { errors: { phone: 'Phone number is required' } }
+  }
+
+  const countryError = validateCountryCode(country)
+  if (countryError) {
+    return { errors: { country: 'Invalid country code' } }
   }
 
   const supabase = await createClient()
@@ -26,6 +33,7 @@ export async function completeOAuthProfileAction(
     last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') ?? '',
     phone: phone.trim(),
     locale_pref: 'es',
+    country,
   })
 
   if (error) return { message: error.message }

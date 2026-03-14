@@ -19,6 +19,7 @@
       "lastName": "Last name",
       "email": "Email",
       "phone": "Phone (optional)",
+      "country": "Country",
       "password": "Password",
       "confirmPassword": "Confirm password",
       "submitButton": "Create account",
@@ -75,6 +76,7 @@
       "subtitle": "Complete your NELL Pickleball Club profile",
       "description": "We just need your phone number to complete your NELL profile.",
       "phone": "Phone number",
+      "country": "Country",
       "submitButton": "Complete profile",
       "savingButton": "Saving..."
     },

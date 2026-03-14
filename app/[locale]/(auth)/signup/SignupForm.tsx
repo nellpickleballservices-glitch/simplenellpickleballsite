@@ -2,13 +2,16 @@
 
 import { useState, useActionState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { signUpAction, AuthActionResult } from '@/app/actions/auth'
 import { validateName } from '@/lib/utils/normalizeName'
+import { CountrySelect } from '@/components/CountrySelect'
 
 const initialState: AuthActionResult = {}
 
 export default function SignupForm() {
   const t = useTranslations('Auth.signup')
+  const locale = useLocale()
   const [state, formAction, isPending] = useActionState(signUpAction, initialState)
 
   const [firstNameError, setFirstNameError] = useState<string | null>(null)
@@ -92,6 +95,17 @@ export default function SignupForm() {
           className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
+
+      {/* Country */}
+      <CountrySelect
+        name="country"
+        label={t('country')}
+        locale={locale as 'en' | 'es'}
+        defaultValue="DO"
+      />
+      {state.errors?.country && (
+        <p className="text-red-400 text-sm mt-1">{state.errors.country}</p>
+      )}
 
       {/* Password */}
       <div className="flex flex-col gap-1">

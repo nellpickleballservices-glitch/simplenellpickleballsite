@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { normalizeName, validateName } from '@/lib/utils/normalizeName'
 import { validatePasswordLength, validatePasswordMatch } from '@/lib/utils/passwordValidation'
+import { extractCountry, validateCountryCode } from '@/lib/utils/countryValidation'
 
 export type AuthActionResult = {
   errors?: Record<string, string>
@@ -23,6 +24,7 @@ export async function signUpAction(
   const password = formData.get('password') as string
   const confirmPassword = formData.get('confirmPassword') as string
   const planType = formData.get('planType') as string | null  // optional
+  const country = extractCountry(formData)
 
   // Server-side validation
   const errors: Record<string, string> = {}
@@ -30,11 +32,13 @@ export async function signUpAction(
   const lastNameError = validateName(rawLastName)
   const passwordError = validatePasswordLength(password)
   const confirmError = validatePasswordMatch(password, confirmPassword)
+  const countryError = validateCountryCode(country)
 
   if (firstNameError) errors.firstName = firstNameError
   if (lastNameError) errors.lastName = lastNameError
   if (passwordError) errors.password = passwordError
   if (confirmError) errors.confirmPassword = confirmError
+  if (countryError) errors.country = countryError
   if (Object.keys(errors).length > 0) return { errors }
 
   // Normalize names before creating account
@@ -65,6 +69,7 @@ export async function signUpAction(
     last_name: lastName,
     phone: phone || null,
     locale_pref: 'es',
+    country,
   })
 
   if (profileError) return { message: profileError.message }
