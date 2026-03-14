@@ -1,122 +1,112 @@
 ---
-phase: 04-admin-and-cms
+phase: 04-admin-pricing-panel
 plan: 01
-subsystem: admin
-tags: [admin, rbac, supabase, next-intl, server-actions, dashboard]
+subsystem: database, api
+tags: [postgres, supabase, rls, server-actions, pricing, validation]
 
+# Dependency graph
 requires:
-  - phase: 01-foundation
-    provides: proxy.ts middleware, supabase server/admin clients, Navbar, i18n setup
-  - phase: 03-reservations
-    provides: reservations table schema, court/location tables
+  - phase: 03-signup-country-collection
+    provides: country field on users for tourist classification
 provides:
-  - Three-layer admin route protection (proxy, layout, requireAdmin)
-  - Admin layout shell with responsive sidebar navigation
-  - Admin dashboard with stat cards
-  - Admin type definitions (Event, ContentBlock, AdminStats, UserWithDetails)
-  - Migration 0005 with events enhancements and content_blocks seed data
-  - ConfirmDialog reusable component for destructive actions
-affects: [04-02, 04-03, 04-04, 05-cms-pages]
+  - session_pricing table with per-court day-of-week pricing
+  - tourist_surcharge_pct config value in app_config
+  - CRUD server actions for pricing management
+  - TypeScript pricing types and validation helpers
+affects: [04-02-admin-pricing-ui, 05-pricing-engine]
 
+# Tech tracking
 tech-stack:
   added: []
-  patterns: [three-layer-admin-auth, admin-server-actions, admin-layout-shell]
+  patterns: [pure validation helper extraction for testability]
 
 key-files:
   created:
-    - supabase/migrations/0005_admin_events_cms.sql
-    - lib/types/admin.ts
-    - app/actions/admin.ts
-    - app/[locale]/(admin)/admin/layout.tsx
-    - components/admin/AdminSidebar.tsx
-    - components/admin/StatCard.tsx
-    - components/admin/ConfirmDialog.tsx
+    - supabase/migrations/0009_session_pricing.sql
+    - app/actions/admin/pricing.ts
+    - lib/types/pricing.ts
+    - lib/utils/pricingValidation.ts
+    - tests/unit/pricingActions.test.ts
   modified:
-    - proxy.ts
-    - components/Navbar.tsx
-    - messages/en.json
-    - messages/es.json
-    - app/[locale]/(admin)/admin/page.tsx
+    - app/actions/admin.ts
 
 key-decisions:
-  - "Three-layer admin protection: proxy.ts (Layer 1), layout.tsx (Layer 2), requireAdmin() in Server Actions (Layer 3)"
-  - "Admin stats query profiles table for total users count (avoids auth.admin.listUsers pagination overhead)"
-  - "AdminSidebar uses Unicode symbols for nav icons (no icon library dependency)"
+  - "Extracted validation helpers to lib/utils/pricingValidation.ts to avoid Supabase client import in unit tests"
 
 patterns-established:
-  - "requireAdmin() helper: all admin Server Actions call this first for Layer 3 protection"
-  - "Admin layout shell: sidebar + main content area with bg-[#0a1628] dark theme"
-  - "StatCard component: reusable stat display with title, value, optional icon"
+  - "Pure validation extraction: server actions import validators from lib/utils/ to keep tests free of infrastructure deps"
 
-requirements-completed: [ADMIN-11, ADMIN-09, CMS-01]
+requirements-completed: [PRIC-01, PRIC-03]
 
-duration: 3min
-completed: 2026-03-12
+# Metrics
+duration: 2min
+completed: 2026-03-14
 ---
 
-# Phase 4 Plan 01: Admin Foundation Summary
+# Phase 04 Plan 01: Pricing Data Layer Summary
 
-**Three-layer admin route protection with dashboard stats, responsive sidebar navigation, and database migration for events/CMS**
+**Session pricing migration with day-of-week per-court pricing, tourist surcharge config, and validated CRUD server actions**
 
 ## Performance
 
-- **Duration:** 3 min
-- **Started:** 2026-03-12T03:53:48Z
-- **Completed:** 2026-03-12T03:57:07Z
+- **Duration:** 2 min
+- **Started:** 2026-03-14T20:20:05Z
+- **Completed:** 2026-03-14T20:22:26Z
 - **Tasks:** 2
-- **Files modified:** 12
+- **Files modified:** 6
 
 ## Accomplishments
-- Three-layer admin route protection: proxy.ts redirects non-admin from /admin/*, layout.tsx server-side role gate, requireAdmin() in Server Actions
-- Admin dashboard at /admin with 4 stat cards (total users, active members, today reservations, upcoming events)
-- Responsive sidebar with 7 navigation links (Dashboard, Users, Courts, Reservations, Events, CMS, Stripe)
-- Migration 0005 with events columns (event_type, start_time, end_time, image_url), court maintenance columns, and 13 content_blocks seed rows
-- ConfirmDialog reusable component for destructive admin actions
-- Admin link in Navbar conditionally visible for admin-role users
+- Created session_pricing table with RLS, seeded 21 default rows (3 courts x 7 days at $10)
+- Seeded tourist_surcharge_pct (25%) in app_config
+- Built 4 server actions: getSessionPricing, upsertSessionPricing, getTouristSurcharge, updateTouristSurcharge
+- 16 validation tests pass with zero regressions across 114 total tests
 
 ## Task Commits
 
 Each task was committed atomically:
 
-1. **Task 1: Database migration, types, and requireAdmin helper** - `5d45145` (feat)
-2. **Task 2: Three-layer route protection, admin layout, dashboard, sidebar, Navbar** - `399a450` (feat)
+1. **Task 1: Database migration and pricing types** - `493605a` (feat)
+2. **Task 2: Admin pricing server actions (TDD RED)** - `6fda3a2` (test)
+3. **Task 2: Admin pricing server actions (TDD GREEN)** - `a7ebed5` (feat)
 
 ## Files Created/Modified
-- `supabase/migrations/0005_admin_events_cms.sql` - Events enhancements, court maintenance columns, content_blocks seeds
-- `lib/types/admin.ts` - Admin domain types (Event, ContentBlock, AdminStats, UserWithDetails)
-- `app/actions/admin.ts` - requireAdmin helper + getAdminStatsAction Server Action
-- `app/[locale]/(admin)/admin/layout.tsx` - Layer 2 admin gate + sidebar shell layout
-- `app/[locale]/(admin)/admin/page.tsx` - Admin dashboard with 4 stat cards
-- `components/admin/AdminSidebar.tsx` - Responsive sidebar with 7 nav links and mobile overlay
-- `components/admin/StatCard.tsx` - Reusable stat card component
-- `components/admin/ConfirmDialog.tsx` - Reusable confirmation dialog for destructive actions
-- `proxy.ts` - Layer 1 admin route protection added
-- `components/Navbar.tsx` - Conditional admin link for admin-role users
-- `messages/en.json` - Admin namespace with all sidebar, stat, and dialog keys
-- `messages/es.json` - Admin namespace Spanish translations
+- `supabase/migrations/0009_session_pricing.sql` - Session pricing table, RLS, tourist surcharge seed, default pricing seed
+- `lib/types/pricing.ts` - SessionPricing, PricingByDay, CourtPricingGrid types and day name constants
+- `lib/utils/pricingValidation.ts` - Pure validation helpers for day-of-week, price, and surcharge
+- `app/actions/admin/pricing.ts` - 4 server actions with requireAdmin + supabaseAdmin pattern
+- `tests/unit/pricingActions.test.ts` - 16 validation tests
+- `app/actions/admin.ts` - Barrel re-export for pricing actions
 
 ## Decisions Made
-- Used profiles table count for total users stat instead of auth.admin.listUsers (simpler, avoids pagination)
-- Unicode symbols for sidebar nav icons to avoid adding an icon library dependency
-- America/Santo_Domingo timezone for today's reservations calculation (consistent with Phase 3)
+- Extracted validation helpers to `lib/utils/pricingValidation.ts` instead of keeping them in the server action file, to avoid triggering Supabase client initialization during unit tests (same pattern as countryValidation.ts)
 
 ## Deviations from Plan
 
-None - plan executed exactly as written.
+### Auto-fixed Issues
 
-## Issues Encountered
-None
-
-## User Setup Required
-
-- [User Action Required]: Run `supabase/migrations/0005_admin_events_cms.sql` in Supabase Dashboard SQL Editor before using admin features
-
-## Next Phase Readiness
-- Admin foundation complete: route protection, layout shell, and types ready for all subsequent admin plans
-- Plan 04-02 (Users management) can proceed using requireAdmin and admin layout
-- Plan 04-03 (Events/Courts management) can proceed using Event types and migration columns
-- Plan 04-04 (CMS management) can proceed using ContentBlock types and seeded content_blocks
+**1. [Rule 3 - Blocking] Validation helpers extracted to separate module**
+- **Found during:** Task 2 (TDD GREEN phase)
+- **Issue:** Importing validators from app/actions/admin/pricing.ts triggered supabaseAdmin module-level createClient, which fails without env vars in test
+- **Fix:** Moved pure validation functions to lib/utils/pricingValidation.ts, server action imports from there
+- **Files modified:** lib/utils/pricingValidation.ts, app/actions/admin/pricing.ts, tests/unit/pricingActions.test.ts
+- **Verification:** All 16 tests pass, full suite 114/114 pass
+- **Committed in:** a7ebed5
 
 ---
-*Phase: 04-admin-and-cms*
-*Completed: 2026-03-12*
+
+**Total deviations:** 1 auto-fixed (1 blocking)
+**Impact on plan:** Necessary for testability. No scope creep.
+
+## Issues Encountered
+None.
+
+## User Setup Required
+None - no external service configuration required. Migration must be run against Supabase via SQL Editor.
+
+## Next Phase Readiness
+- Data layer complete, Plan 02 (admin pricing UI) can build on these server actions
+- All types and server actions exported via barrel file
+
+---
+*Phase: 04-admin-pricing-panel*
+*Completed: 2026-03-14*

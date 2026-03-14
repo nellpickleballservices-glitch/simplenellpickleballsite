@@ -81,7 +81,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Database migration (session_pricing table, tourist surcharge seed) and pricing server actions
+- [x] 04-01-PLAN.md — Database migration (session_pricing table, tourist surcharge seed) and pricing server actions
 - [ ] 04-02-PLAN.md — Admin pricing UI page (day-of-week grid, surcharge editor) and sidebar link
 
 ### Phase 5: Reservation Flow Integration
@@ -109,5 +109,5 @@ Plans:
 | 1. Performance Fixes | post-v1.0 | 4/4 | Complete | 2026-03-14 |
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
 | 3. Signup Country Collection | v1.1 | 2/2 | Complete | 2026-03-14 |
-| 4. Admin Pricing Panel | v1.1 | 0/2 | In progress | - |
+| 4. Admin Pricing Panel | v1.1 | 1/2 | In progress | - |
 | 5. Reservation Flow Integration | v1.1 | 0/? | Not started | - |

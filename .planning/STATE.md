@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
-status: completed
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-14T20:07:23.374Z"
-last_activity: 2026-03-14 — Completed Plan 03-02 (form integration)
+status: in-progress
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-14T20:22:26Z"
+last_activity: 2026-03-14 — Completed Plan 04-01 (pricing data layer)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 14
+  total_plans: 4
+  completed_plans: 3
+  percent: 43
 ---
 
 # Project State
@@ -21,29 +21,30 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Phase 3 - Signup Country Collection (v1.1)
+**Current focus:** Phase 4 - Admin Pricing Panel (v1.1)
 
 ## Current Position
 
-Phase: 3 of 6 (Signup Country Collection)
-Plan: 2 of 2 complete
-Status: Phase 3 complete
-Last activity: 2026-03-14 — Completed Plan 03-02 (form integration)
+Phase: 4 of 6 (Admin Pricing Panel)
+Plan: 1 of 2 complete
+Status: Phase 4 in progress
+Last activity: 2026-03-14 — Completed Plan 04-01 (pricing data layer)
 
-Progress: [█░░░░░░░░░] 14%
+Progress: [████░░░░░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2 (v1.1)
+- Total plans completed: 3 (v1.1)
 - Average duration: ~3min
-- Total execution time: ~6min
+- Total execution time: ~8min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 03-signup-country-collection | 2/2 | ~6min | ~3min |
+| 04-admin-pricing-panel | 1/2 | ~2min | ~2min |
 
 ## Accumulated Context
 
@@ -65,6 +66,7 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [01-04] Extracted checkRateLimit as pure function with injected Supabase client for testability
 - [03-02] Added onChange prop to CountrySelect for admin inline edit
 - [03-02] Country validation uses pure functions (extractCountry, validateCountryCode) for testability
+- [04-01] Extracted pricing validation helpers to lib/utils/pricingValidation.ts to avoid Supabase client import in unit tests
 
 ### Key Research Findings (v1.1)
 
@@ -84,6 +86,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-14T20:03:00.000Z
-Stopped at: Completed 03-02-PLAN.md
-Resume file: .planning/phases/03-signup-country-collection/03-02-SUMMARY.md
+Last session: 2026-03-14T20:22:26Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: .planning/milestones/v1.0-phases/04-admin-and-cms/04-01-SUMMARY.md

@@ -15,9 +15,9 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 
 ### Pricing
 
-- [ ] **PRIC-01**: Admin can set base session price per day of week per court
+- [x] **PRIC-01**: Admin can set base session price per day of week per court
 - [ ] **PRIC-02**: Days without specific pricing fall back to a default base price
-- [ ] **PRIC-03**: Admin can set a global tourist surcharge percentage
+- [x] **PRIC-03**: Admin can set a global tourist surcharge percentage
 - [ ] **PRIC-04**: Tourist session price is calculated as base price x (1 + surcharge%)
 - [ ] **PRIC-05**: All price calculations happen server-side only
 
@@ -64,9 +64,9 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 | UCLS-01 | Phase 3 | Complete |
 | UCLS-02 | Phase 3 | Complete |
 | UCLS-03 | Phase 3 | Complete |
-| PRIC-01 | Phase 4 | Pending |
+| PRIC-01 | Phase 4 | Complete |
 | PRIC-02 | Phase 2 | Pending |
-| PRIC-03 | Phase 4 | Pending |
+| PRIC-03 | Phase 4 | Complete |
 | PRIC-04 | Phase 2 | Pending |
 | PRIC-05 | Phase 2 | Pending |
 | RESV-01 | Phase 5 | Pending |
