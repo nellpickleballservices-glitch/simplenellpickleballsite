@@ -1,311 +1,188 @@
-# Feature Research
+# Feature Landscape: Local vs Tourist Differential Pricing
 
-**Domain:** Sports club membership and court reservation platform (pickleball)
-**Researched:** 2026-03-07
-**Confidence:** MEDIUM — Based on training knowledge of CourtReserve, Mindbody, ClubSpark, Skedda, Pickleheads, DUPR, and general court-booking SaaS patterns. Web tools unavailable for live verification. Core patterns are stable and well-established; specific competitive details flagged where confidence is lower.
+**Domain:** Sports/recreation court booking with resident/non-resident pricing
+**Researched:** 2026-03-14
+**Confidence:** HIGH (existing codebase fully inspected, domain patterns well-established)
 
 ---
 
-## Feature Landscape
+## Context: What Already Exists
 
-### Table Stakes (Users Expect These)
+Before defining new features, here is what the codebase already provides that this milestone builds on:
 
-Features members assume exist. Missing these = members churn or never convert.
+| Existing Component | Relevant Detail |
+|--------------------|-----------------|
+| `court_pricing` table | Keys on `(court_id, mode)` with `price_cents`. No day-of-week dimension. |
+| `app_config` table | Key-value store with `session_price_default = 10`. Pattern for adding new config keys. |
+| `reservations.price_cents` | Price is already snapshotted at booking time. Good -- no retroactive price mutation risk. |
+| `createReservationAction` | Looks up `court_pricing` by `(court_id, mode)` for non-members. Members get `price_cents = 0`. |
+| `createSessionPaymentAction` | Reads `price_cents` from the reservation row and passes it as `unit_amount` in Stripe `price_data`. Already supports dynamic pricing -- no Stripe Price objects. |
+| `adminCreateReservationAction` | Walk-in reservations hardcode `price_cents: 0`. This is a bug that must be fixed. |
+| `PaymentPanel.tsx` | Displays `priceCents` prop. Already generic -- no changes needed for new pricing. |
+| `profiles` table | Has `id, first_name, last_name, phone, avatar_url, locale_pref`. No country field. |
+| `signUpAction` | Collects first name, last name, email, phone, password. No country collection. |
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **Membership signup + online payment** | Every modern club uses recurring billing; writing checks is dead | MEDIUM | Stripe Checkout or embedded form. Must feel instant — no multi-day approval flows |
-| **Real-time court availability view** | Members will not call ahead to check; they expect to see availability before deciding to drive | MEDIUM | Time-slot grid (not just calendar month view) is the correct pattern for court sports |
-| **Self-service reservation booking** | Members book on their own time (nights, weekends); staff should not be in the loop for standard bookings | MEDIUM | Click court → pick time → confirm. 3 steps max |
-| **Reservation confirmation email** | Members need proof of booking + reminder of court/time | LOW | Transactional email via Resend. Must fire immediately (< 30 seconds) |
-| **Pre-session reminder notification** | Sports clubs live and die on court utilization; no-shows waste courts | LOW | Email or push 24h + 1h before session. The 10-min "wrap up" reminder in PROJECT.md is unusual but valuable |
-| **Self-service cancellation** | Members cancel plans; forcing them to call creates resentment | LOW | Must enforce cancellation window (e.g., 2h before = no penalty; same-day = limited) |
-| **Member dashboard: upcoming reservations** | "What did I book?" is the #1 member self-service question | LOW | Simple list: date, court, time, cancel button |
-| **Member dashboard: membership status** | "Is my membership active?" is the #2 question | LOW | Show tier, renewal date, Stripe status |
-| **Password reset / account recovery** | Standard auth expectation; missing it causes churn immediately | LOW | Email-link flow via Supabase Auth |
-| **Mobile-responsive UI** | 70%+ of club members book from phones, especially in LatAm | MEDIUM | Not a native app — but the web UI must be genuinely usable at 375px width |
-| **Admin: view and cancel any reservation** | Courts get blocked by bad bookings; admins must have override | LOW | Simple admin table with search + cancel action |
-| **Admin: block courts for maintenance** | Courts go offline for resurfacing, equipment failure, events | LOW | Date-range block on a per-court basis |
-| **Contact information / WhatsApp access** | In Dominican Republic, WhatsApp is the primary support channel; members expect it | LOW | WhatsApp link in footer + contact page |
+---
 
-### Differentiators (Competitive Advantage)
+## Table Stakes
 
-Features that separate NELL from generic booking tools and from the "call the club" experience members currently have.
+Features users expect. Missing = pricing feels broken, unfair, or untrustworthy.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Interactive court map with live availability** | Visual, geographic court selection is rare — most platforms show text lists. NELL has multiple courts possibly at multiple locations; a map makes the choice spatial and intuitive | HIGH | Leaflet.js with color-coded markers (green/red/gray). Clicking marker shows time slots inline. This is the signature UX moment of the platform |
-| **Bilingual AI chatbot (Spanish + English)** | The DR pickleball community is new to the sport; an AI that answers "What are the rules?" and "How do I cancel my booking?" in Spanish removes friction for non-English speakers | HIGH | Uses site content as RAG context. OpenAI GPT-4o or Anthropic Claude. Spanish must be primary, not an afterthought |
-| **Educational pickleball content hub** | Most club platforms are pure transactional (book, pay, done). A learn section builds loyalty, helps new players get comfortable, and establishes NELL as the authoritative DR pickleball brand | MEDIUM | Sport history, rules, scoring, court dimensions, equipment guide. Admin-editable via CMS |
-| **Events system (tournaments, training, social)** | Court reservations alone don't build community. Events drive member engagement and recurring reasons to visit | MEDIUM | Admin creates events; members view + RSVP (or just view for v1). Tournaments especially are social glue |
-| **VIP vs Basic tier with location enforcement** | Most small clubs offer one flat membership rate. Tiered pricing with location-scoped access is enterprise behavior that signals professionalism and allows NELL to monetize multi-location expansion | MEDIUM | Stripe product/price IDs map to tier. Basic tier has a location_id foreign key on the membership |
-| **Admin CMS for all content** | Custom-built platforms typically hardcode marketing copy, forcing a developer every time text changes. A DB-backed content_blocks system lets the founder update messaging herself | MEDIUM | content_blocks table with page + key + value. No external CMS required |
-| **Stripe webhook-backed membership gating** | Many custom builds poll Stripe on each request (slow, fragile) or store status only in DB without sync (out of sync). Webhook-driven sync to Supabase gives real-time accuracy | MEDIUM | Critical for preventing expired members from booking. Supabase Edge Function handles webhook verification + status updates |
-| **Session wrap-up reminder ("10 minutes left")** | This is uncommon in booking platforms — it's operationally excellent for court utilization and signals to members that NELL runs a tight, professional operation | LOW | Supabase cron or pg_cron at reservation end_time - 10 min |
+| Feature | Why Expected | Complexity | Dependencies on Existing | Notes |
+|---------|--------------|------------|--------------------------|-------|
+| **Country field on signup** | Users must be classified to receive correct price. Every resident/non-resident recreation system requires this at registration. Standard pattern in parks & recreation software. | Low | `profiles` table (add `country` column), `signUpAction` in `app/actions/auth.ts`, `SignupForm.tsx` | Dropdown with "DO" (Dominican Republic) pre-selected. Store ISO 3166-1 alpha-2 country code. Derive `is_local` as: `country = 'DO'`. |
+| **Tourist surcharge as percentage on base price** | Industry standard: base price + surcharge %, not two separate price lists. Simpler admin UX, fewer rows to maintain. One setting change updates all tourist prices simultaneously. | Low | `app_config` table (add `tourist_surcharge_pct` key), pricing calculation in `createReservationAction` | Store as integer (e.g., 50 = 50%). Tourist pays `base_price_cents * (1 + surcharge_pct / 100)`. Round to nearest cent. |
+| **Dynamic price display before payment** | Users must see the correct price BEFORE committing. Non-members currently see price in `PaymentPanel.tsx` which reads `price_cents` from the reservation. Price must reflect local/tourist status and day-of-week. | Med | `ReservationForm.tsx`, pricing calculation function, `court_pricing` + `app_config` queries | Price must be calculated at display time AND validated at insert time. Never trust client-sent price -- calculate server-side on both display and commit. |
+| **Admin UI to set base prices per day of week** | Enables "$5 Mondays" and similar specials. Current `court_pricing` has no day dimension. Day-of-week pricing is the standard granularity for sports facilities -- finer (hourly) is over-engineering for v1.1. | Med | Extend `court_pricing` table to add `day_of_week` column (0-6, or NULL for default). Admin courts panel needs pricing section. | Current UNIQUE constraint is `(court_id, mode)`. Must migrate to `(court_id, mode, day_of_week)`. NULL `day_of_week` = fallback for days without specific pricing. |
+| **Admin UI to set tourist surcharge percentage** | Single global setting. Admin must be able to change this without code deploys. | Low | `app_config` table, admin settings panel | Already have `app_config` pattern. One new key-value pair. Admin needs simple input field with validation (0-200% reasonable range). |
+| **Walk-in local/tourist designation** | Admin creates walk-in reservations via `adminCreateReservationAction`. Must designate local or tourist to apply correct price. Currently walk-ins get `price_cents: 0` which is wrong -- this is a pricing bug. | Low | `adminCreateReservationAction`, admin reservation form | Add local/tourist toggle to admin walk-in form. Price auto-calculates. Fix the hardcoded `price_cents: 0`. |
+| **Correct price stored on reservation at booking time** | Price snapshot prevents retroactive changes from affecting past bookings. Column exists (`price_cents`) but is not correctly populated for walk-ins or with day/tourist logic. | Low | `reservations.price_cents` (exists), shared pricing calculation | Just need correct calculation at insert time. Both user and admin flows must use same pricing function. |
 
-### Anti-Features (Deliberately Not Building in v1)
+---
 
-Features that seem valuable but introduce disproportionate complexity, cost, or distraction.
+## Differentiators
 
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| **SMS / WhatsApp notifications** | "Everyone is on WhatsApp in DR" — true, but requires Twilio or WhatsApp Business API, adds cost per message, requires phone number verification flows | Doubles notification infrastructure complexity; WhatsApp Business API approval takes weeks; Twilio adds recurring per-SMS cost on a tight launch budget | Email notifications cover confirmations and reminders. WhatsApp contact link on the site is sufficient for v1 support |
-| **Member-to-member messaging / chat** | Social features feel like community building | Requires moderation, content policies, storage, real-time infrastructure. Distracts from core reservation loop | Events page + WhatsApp group (managed outside the platform) is the community layer |
-| **DUPR / rating integration** | Competitive pickleball players want their skill rating tracked | DUPR API access requires partnership agreement; rating display without context confuses casual players who are NELL's primary audience in v1 | Skill level as a self-reported profile field (dropdown: beginner/intermediate/advanced) is sufficient |
-| **Waitlist management** | "What if courts are full?" | Waitlist requires complex state machine (notification → claim → timeout → next in queue). Most courts won't hit full capacity at launch | Show "fully booked" status. Members contact admin via WhatsApp for special arrangements |
-| **Guest pass / day-pass purchases** | Non-member bookings, one-time court fees | Requires separate Stripe checkout flow, guest account handling, no-subscription gating logic — doubles the auth complexity | Members can host guests under their own reservation in v1 |
-| **Video content hosting** | Instructional videos for pickleball education | Video storage + streaming is expensive (bandwidth costs on Supabase Storage are high for video). YouTube embeds solve this without the cost | Embed YouTube videos in the Learn section — no hosting needed |
-| **Native mobile app** | Mobile booking is convenient | App Store/Play Store submission, separate codebase, React Native overhead, $99/yr Apple dev account — all before a single user is acquired | Progressive Web App (PWA) behavior from a responsive Next.js site is the correct v1 mobile strategy |
-| **Real-time court occupancy ("X people on court now")** | Operational transparency | Requires hardware sensors or manual check-in; no reliable software-only approach. Creates false expectations if inaccurate | Reservation system provides scheduled occupancy. Actual real-time tracking is a physical ops problem, not a software one |
-| **Loyalty points / rewards system** | Gamification to increase retention | Points systems require careful balance design, redemption flows, and member expectation management. Poorly designed points = support burden | Tiered membership (Basic vs VIP) already provides loyalty incentive structure |
+Features that set product apart. Not expected but high-value.
+
+| Feature | Value Proposition | Complexity | Dependencies on Existing | Notes |
+|---------|-------------------|------------|--------------------------|-------|
+| **Price preview on time-slot grid** | Before selecting a slot, user sees "Local: $5 / Tourist: $10" per slot. Zero surprises, reduces abandoned bookings. | Med | `ReservationForm.tsx` time-slot grid, shared pricing function, client-accessible pricing data | Requires fetching day-of-week pricing and surcharge config to client. Worth building but not launch-blocking. |
+| **Price in confirmation email** | Confirmation email currently shows court + time but not price. Showing price builds trust and serves as receipt. | Low | `sendConfirmationEmail` in `lib/resend/emails.ts` | Simple template change. High value for low effort. Should be built alongside core features. |
+| **Bilingual country selector** | Country dropdown labels in both Spanish and English via next-intl. 240+ countries is a lot of translation. | Low | i18n message files, `SignupForm.tsx` | Use standard country name dataset. Pre-select "Republica Dominicana" / "Dominican Republic" based on locale. |
+| **Admin pricing history / audit log** | Admin sees when prices changed and by whom. Useful for dispute resolution. | Med | New audit mechanism (trigger or application-level logging) | Nice for operational maturity. Not needed for v1.1 launch. Defer. |
+| **Visual pricing calendar for admin** | Grid showing base prices for each day of the week per court, with color coding for specials (lower-than-normal prices highlighted). | Med | Admin pricing UI, day-of-week data | Better admin UX than a flat table. Can be a fast-follow after basic CRUD. |
+| **Tourist price breakdown on checkout** | Show "Base: $5.00 + Tourist surcharge (50%): $2.50 = Total: $7.50" instead of just "$7.50". Transparency builds trust. | Low | `PaymentPanel.tsx`, pricing calculation returns breakdown not just total | Straightforward UI change. Worth doing for trust. |
+
+---
+
+## Anti-Features
+
+Features to explicitly NOT build.
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Separate price tables for locals vs tourists** | Creates N x 2 pricing rows. Admin must update two prices for every change. Error-prone, hard to audit. | Single base price + surcharge percentage. Tourist price is always derived: `base * (1 + surcharge_pct/100)`. One change propagates everywhere. |
+| **User self-classification as local/tourist** | Users will game the system to get lower prices. "Are you a local?" checkbox is trivially bypassed. | Use country from signup profile. Country field is set at registration and harder to fake. Admin can override for walk-ins. |
+| **Per-court surcharge percentages** | Over-engineering. One club, one surcharge policy. Per-court surcharges create admin confusion and UI complexity. | Single global `tourist_surcharge_pct` in `app_config`. If per-location surcharges are needed later (national expansion), move to per-location config. |
+| **IP-based geolocation for local/tourist detection** | Unreliable (VPNs, shared IPs, hotel WiFi), privacy concerns, adds external API dependency, false positives frustrate users. | Country field on profile is explicit, user-provided, and auditable. |
+| **Hourly peak/off-peak pricing within a day** | Massive complexity: time-range-based pricing lookups, more admin UI, edge cases at range boundaries. | Day-of-week pricing covers "$5 Mondays" use case. Hourly pricing is v2+ if demand analysis shows peak-hour pricing opportunity. |
+| **Stripe Price objects for each price variation** | Would require creating/managing Stripe Price objects for every (day x mode x court) combination. Stripe supports inline `price_data` which is simpler. | Use `price_data` with `unit_amount` calculated at checkout time. Already the pattern in `sessionPayment.ts`. No Stripe catalog management needed. |
+| **Real-time currency conversion for tourists** | `PROJECT.md` explicitly lists "Multi-currency payments" as out of scope. USD only. | All prices in USD cents. No conversion. |
+| **Promotional pricing with date ranges** | Time-limited specials (e.g., "Holiday week 50% off") require a `promotions` table with date ranges, priority resolution logic over base pricing, expiration handling, and admin UI. | Defer to future milestone. Day-of-week specials cover the immediate need. Admin can manually adjust base prices for special weeks. |
 
 ---
 
 ## Feature Dependencies
 
 ```
-[Stripe Subscription]
-    └──required by──> [Court Reservation Gating]
-    └──required by──> [Member Dashboard: Membership Status]
-    └──required by──> [VIP vs Basic Location Enforcement]
+Country on signup  ──>  is_local derivation  ──>  Pricing calculation
+                                              │
+Day-of-week pricing table  ──────────────────>│
+                                              │
+Tourist surcharge in app_config  ────────────>│
+                                              │
+                                              v
+                                   calculateSessionPrice()
+                                      │              │
+                                      v              v
+                              Price display    Price at reservation insert
+                              (ReservationForm)     │
+                                                    v
+                                             price_cents on reservation
+                                                    │
+                                                    v
+                                             Stripe checkout (unit_amount)
+                                             Confirmation email (price display)
 
-[User Authentication]
-    └──required by──> [Court Reservation Booking]
-    └──required by──> [Member Dashboard]
-    └──required by──> [Admin Panel]
-
-[Court Reservation Booking]
-    └──required by──> [Reservation Confirmation Email]
-    └──required by──> [Session Wrap-up Reminder]
-    └──required by──> [Admin: View/Cancel Reservations]
-    └──required by──> [Interactive Court Map]
-
-[Interactive Court Map]
-    └──requires──> [Court Data with GPS Coordinates]
-    └──requires──> [Real-time Availability Query]
-
-[Admin Panel: Court Management]
-    └──required by──> [Interactive Court Map] (courts must exist before map shows them)
-    └──required by──> [Admin: Block Courts for Maintenance]
-
-[Bilingual AI Chatbot]
-    └──requires──> [Site Content in Supabase] (knowledge base)
-    └──enhanced by──> [Events System] (chatbot can answer event questions)
-    └──enhanced by──> [Educational Content] (chatbot can answer rules questions)
-
-[Events System]
-    └──independent of──> [Court Reservation System] (events are separate from bookings)
-
-[Admin CMS]
-    └──required by──> [Public Website Content Editing]
-    └──enhanced by──> [Educational Content Hub]
+Admin pricing CRUD  ──>  Day-of-week pricing table (write)
+Admin settings UI  ──>  Tourist surcharge config (write)
+Admin walk-in form ──>  local/tourist toggle ──>  calculateSessionPrice()
 ```
 
-### Dependency Notes
-
-- **Stripe Subscription requires User Authentication:** A user must exist before a subscription can be attached. Supabase Auth → Stripe Customer → Stripe Subscription is the correct creation order.
-- **Court Reservation requires Active Subscription:** The booking API must check Stripe subscription status (via Supabase mirror) before allowing a reservation. This is the core business rule.
-- **Interactive Court Map requires Court Data:** Admin must create at least one court with GPS coordinates before the map renders any markers. Seed data or an admin-first flow is needed.
-- **Session Reminder requires Reservation End Time:** The scheduled notification depends on an `end_time` field on reservations. This must be computed at booking time (start_time + session_duration).
-- **AI Chatbot enhanced by Content:** The chatbot's usefulness scales with how much structured content is in the knowledge base. Ship chatbot after educational content exists.
+**Critical ordering:**
+1. **Schema changes first** -- country on profiles, day_of_week on court_pricing, surcharge in app_config
+2. **Shared pricing function** -- pure logic, testable, used by all downstream consumers
+3. **Reservation flow updates** -- both user and admin actions use pricing function
+4. **UI updates** -- signup form, reservation price display, admin pricing panels
 
 ---
 
-## MVP Definition
+## MVP Recommendation
 
-### Launch With (v1)
+**Must ship together** (these features form one coherent unit -- shipping any subset creates inconsistency):
 
-These are required to deliver the core value: "sign up, pay, book a court."
+1. **Country field on profiles + signup form** -- Foundation for all classification. Add `country TEXT` to profiles, dropdown on signup defaulting to "DO". Existing users get `country = NULL` treated as local (safe default for a Dominican club).
 
-- [x] **User authentication (signup + login + password reset)** — zero court bookings without accounts
-- [x] **Stripe subscription checkout (VIP + Basic tiers)** — zero revenue without payment
-- [x] **Stripe webhook sync to Supabase** — membership gating requires accurate real-time status
-- [x] **Court listing with time-slot availability grid** — members must see what's available
-- [x] **Self-service reservation booking + cancellation** — core member action
-- [x] **Double-booking prevention** — data integrity; without this the product is broken
-- [x] **Reservation confirmation email** — members need proof of booking
-- [x] **Member dashboard (reservations + membership status)** — members need self-service
-- [x] **Interactive court map with color-coded markers** — signature UX differentiator; worth building in v1 because it defines the brand
-- [x] **Admin panel: user management, court management, reservation management** — operator cannot run the club without this
-- [x] **Admin CMS: basic content blocks** — founder must be able to update copy without developers
-- [x] **Public website: Home, About, Learn Pickleball, Events, Contact** — acquisition and brand trust
-- [x] **Bilingual support (Spanish primary, English secondary)** — market requirement in DR
-- [x] **Row Level Security on all Supabase tables** — non-negotiable for a multi-tenant membership system
+2. **Day-of-week pricing schema migration** -- Add `day_of_week SMALLINT` (0=Sunday through 6=Saturday) to `court_pricing`. Change UNIQUE constraint from `(court_id, mode)` to `(court_id, mode, day_of_week)`. Existing rows get `day_of_week = NULL` meaning "default for all days". Day-specific rows override the default.
 
-### Add After Validation (v1.x)
+3. **Tourist surcharge percentage in app_config** -- `INSERT INTO app_config (key, value) VALUES ('tourist_surcharge_pct', '50')`. 50% default surcharge. Admin-editable.
 
-Add once the core flow is live and members are actively booking.
+4. **Shared pricing calculation function** -- `calculateSessionPrice(courtId, bookingMode, date, isLocal): { basePriceCents: number, surchargePercent: number, totalPriceCents: number }`. Queries `court_pricing` with day-of-week fallback + surcharge config. Pure server-side function. Used by display AND insert paths.
 
-- [ ] **Session wrap-up reminder (10 min before end)** — operationally valuable but not blocking launch; add when cron infrastructure is stable
-- [ ] **Events RSVP (not just viewing)** — viewing events is v1; RSVP adds state management complexity
-- [ ] **AI chatbot** — valuable differentiator but requires content to exist first; ship when Learn + Events content is populated
-- [ ] **Admin: Stripe payment dashboard view** — founders need revenue visibility; Stripe dashboard itself covers this initially
-- [ ] **Profile editing (name, phone)** — good self-service but not blocking core value
-- [ ] **SMS notification opt-in** — add when email open rates show gaps in reminder delivery
+5. **Reservation action updates** -- `createReservationAction` uses pricing function instead of raw `court_pricing` lookup. `adminCreateReservationAction` adds local/tourist toggle and calculates price (fixes `price_cents: 0` bug).
 
-### Future Consideration (v2+)
+6. **Signup form update** -- Country dropdown with i18n labels.
 
-Defer until product-market fit and multi-location expansion.
+7. **Price display in reservation flow** -- Show calculated price in `ReservationForm.tsx` before user commits.
 
-- [ ] **Multi-location map (national expansion)** — architecture supports it (location_id on courts) but building UI for 1 location first is right
-- [ ] **Guest pass / day-pass purchase flow** — separate checkout path; defer until member base is established
-- [ ] **Member skill level + matchmaking** — requires DUPR partnership or custom rating system
-- [ ] **Loyalty/rewards program** — gamification only makes sense with a large member base
-- [ ] **Native mobile app (iOS/Android)** — only justified once web traffic shows high mobile conversion intent
-- [ ] **WhatsApp Business API integration** — justified once email open rates prove insufficient
-- [ ] **Advanced analytics dashboard** — court utilization rates, peak hours, churn predictions
+8. **Admin pricing management UI** -- CRUD for day-of-week prices per court/mode. Input for tourist surcharge percentage.
+
+**Defer to fast-follow:**
+- Price preview tooltip on grid slots (nice UX, not blocking)
+- Price in confirmation email (low effort, can ship alongside or right after)
+- Tourist price breakdown on checkout page
+- Pricing audit log
 
 ---
 
-## Feature Prioritization Matrix
+## Complexity Assessment
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| User authentication | HIGH | LOW | P1 |
-| Stripe subscription checkout | HIGH | MEDIUM | P1 |
-| Court time-slot grid + booking | HIGH | MEDIUM | P1 |
-| Double-booking prevention | HIGH | LOW | P1 |
-| Reservation confirmation email | HIGH | LOW | P1 |
-| Member dashboard | HIGH | LOW | P1 |
-| Admin panel (core CRUD) | HIGH | MEDIUM | P1 |
-| Stripe webhook sync | HIGH | MEDIUM | P1 |
-| Mobile-responsive UI | HIGH | LOW | P1 |
-| Interactive court map | HIGH | HIGH | P1 |
-| Public website (5 pages) | MEDIUM | MEDIUM | P1 |
-| Admin CMS (content blocks) | MEDIUM | MEDIUM | P1 |
-| Bilingual UI (i18n) | HIGH | MEDIUM | P1 |
-| Session wrap-up reminder (cron) | MEDIUM | LOW | P2 |
-| AI chatbot | MEDIUM | HIGH | P2 |
-| Events system (view + RSVP) | MEDIUM | MEDIUM | P2 |
-| Admin: Stripe payment view | MEDIUM | LOW | P2 |
-| Profile self-editing | LOW | LOW | P2 |
-| Multi-location map | MEDIUM | HIGH | P3 |
-| Guest pass checkout | LOW | HIGH | P3 |
-| Native mobile app | MEDIUM | HIGH | P3 |
-| Loyalty rewards | LOW | HIGH | P3 |
+| Feature Area | Complexity | Rationale |
+|--------------|-----------|-----------|
+| Schema migrations (country, pricing, config) | Low | 3 small additive migrations. No data loss. Backwards-compatible with NULL defaults. |
+| Shared pricing function | Low-Med | Pure function with 2-3 queries. Main complexity: fallback logic when no day-specific price exists (fall back to NULL day_of_week row, then to `session_price_default` config). |
+| Signup form country field | Low | One dropdown, one column. Existing i18n + form patterns. |
+| Reservation flow price integration | Med | Must update both user-facing (`createReservationAction`) and admin (`adminCreateReservationAction`) flows. Must handle: member (free), non-member local, non-member tourist, walk-in local, walk-in tourist. |
+| Walk-in tourist designation | Low | One toggle on admin form, passed to pricing function. |
+| Admin pricing CRUD | Med | New admin panel section. Day-of-week grid per court per mode. Validation: no negative prices, reasonable surcharge range (0-200%). |
+| Stripe checkout accuracy | Low | Already uses inline `price_data` with `unit_amount`. Just pass correctly calculated `price_cents`. Zero Stripe-side changes. |
+| Price display in reservation UI | Med | Must show correct price before user commits. Requires either server component data loading or API endpoint for pricing. |
 
-**Priority key:**
-- P1: Must have for launch
-- P2: Should have, add when core is validated
-- P3: Nice to have, future consideration
+**Total estimated effort:** Medium. No architectural changes needed. All features layer onto existing patterns (app_config key-value, court_pricing table, server actions, admin panel CRUD).
 
 ---
 
-## Reservation UX Patterns (Deep Dive)
+## Existing Code Integration Points
 
-This section documents the correct UX patterns for court reservation systems, based on established platforms (CourtReserve, Skedda, ClubSpark, Pickleheads).
-
-### Time-Slot Grid vs. Calendar Month View
-
-**Calendar month view** (Google Calendar style) is wrong for court booking. It shows days, not availability within a day.
-
-**Time-slot grid** is the correct pattern:
-```
-         Court 1    Court 2    Court 3
-08:00    [OPEN]     [BOOKED]   [OPEN]
-09:30    [OPEN]     [OPEN]     [CLOSED]
-11:00    [BOOKED]   [OPEN]     [OPEN]
-12:30    [OPEN]     [OPEN]     [BOOKED]
-```
-
-Members select a **date** first (date picker), then see the **grid** for that day. Clicking an OPEN slot initiates booking.
-
-**Key UX rules for time-slot grids:**
-- Show the full day at once (no pagination within a day)
-- Color: green = available, red = booked by someone else, gray = closed/blocked
-- "Your booking" gets a distinct color (e.g., blue) so members see their own reservations in context
-- Session duration should be fixed (60 or 90 min) rather than variable for v1 — variable duration creates collision complexity
-
-### Interactive Map Flow
-
-The map-first flow (unique to NELL) works best as:
-1. **Map view** — all courts shown as markers, color-coded by availability *for today* (or selected date)
-2. **Marker click** → **side panel / modal** opens showing time slots for that court
-3. **Time slot selection** → **confirm modal** (shows: court name, date, time, member name, tier)
-4. **Confirm** → booking created → confirmation email fires
-
-This is a 3-step flow from map to confirmed booking. Each step should be visually distinct.
-
-**Pitfall:** Don't make the map the only entry point. Some members will want to search by time first ("I'm free at 3pm — what's available?"). Provide a secondary "search by time" view alongside the map.
-
-### Cancellation UX
-
-The cancellation window (configurable, e.g., 2 hours before) must be:
-- **Clearly communicated at booking time** ("You can cancel up to 2 hours before your session")
-- **Enforced at the API level, not just UI level** (members will find workarounds)
-- **Visible in the dashboard** — show the deadline: "Cancel by 1:00 PM today"
-
-### Notification Timing That Works
-
-Based on industry patterns for sports facility platforms:
-- **Immediate** (< 30 sec): Booking confirmation email
-- **24 hours before**: Session reminder ("Your court is tomorrow at 3:00 PM")
-- **1 hour before**: Final reminder (optional but high-value)
-- **10 minutes before end**: Wrap-up notice (NELL-specific, operationally excellent)
-
-The 24h + 1h pattern significantly reduces no-shows. The 10-min wrap-up is NELL's operational differentiator.
-
----
-
-## Admin Panel Patterns (Deep Dive)
-
-What club management software gets right that custom builds consistently miss:
-
-### What Professional Tools Do
-
-**CourtReserve, Mindbody, and ClubSpark all include:**
-
-1. **Unified member view** — one screen shows a member's: profile, subscription status, full reservation history, payment history, and admin notes. Custom builds often require jumping between 3+ screens.
-
-2. **Bulk operations** — admins need to cancel all reservations for a blocked date (maintenance day), not one-by-one. Build with multi-select from day one.
-
-3. **Audit trail** — who created/cancelled a reservation, and when. Essential for disputes. Store `created_by`, `cancelled_by`, `cancelled_at` on reservations.
-
-4. **Court utilization at a glance** — % occupancy per day/week. Founders need this to make pricing decisions. Simple aggregate query on reservations table.
-
-5. **Configurable business rules in UI, not code** — cancellation window hours, session duration, max reservations per member per week — these should be admin-settable, not hardcoded. Build a `club_settings` table.
-
-### What Custom Builds Always Miss
-
-1. **Timezone handling** — DR is UTC-4 (Atlantic Standard Time, no DST). All reservation times must store as UTC and display in `America/Santo_Domingo`. Hardcoding local times causes double-booking bugs.
-
-2. **The "admin creates reservation for a member" flow** — walk-in members, phone bookings. Admins need to create reservations on behalf of users. Missing this forces phone reservations to be untracked.
-
-3. **Soft delete, not hard delete** — when a reservation is cancelled, don't delete it. Set `status = 'cancelled'`, `cancelled_at`, `cancelled_by`. Membership managers need history for disputes.
-
-4. **Webhook replay handling** — Stripe sends duplicate webhooks. Without idempotency keys, a member's subscription can appear activated twice or, worse, deactivated then re-activated in the wrong order. Store `stripe_event_id` and check before processing.
-
----
-
-## Competitor Feature Analysis
-
-| Feature | CourtReserve | Skedda | Pickleheads | NELL Approach |
-|---------|--------------|--------|-------------|---------------|
-| Court booking | Yes (time-slot grid) | Yes (timeline view) | Yes (map + list) | Map-first + time-slot grid |
-| Membership tiers | Yes (complex) | No (space booking only) | No (listing platform) | 2 tiers (VIP + Basic) via Stripe |
-| Interactive map | No | No | Yes (find courts near me) | Yes (per-club court map) |
-| AI chatbot | No | No | No | Yes (bilingual) |
-| Educational content | No | No | Basic rules | Full learn section |
-| Events management | Yes | No | No | Yes (tournaments, training, social) |
-| Admin CMS | Limited | No | N/A | Yes (content_blocks in DB) |
-| Bilingual support | No (English only) | No | No | Yes (Spanish primary) |
-| Mobile app | Yes | Yes | Yes | Web PWA only (v1) |
-| Session reminders | Email only | Email only | None | Email (confirmation + 24h + wrap-up) |
-
-**Note on confidence:** CourtReserve and Skedda feature lists are from training data (MEDIUM confidence). Pickleheads is a court-finding directory, not a club management tool. This table reflects the competitive landscape as of mid-2025.
+| Existing File | What Changes | Why |
+|---------------|-------------|-----|
+| `supabase/migrations/` (new 0008) | Add `country` to profiles, add `day_of_week` to court_pricing, add `tourist_surcharge_pct` to app_config, update UNIQUE constraint | Schema foundation for all pricing features |
+| `app/actions/auth.ts` | `signUpAction` accepts `country` from form, stores in profiles | User classification at registration |
+| `app/[locale]/(auth)/signup/SignupForm.tsx` | Country dropdown field (pre-selected "DO") | UI for country selection |
+| `app/actions/reservations.ts` | `createReservationAction` uses shared pricing function; looks up user country from profiles to determine local/tourist | Correct price calculation for self-service bookings |
+| `app/actions/sessionPayment.ts` | **No change needed** -- already reads `price_cents` from reservation row | Price is already snapshotted; Stripe gets correct amount automatically |
+| `app/actions/admin/reservations.ts` | `adminCreateReservationAction` adds `isLocal` param, uses pricing function, fixes `price_cents: 0` bug | Walk-in pricing + bug fix |
+| `app/[locale]/(member)/reservations/PaymentPanel.tsx` | **No change needed** -- already displays `priceCents` prop generically | Already handles dynamic prices |
+| `app/[locale]/(member)/reservations/ReservationForm.tsx` | Display calculated price before booking confirmation | Pre-booking price transparency |
+| `lib/types/reservations.ts` | Update `CourtPricing` type to include `day_of_week: number | null`, add `PriceCalculation` type | Type safety for new pricing logic |
+| `app/actions/admin/courts.ts` | `addCourtAction` seeds 7 day-of-week pricing rows (or just NULL default) instead of mode-only rows | Correct defaults for new courts |
+| `lib/queries/reservations.ts` | Pricing query function (or new `lib/queries/pricing.ts`) | Shared pricing calculation |
+| Admin panel (new page) | New admin pricing management section | Day-of-week CRUD + surcharge config UI |
+| i18n message files | Country names, pricing labels, tourist/local labels | Bilingual support for new UI elements |
 
 ---
 
 ## Sources
 
-- Training knowledge of CourtReserve, Skedda, ClubSpark, Mindbody, Pickleheads, DUPR platforms (MEDIUM confidence — web tools unavailable for live verification)
-- NELL Pickleball Club PROJECT.md requirements (HIGH confidence — primary source)
-- General court reservation UX patterns derived from industry-standard booking systems (MEDIUM confidence)
-- Stripe subscription + webhook patterns (HIGH confidence — well-established)
-- Supabase RLS and auth patterns (HIGH confidence — well-established)
-- DR timezone (UTC-4, `America/Santo_Domingo`, no DST) — standard timezone data (HIGH confidence)
+- [Stripe: How Products and Prices Work](https://docs.stripe.com/products-prices/how-products-and-prices-work) -- Confirms inline `price_data` approach for dynamic unit amounts (HIGH confidence)
+- [Stripe: Manage Prices](https://docs.stripe.com/products-prices/manage-prices) -- Multiple prices per product, inline pricing patterns (HIGH confidence)
+- [CourtReserve: How to Price Pickleball Court Time](https://courtreserve.com/how-to-price-your-pickleball-court-time-for-maximum-profit/) -- Day-of-week pricing strategies (MEDIUM confidence)
+- [Pitchbooking: Pricing Sports Facilities](https://pitchbooking.com/blog/pricing-sports-facilities-how-much-charge-invoicing-online-payment) -- Start with small % changes, measure over 3 months (MEDIUM confidence)
+- [SportsKey: Parks & Recreation Software](https://sportskey.com/post/parks-recreation-software-sports-field-reservations/) -- Resident vs non-resident pricing as standard feature in recreation software (MEDIUM confidence)
+- [Sportsman Cloud: Parks and Recreation Software](https://sportsmancloud.com/parks-recreation-management-software) -- Resident/non-resident pricing tiers pattern (MEDIUM confidence)
+- Existing codebase: `app/actions/reservations.ts`, `app/actions/sessionPayment.ts`, `app/actions/admin/reservations.ts`, `supabase/migrations/0003_reservations.sql`, `lib/types/reservations.ts`, `app/actions/auth.ts` (HIGH confidence)
 
 ---
 
-*Feature research for: Sports club membership and court reservation platform (pickleball)*
-*Researched: 2026-03-07*
+*Feature research for: v1.1 Local vs Tourist Differential Pricing milestone*
+*Researched: 2026-03-14*

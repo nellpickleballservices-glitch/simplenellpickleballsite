@@ -1,731 +1,509 @@
-# Architecture Research
+# Architecture Patterns: Local vs Tourist Differential Pricing
 
-**Domain:** Next.js 15 App Router + Supabase + Stripe sports club SaaS platform
-**Researched:** 2026-03-07
-**Confidence:** HIGH (Next.js official docs verified 2026-02-27; Supabase SSR patterns from @supabase/ssr package; Stripe webhook patterns from official guides)
+**Domain:** Dynamic pricing integration for existing pickleball club platform
+**Researched:** 2026-03-14
+**Confidence:** HIGH (integrating with well-understood existing codebase)
 
----
+## Executive Summary
 
-## Standard Architecture
+The differential pricing system integrates into the existing Supabase + Stripe + Next.js architecture by adding a new `session_pricing` table for day-of-week base prices, a `tourist_surcharge_pct` key in the existing `app_config` table, a `country` column on `profiles`, and a pricing calculation layer that sits between the reservation action and Stripe checkout creation. The existing `court_pricing` table (per-court, per-mode) becomes the fallback when no day-specific price is configured. No existing tables need destructive changes -- only additive columns and a new table.
 
-### System Overview
+## Recommended Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                          VERCEL (Next.js 15)                            │
-│                                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐  │
-│  │  (marketing) │  │   (auth)     │  │  (member)    │  │  (admin)   │  │
-│  │  Public site │  │ Signup/Login │  │  Dashboard   │  │  Panel     │  │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └─────┬──────┘  │
-│         │                │                  │                │          │
-│  ┌──────┴────────────────┴──────────────────┴────────────────┴──────┐   │
-│  │                     middleware.ts                                 │   │
-│  │          (auth check, role enforcement, cookie refresh)           │   │
-│  └──────────────────────────────┬────────────────────────────────────┘  │
-│                                 │                                        │
-│  ┌──────────────────────────────┴────────────────────────────────────┐   │
-│  │                     API Routes (/api/*)                            │   │
-│  │   /api/stripe/webhook   /api/chatbot   /api/reservations          │   │
-│  └──────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────┘
-          │                    │                       │
-          ▼                    ▼                       ▼
-┌──────────────┐    ┌──────────────────┐    ┌──────────────────────┐
-│    Stripe    │    │    Supabase      │    │   OpenAI / Anthropic  │
-│  Checkout    │    │  Postgres + RLS  │    │   (AI chatbot API)    │
-│  Webhooks    │    │  Auth (cookies)  │    └──────────────────────┘
-│  Billing     │    │  Storage         │
-└──────────────┘    │  Edge Functions  │
-                    │  Realtime        │
-                    └──────────────────┘
-```
+### How It Integrates With What Exists
 
-### Component Responsibilities
-
-| Component | Responsibility | Implementation |
-|-----------|----------------|----------------|
-| `(marketing)` route group | Public pages: home, about, learn, events, contact | RSC, reads `content_blocks` table, static/ISR |
-| `(auth)` route group | Signup, login, password reset, Stripe checkout redirect | Client components for forms, Server Actions for mutations |
-| `(member)` route group | Dashboard, reservations, profile, map | Mixed RSC + client; auth-gated via middleware |
-| `(admin)` route group | User management, CMS, court management, Stripe view | Auth-gated, admin role required, heavy server data fetching |
-| `middleware.ts` | Auth session refresh, route protection by role | Runs on Edge runtime; uses `@supabase/ssr` cookie utilities |
-| `/api/stripe/webhook` | Receives Stripe events, updates `memberships` table in Supabase | Route handler, signature verified, runs as Node.js |
-| `/api/chatbot` | Streams AI responses to client | Route handler proxying OpenAI/Anthropic; no direct DB access |
-| Supabase Edge Functions | Session-end reminder notifications (scheduled/cron) | Deno runtime; queries `reservations`; sends via Resend |
-| Supabase RLS | Enforces data access by role at DB layer | Policies on every table; three roles: anon, member, admin |
-
----
-
-## Recommended Project Structure
+The current per-session payment flow:
 
 ```
-nell-pickleball/
-├── app/
-│   ├── layout.tsx                    # Root layout (html, body, fonts)
-│   ├── globals.css
-│   ├── (marketing)/                  # Route group — public pages
-│   │   ├── layout.tsx                # Marketing layout (navbar, footer)
-│   │   ├── page.tsx                  # / (home)
-│   │   ├── about/page.tsx            # /about
-│   │   ├── learn/page.tsx            # /learn
-│   │   ├── events/page.tsx           # /events
-│   │   └── contact/page.tsx         # /contact
-│   ├── (auth)/                       # Route group — auth flow
-│   │   ├── layout.tsx                # Auth layout (centered card)
-│   │   ├── signup/page.tsx           # /signup
-│   │   ├── login/page.tsx            # /login
-│   │   ├── reset-password/page.tsx   # /reset-password
-│   │   └── confirm/page.tsx          # /confirm (email callback)
-│   ├── (member)/                     # Route group — authenticated members
-│   │   ├── layout.tsx                # Member layout (sidebar, navbar)
-│   │   ├── dashboard/page.tsx        # /dashboard
-│   │   ├── reservations/
-│   │   │   ├── page.tsx              # /reservations (list + map)
-│   │   │   └── [id]/page.tsx         # /reservations/[id] (detail)
-│   │   ├── profile/page.tsx          # /profile
-│   │   └── membership/page.tsx       # /membership (manage plan)
-│   ├── (admin)/                      # Route group — admin panel
-│   │   ├── layout.tsx                # Admin layout (sidebar)
-│   │   ├── admin/page.tsx            # /admin (overview)
-│   │   ├── admin/users/page.tsx      # /admin/users
-│   │   ├── admin/courts/page.tsx     # /admin/courts
-│   │   ├── admin/reservations/page.tsx
-│   │   ├── admin/events/page.tsx
-│   │   ├── admin/cms/page.tsx        # /admin/cms (content blocks)
-│   │   └── admin/billing/page.tsx    # /admin/billing (Stripe view)
-│   └── api/
-│       ├── stripe/
-│       │   └── webhook/route.ts      # POST — Stripe webhook handler
-│       └── chatbot/
-│           └── route.ts             # POST — AI chatbot stream
-├── components/
-│   ├── ui/                           # Shadcn/ui primitives
-│   ├── marketing/                    # Marketing-specific components
-│   ├── member/                       # Member dashboard components
-│   │   ├── CourtMap.tsx              # Dynamic import wrapper for Leaflet
-│   │   └── ReservationCard.tsx
-│   ├── admin/                        # Admin panel components
-│   └── shared/                       # Cross-context components (Navbar, Footer, Chatbot)
-├── lib/
-│   ├── supabase/
-│   │   ├── server.ts                 # createServerClient (RSC + Route Handlers)
-│   │   ├── client.ts                 # createBrowserClient (Client Components)
-│   │   └── middleware.ts             # createServerClient for middleware
-│   ├── stripe/
-│   │   ├── client.ts                 # Stripe instance
-│   │   └── webhooks.ts              # Webhook event handlers
-│   ├── resend/
-│   │   └── emails.ts                # Email send helpers
-│   └── utils/
-│       ├── formatters.ts             # Name normalization, date formatting
-│       └── constants.ts             # App-wide constants
-├── actions/                          # Server Actions
-│   ├── auth.ts                       # signup, login, logout, resetPassword
-│   ├── reservations.ts               # createReservation, cancelReservation
-│   ├── profile.ts                    # updateProfile, changePassword
-│   └── cms.ts                        # updateContentBlock (admin)
-├── types/
-│   └── database.ts                   # Generated Supabase types (supabase gen types)
-├── middleware.ts                      # Edge middleware (auth + route guard)
-├── supabase/
-│   ├── functions/
-│   │   └── session-reminder/
-│   │       └── index.ts             # Edge Function — session end reminders
-│   └── migrations/                   # SQL migration files
-└── public/
-    └── images/
+User selects slot -> createReservationAction() -> reads court_pricing -> inserts reservation with price_cents -> createSessionPaymentAction() -> creates Stripe Checkout with reservation.price_cents
 ```
 
-### Structure Rationale
+The new flow adds a pricing calculation step:
 
-- **Route groups `(marketing)`, `(auth)`, `(member)`, `(admin)`:** Each group gets its own `layout.tsx` with distinct navigation chrome. Groups do not appear in URLs, so `/dashboard` stays clean. This is the official Next.js pattern for sectioning an app with different layouts.
-- **`lib/supabase/server.ts` vs `lib/supabase/client.ts`:** Separation is mandatory — the server client reads cookies from request headers; the browser client stores session in cookies via `@supabase/ssr`. Mixing them causes auth state errors.
-- **`actions/`:** Server Actions live in a dedicated directory, not colocated in pages, to keep them importable across multiple routes and testable in isolation.
-- **`supabase/functions/`:** Edge Functions live here and are deployed via Supabase CLI. Keeping them in the monorepo ensures shared type definitions are accessible.
-- **`components/` split by domain:** Prevents accidental imports of member-only components into the marketing bundle. Admin components can be heavy (data tables, charts) and should not ship to public pages.
-
----
-
-## Architectural Patterns
-
-### Pattern 1: Supabase SSR — Server vs Client Client Split
-
-**What:** Two distinct Supabase client factories. The server client (`createServerClient` from `@supabase/ssr`) reads/writes cookies via Next.js `cookies()` helper. The browser client (`createBrowserClient`) runs in Client Components and uses `localStorage`-backed cookie adapter.
-
-**When to use:** Use the server client in Server Components, Route Handlers, Server Actions, and middleware. Use the browser client only in Client Components that need real-time subscriptions or user-triggered mutations.
-
-**Trade-offs:** The server client cannot be instantiated at module level (it must be called inside a function to get fresh cookies per request). Slightly more boilerplate, but eliminates SSR cookie desync bugs.
-
-**Example:**
-```typescript
-// lib/supabase/server.ts
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import type { Database } from '@/types/database'
-
-export function createClient() {
-  const cookieStore = cookies()
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll() },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Silently ignore: called from Server Component (read-only context)
-            // Middleware handles the actual cookie refresh
-          }
-        },
-      },
-    }
-  )
-}
-
-// lib/supabase/client.ts
-import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from '@/types/database'
-
-export function createClient() {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+```
+User selects slot -> createReservationAction() -> calculateSessionPrice() [NEW] -> inserts reservation with calculated price_cents -> createSessionPaymentAction() -> creates Stripe Checkout with reservation.price_cents (unchanged)
 ```
 
-### Pattern 2: Middleware Auth Guard with Role Enforcement
+The key insight: `createSessionPaymentAction()` already reads `reservation.price_cents` from the database and passes it to Stripe. It does NOT need to change. The only thing that changes is HOW `price_cents` gets calculated before insertion.
 
-**What:** `middleware.ts` runs on every request. It refreshes the Supabase session (required to prevent token expiry), checks the user's role from the session, and redirects unauthenticated or unauthorized requests.
+### Component Boundaries
 
-**When to use:** Always. Even if individual pages do server-side auth checks, middleware provides the first line of defense and handles cookie refresh — which is mandatory for the Supabase JWT to stay valid across navigations.
+| Component | Responsibility | Status | Communicates With |
+|-----------|---------------|--------|-------------------|
+| `profiles` table | Stores user `country` for local/tourist classification | **MODIFY** (add column) | signup action, pricing calc |
+| `session_pricing` table | Base price per day-of-week per booking mode | **NEW** | pricing calc, admin pricing UI |
+| `app_config` table | Stores `tourist_surcharge_pct` as new key | **MODIFY** (add row) | pricing calc, admin pricing UI |
+| `calculateSessionPrice()` | Pure function: (day, mode, isLocal) -> price_cents | **NEW** | reservation action |
+| `signUpAction()` | Collects country on signup | **MODIFY** | profiles table |
+| `completeOAuthProfileAction()` | Collects country for OAuth users | **MODIFY** | profiles table |
+| `createReservationAction()` | Uses new pricing calc instead of court_pricing lookup | **MODIFY** | pricing calc |
+| `adminCreateReservationAction()` | Adds local/tourist toggle for walk-ins | **MODIFY** | pricing calc |
+| Admin Pricing page | CRUD for session_pricing + surcharge config | **NEW** | session_pricing, app_config |
+| `createSessionPaymentAction()` | **NO CHANGE** -- already reads price_cents from reservation | KEEP | Stripe API |
+| `handleOneTimePaymentCompleted()` | **NO CHANGE** -- already confirms reservation on payment | KEEP | webhook route |
+| Reservation UI | Shows calculated price before booking | **MODIFY** | pricing calc (via server) |
 
-**Trade-offs:** Middleware runs on the Edge runtime (no Node.js APIs). Role data must be embedded in the JWT or fetched from a lightweight source. The recommended pattern embeds `role` in `app_metadata` so it's available without a DB query.
+### New vs Modified: Explicit Inventory
 
-**Example:**
-```typescript
-// middleware.ts
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+**New files to create:**
+1. `supabase/migrations/0008_session_pricing.sql` -- new table + profile column + app_config seed
+2. `lib/pricing/calculateSessionPrice.ts` -- pure pricing logic
+3. `lib/pricing/index.ts` -- barrel export
+4. `app/[locale]/(admin)/admin/pricing/page.tsx` -- admin pricing management page
+5. `app/[locale]/(admin)/admin/pricing/PricingForm.tsx` -- day-of-week price editor
+6. `app/[locale]/(admin)/admin/pricing/SurchargeForm.tsx` -- tourist surcharge editor
+7. `app/actions/admin/pricing.ts` -- server actions for admin pricing CRUD
+8. `lib/types/pricing.ts` -- type definitions for pricing domain
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+**Files to modify:**
+1. `app/actions/auth.ts` -- add `country` to signUpAction profile insert
+2. `app/actions/reservations.ts` -- replace court_pricing lookup with calculateSessionPrice()
+3. `app/actions/admin/reservations.ts` -- add isLocal param to adminCreateReservationAction()
+4. `app/[locale]/(auth)/signup/SignupForm.tsx` -- add country dropdown
+5. `app/[locale]/(auth)/signup/complete-profile/actions.ts` -- add country for OAuth
+6. `app/[locale]/(auth)/signup/complete-profile/CompleteProfileForm.tsx` -- add country dropdown
+7. `lib/types/reservations.ts` -- add AppConfigKey for new keys
+8. `components/admin/AdminSidebar.tsx` -- add pricing nav link
+9. `app/[locale]/(member)/reservations/CourtCard.tsx` -- show price with surcharge indicator
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
+**Files that do NOT change (critical to understand):**
+- `app/actions/sessionPayment.ts` -- already uses reservation.price_cents
+- `lib/stripe/webhookHandlers.ts` -- handleOneTimePaymentCompleted already works
+- `app/api/stripe/webhook/route.ts` -- no changes needed
+- `lib/stripe/index.ts` -- no changes needed
+- `app/actions/billing.ts` -- subscription flow unaffected
 
-  // CRITICAL: getUser() refreshes token. Do NOT use getSession() here.
-  const { data: { user } } = await supabase.auth.getUser()
+## Data Model
 
-  const pathname = request.nextUrl.pathname
-  const isMemberRoute = pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/reservations') ||
-    pathname.startsWith('/profile') ||
-    pathname.startsWith('/membership')
-  const isAdminRoute = pathname.startsWith('/admin')
+### New Table: `session_pricing`
 
-  if (!user && (isMemberRoute || isAdminRoute)) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  if (isAdminRoute && user?.app_metadata?.role !== 'admin') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  return supabaseResponse
-}
-
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
-}
-```
-
-### Pattern 3: Stripe Subscription Flow — Checkout → Webhook → Supabase
-
-**What:** Stripe Checkout is initiated server-side (Server Action or Route Handler), creating a Checkout Session with the user's Supabase `user_id` embedded in `metadata` or `client_reference_id`. Stripe redirects to a success URL. A Stripe webhook (`/api/stripe/webhook`) receives `checkout.session.completed` and `customer.subscription.*` events and writes the membership status to Supabase using the **service role key** (bypasses RLS).
-
-**When to use:** All payment and subscription state mutations. Never read Stripe state for authorization — always read from Supabase (Stripe is source of truth → synced to Supabase → Supabase is operational truth).
-
-**Trade-offs:** There is an inherent delay between Stripe event and Supabase update (usually < 1 second). The success page should poll or use Supabase Realtime rather than trusting redirect query params for membership status.
-
-**Example — Webhook Handler:**
-```typescript
-// app/api/stripe/webhook/route.ts
-import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-// Service role client — bypasses RLS for webhook writes
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-export async function POST(request: Request) {
-  const body = await request.text()
-  const signature = request.headers.get('stripe-signature')!
-
-  let event: Stripe.Event
-  try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
-  } catch {
-    return new Response('Webhook signature verification failed', { status: 400 })
-  }
-
-  switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object as Stripe.CheckoutSession
-      const userId = session.client_reference_id!
-      await supabase.from('memberships').upsert({
-        user_id: userId,
-        stripe_customer_id: session.customer as string,
-        stripe_subscription_id: session.subscription as string,
-        status: 'active',
-        plan: session.metadata?.plan ?? 'basic',
-      })
-      break
-    }
-    case 'customer.subscription.updated':
-    case 'customer.subscription.deleted': {
-      const sub = event.data.object as Stripe.Subscription
-      await supabase.from('memberships')
-        .update({ status: sub.status })
-        .eq('stripe_subscription_id', sub.id)
-      break
-    }
-  }
-
-  return new Response('OK', { status: 200 })
-}
-```
-
-### Pattern 4: Leaflet Map — Dynamic Import in Next.js
-
-**What:** Leaflet requires browser globals (`window`, `document`). It cannot be imported in Server Components or during SSR. The solution is a wrapper component that uses `next/dynamic` with `ssr: false`.
-
-**When to use:** Any component using Leaflet or other browser-only libraries (react-leaflet, etc.).
-
-**Trade-offs:** The map component is excluded from SSR, so it shows a loading state until hydration. Provide a skeleton placeholder.
-
-**Example:**
-```typescript
-// components/member/CourtMap.tsx
-'use client'
-import dynamic from 'next/dynamic'
-
-const LeafletMap = dynamic(
-  () => import('@/components/member/LeafletMapInner'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[400px] w-full animate-pulse rounded-lg bg-gray-100" />
-    ),
-  }
-)
-
-export function CourtMap({ courts }: { courts: Court[] }) {
-  return <LeafletMap courts={courts} />
-}
-
-// components/member/LeafletMapInner.tsx — NOT a Server Component
-'use client'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-// ... full Leaflet implementation here
-```
-
-### Pattern 5: Content Blocks — Headless CMS in Supabase
-
-**What:** A `content_blocks` table stores structured page content keyed by `(page_slug, block_key)`. Server Components fetch blocks at render time. Admins edit blocks via the admin CMS panel. No external CMS dependency.
-
-**When to use:** All marketing page copy: headings, body text, button labels, image URLs. Keeps content editable without a deployment.
-
-**Trade-offs:** Coarse ISR invalidation — either revalidate on tag or set a short `revalidate` time. Rich text blocks require a decision: store as Markdown or as structured JSON (prefer JSON for portability).
-
-**Example — Schema:**
 ```sql
-create table content_blocks (
-  id uuid primary key default gen_random_uuid(),
-  page_slug text not null,       -- 'home', 'about', 'learn'
-  block_key text not null,       -- 'hero_title', 'hero_subtitle'
-  content_type text not null,    -- 'text', 'richtext', 'image_url'
-  value_text text,
-  value_json jsonb,
-  updated_at timestamptz default now(),
-  updated_by uuid references auth.users(id),
-  unique(page_slug, block_key)
+CREATE TABLE session_pricing (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+  mode        TEXT NOT NULL CHECK (mode IN ('full_court', 'open_play')),
+  price_cents INT NOT NULL,
+  label_es    TEXT,
+  label_en    TEXT,
+  is_active   BOOLEAN NOT NULL DEFAULT true,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (day_of_week, mode)
 );
 ```
 
-**Example — Server Component fetch:**
-```typescript
-// app/(marketing)/page.tsx
-import { createClient } from '@/lib/supabase/server'
+**Why this structure:**
+- `day_of_week` integer (not day name string) because JavaScript `getDay()` returns 0-6, making lookup trivial with no string parsing.
+- `UNIQUE (day_of_week, mode)` ensures one price per day per booking mode, matching how `court_pricing` uses `UNIQUE (court_id, mode)`.
+- `label_es`/`label_en` allows admin to set promotional text like "$5 Mondays" that displays in the UI, following the bilingual pattern already used in `events` and `content_blocks`.
+- `is_active` lets admin disable a special without deleting the row. Deactivated specials are invisible to the pricing calculator.
+- Anon read policy because unauthenticated users browsing the site should see promotional pricing on public pages.
 
-export const revalidate = 3600 // ISR: refresh every hour
+**Why NOT per-court pricing per day:** The business requirement is day-of-week specials (e.g., "$5 Mondays"), not per-court-per-day pricing. Adding court_id would create a `courts x 7 days x 2 modes = 42 rows` management burden for 3 courts. The existing `court_pricing` table already handles per-court base pricing as a fallback.
 
-export default async function HomePage() {
-  const supabase = createClient()
-  const { data: blocks } = await supabase
-    .from('content_blocks')
-    .select('block_key, value_text, value_json')
-    .eq('page_slug', 'home')
+### Modified Table: `profiles`
 
-  const block = (key: string) =>
-    blocks?.find(b => b.block_key === key)?.value_text ?? ''
-
-  return (
-    <main>
-      <h1>{block('hero_title')}</h1>
-      <p>{block('hero_subtitle')}</p>
-    </main>
-  )
-}
+```sql
+ALTER TABLE profiles
+  ADD COLUMN country TEXT;
 ```
 
-### Pattern 6: Supabase Edge Function — Scheduled Session Reminders
+**Why TEXT not ENUM:** Country codes may expand. TEXT with application-level validation (ISO 3166-1 alpha-2) is simpler than maintaining a Postgres ENUM. The classification logic lives in the app, not the database.
 
-**What:** A Supabase Edge Function runs on a pg_cron schedule (every minute or on a tight interval). It queries `reservations` where `end_time` is 10 minutes from now, sends reminder emails via Resend, and logs send status to prevent duplicates.
+**Why on profiles, not auth.users metadata:** `profiles` is the application data table. User metadata in `auth.users` is for Supabase Auth internals. All existing user data queries go through `profiles`, and adding here means RLS policies already cover it. The signup action already inserts into profiles via `supabaseAdmin`.
 
-**When to use:** Any time-based notification. Supabase pg_cron + Edge Functions is the preferred pattern over external cron services because it runs inside the Supabase network with access to the database.
+### Modified Table: `app_config`
 
-**Trade-offs:** Edge Functions run on Deno (not Node.js) — use `fetch`-based email APIs like Resend, not Node.js SDK. The function must be idempotent: track sent reminders to prevent duplicate emails if the cron runs multiple times near the boundary.
-
-**Example:**
-```typescript
-// supabase/functions/session-reminder/index.ts
-import { createClient } from 'jsr:@supabase/supabase-js@2'
-
-const supabase = createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-)
-
-Deno.serve(async () => {
-  const now = new Date()
-  const windowStart = new Date(now.getTime() + 9 * 60 * 1000)  // 9 min from now
-  const windowEnd   = new Date(now.getTime() + 11 * 60 * 1000) // 11 min from now
-
-  const { data: sessions } = await supabase
-    .from('reservations')
-    .select('id, user_email, end_time, reminder_sent')
-    .gte('end_time', windowStart.toISOString())
-    .lte('end_time', windowEnd.toISOString())
-    .eq('reminder_sent', false)
-    .eq('status', 'confirmed')
-
-  for (const session of sessions ?? []) {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'NELL Pickleball <no-reply@nellpickleball.com>',
-        to: session.user_email,
-        subject: 'Tu sesión termina en 10 minutos / Your session ends in 10 minutes',
-        text: 'Your pickleball session ends in 10 minutes. Please prepare to exit the court so the next group can begin.',
-      }),
-    })
-
-    await supabase
-      .from('reservations')
-      .update({ reminder_sent: true })
-      .eq('id', session.id)
-  }
-
-  return new Response('OK')
-})
+```sql
+INSERT INTO app_config (key, value) VALUES
+  ('tourist_surcharge_pct', '25'::jsonb);
 ```
 
----
+**Why in app_config:** This is a single global value, exactly what `app_config` was designed for. The reservation action already fetches from `app_config` (see lines 73-83 of `reservations.ts`). Adding one more key to the `.in('key', [...])` call is trivial.
+
+### Modified Table: `reservations` (informational column)
+
+```sql
+ALTER TABLE reservations
+  ADD COLUMN is_tourist_price BOOLEAN NOT NULL DEFAULT false;
+```
+
+**Why:** Audit trail. When reviewing reservation history, admin needs to know if tourist surcharge was applied. Without this, you'd have to re-derive it from the user's country at query time, which is fragile if the user updates their country later. Follows the same "snapshot at booking time" pattern already used for `reservation_user_first_name`/`reservation_user_last_name`.
 
 ## Data Flow
 
-### Primary Flow: Signup → Stripe → Active Member
+### Price Calculation Flow (the core logic)
 
 ```
-User fills signup form (name, email, phone, plan)
-    ↓
-Server Action: creates Supabase auth user + inserts profile row
-    ↓
-Server Action: creates Stripe Checkout Session
-  (client_reference_id = supabase user_id, metadata.plan = 'basic'|'vip')
-    ↓
-Browser redirects to Stripe Checkout (hosted page)
-    ↓
-User pays → Stripe fires checkout.session.completed webhook
-    ↓
-POST /api/stripe/webhook (verified by signature)
-    ↓
-Service-role Supabase client upserts memberships row
-  (status: 'active', stripe_subscription_id, plan)
-    ↓
-User redirected to /dashboard — membership is now active
+calculateSessionPrice(date: Date, mode: BookingMode, isLocal: boolean): PriceResult
+
+1. Get day_of_week from date (0-6)
+2. Query session_pricing WHERE day_of_week = X AND mode = Y AND is_active = true
+3. If found -> use session_pricing.price_cents as base
+4. If not found -> fall back to court_pricing.price_cents (existing behavior)
+5. If not found -> fall back to app_config.session_price_default (1000 cents = $10)
+6. If !isLocal:
+   a. Read app_config.tourist_surcharge_pct (e.g., 25)
+   b. surcharge = Math.round(base * pct / 100)
+   c. total = base + surcharge
+7. Return total price_cents
 ```
 
-### Auth Session Flow: Every Request
+**Price resolution priority:**
+1. Day-of-week special (session_pricing) -- highest priority
+2. Court/mode pricing (court_pricing) -- existing per-court rates
+3. Global default (app_config.session_price_default) -- fallback
+
+### User Classification Flow
 
 ```
-Browser sends request with Supabase cookie
-    ↓
-middleware.ts intercepts
-    ↓
-createServerClient reads cookie → supabase.auth.getUser()
-  [Supabase validates JWT; if near expiry, issues refreshed token]
-    ↓
-Refreshed cookie written back to response headers
-    ↓
-Route protection check (member vs admin)
-    ↓
-Request passes to Server Component or Route Handler
-    ↓
-Server Component calls createClient() → reads fresh cookie for DB queries
+isLocal(country: string | null): boolean
+  Return country === 'DO'
 ```
 
-### Reservation Flow
+**Why hardcode 'DO':** The club is in the Dominican Republic. "Local" means Dominican. This is a business rule, not a configuration. If multi-country expansion happens, this becomes a config value, but YAGNI for now.
 
-```
-Member opens /reservations
-    ↓
-RSC: fetches courts + availability from Supabase (with RLS = only active members)
-    ↓
-CourtMap client component renders (dynamic import, ssr: false)
-    ↓
-Member clicks court marker → time slots rendered
-    ↓
-Member selects slot → Server Action: createReservation()
-    ↓
-Server Action checks: membership active? Slot available? (atomic transaction)
-    ↓
-Insert reservation row (with snapshot: first_name_snapshot, last_name_snapshot)
-    ↓
-Resend email: confirmation sent
-    ↓
-Supabase pg_cron runs session-reminder Edge Function at T-10min
-    ↓
-Reminder email sent, reminder_sent = true
+**Edge case -- null country:** Users who signed up before v1.1 will have `country = NULL`. Default to tourist pricing (conservative). This incentivizes users to update their profile to get local rates, which is better than accidentally undercharging tourists.
+
+### Reservation Action Integration
+
+Current code in `createReservationAction()` (lines 132-143):
+
+```typescript
+// CURRENT: Simple court_pricing lookup
+let priceCents = 0
+if (!isMember) {
+  const { data: pricing } = await supabase
+    .from('court_pricing')
+    .select('price_cents')
+    .eq('court_id', courtId)
+    .eq('mode', bookingMode)
+    .single()
+  priceCents = pricing?.price_cents ?? 1000
+}
 ```
 
-### State Management
+Becomes:
 
-```
-Server Components: data fetched at render, no client state needed
-Client Components: React state for UI (map interactions, form state)
-No global state library needed for v1 — RSC + Server Actions cover mutations
-Supabase Realtime: optional for court availability (real-time color updates on map)
-```
+```typescript
+// NEW: Dynamic pricing with day-of-week specials and tourist surcharge
+let priceCents = 0
+let isTouristPrice = false
+if (!isMember) {
+  const isLocal = profile?.country === 'DO'
+  const reservationDate = new Date(startTime)
 
----
+  const result = await calculateSessionPrice(supabase, {
+    date: reservationDate,
+    courtId,
+    bookingMode,
+    isLocal,
+  })
 
-## Database Table Overview
-
-```
-auth.users (managed by Supabase)
-    │
-    ├── profiles
-    │   ├── id (FK → auth.users)
-    │   ├── first_name, last_name, phone
-    │   └── role: 'member' | 'admin'
-    │
-    ├── memberships
-    │   ├── id, user_id (FK → auth.users)
-    │   ├── stripe_customer_id, stripe_subscription_id
-    │   ├── status: 'active' | 'canceled' | 'past_due'
-    │   └── plan: 'basic' | 'vip'
-    │
-    ├── reservations
-    │   ├── id, user_id (FK → auth.users)
-    │   ├── court_id (FK → courts)
-    │   ├── start_time, end_time
-    │   ├── status: 'confirmed' | 'canceled'
-    │   ├── first_name_snapshot, last_name_snapshot  ← denormalized for history
-    │   ├── user_email  ← snapshot for notifications
-    │   └── reminder_sent: boolean
-    │
-    ├── courts
-    │   ├── id, name, location_name
-    │   ├── latitude, longitude  ← GPS for Leaflet markers
-    │   ├── status: 'open' | 'closed' | 'maintenance'
-    │   └── session_duration_minutes
-    │
-    ├── events
-    │   ├── id, title, description, event_type
-    │   ├── start_time, end_time, location
-    │   └── image_url
-    │
-    └── content_blocks
-        ├── id, page_slug, block_key
-        ├── content_type: 'text' | 'richtext' | 'image_url'
-        ├── value_text, value_json
-        └── updated_by (FK → auth.users)
+  priceCents = result.totalCents
+  isTouristPrice = result.isTouristPrice
+}
 ```
 
----
+**Note:** The profile query for country can be merged with the existing profile query on line 38-42 that already fetches `first_name, last_name, locale_pref`. Just add `country` to the select. No new query needed.
 
-## RLS Policy Structure
+### Admin Walk-in Flow
 
-**Three permission levels:**
+Current code in `adminCreateReservationAction()` always sets `price_cents: 0`. This needs to change:
 
-| Role | Mechanism | Access |
-|------|-----------|--------|
-| `anon` | No session | `content_blocks` (read), `events` (read), `courts` (read-only public info) |
-| `member` | Authenticated + `memberships.status = 'active'` | Own `reservations` (CRUD within rules), own `profile`, own `membership` |
-| `admin` | `auth.jwt() ->> 'role' = 'admin'` in `app_metadata` | All tables, all rows |
+```typescript
+// Admin designates walk-in as local or tourist via form toggle
+const isLocal = formData.get('isLocal') === 'true'
 
-**Critical RLS patterns:**
+// Calculate price for walk-in (not a member by definition)
+const result = await calculateSessionPrice(supabaseAdmin, {
+  date: new Date(startsAt),
+  courtId,
+  bookingMode: bookingMode || 'full_court',
+  isLocal,
+})
+
+// Insert with calculated price
+price_cents: result.totalCents,
+is_tourist_price: result.isTouristPrice,
+payment_status: 'cash_pending',
+```
+
+### Price Display Flow (UI)
+
+The reservation UI needs to show the price BEFORE the user commits. This means the pricing calculation must be callable as a server action that returns price info without creating a reservation.
+
+```typescript
+// New server action: getSessionPricePreview
+export async function getSessionPricePreviewAction(
+  date: string,
+  courtId: string,
+  bookingMode: BookingMode
+): Promise<{
+  baseCents: number
+  totalCents: number
+  isTouristPrice: boolean
+  specialLabel?: string
+}>
+```
+
+This action calls `calculateSessionPrice()` with the current user's country to show:
+- "$5.00" for a local on a Monday special
+- "$6.25 (includes tourist surcharge)" for a tourist on a Monday special
+- "$10.00" / "$12.50" on a normal day
+
+## Patterns to Follow
+
+### Pattern 1: Pricing as a Pure Calculation Layer
+
+**What:** Isolate all pricing logic in `lib/pricing/calculateSessionPrice.ts` as a function that takes a Supabase client and input params, returns a price result. Database reads only, no writes.
+
+**Why:** The same pricing logic is needed in three places:
+1. `createReservationAction()` -- to set price_cents on insert
+2. `adminCreateReservationAction()` -- to set walk-in prices
+3. `getSessionPricePreviewAction()` -- to show price before booking
+
+Duplicating the logic guarantees drift. A single function ensures consistency.
+
+**Example:**
+
+```typescript
+// lib/pricing/calculateSessionPrice.ts
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { BookingMode } from '@/lib/types/reservations'
+
+interface PriceInput {
+  date: Date
+  courtId: string
+  bookingMode: BookingMode
+  isLocal: boolean
+}
+
+interface PriceResult {
+  baseCents: number
+  surchargeCents: number
+  totalCents: number
+  isTouristPrice: boolean
+  specialLabel?: { es: string | null; en: string | null }
+}
+
+export async function calculateSessionPrice(
+  supabase: SupabaseClient,
+  input: PriceInput
+): Promise<PriceResult> {
+  const dayOfWeek = input.date.getDay()
+
+  // 1. Check day-of-week special
+  const { data: special } = await supabase
+    .from('session_pricing')
+    .select('price_cents, label_es, label_en')
+    .eq('day_of_week', dayOfWeek)
+    .eq('mode', input.bookingMode)
+    .eq('is_active', true)
+    .single()
+
+  let baseCents: number
+  let specialLabel: { es: string | null; en: string | null } | undefined
+
+  if (special) {
+    baseCents = special.price_cents
+    specialLabel = { es: special.label_es, en: special.label_en }
+  } else {
+    // 2. Fall back to court_pricing
+    const { data: courtPrice } = await supabase
+      .from('court_pricing')
+      .select('price_cents')
+      .eq('court_id', input.courtId)
+      .eq('mode', input.bookingMode)
+      .single()
+
+    if (courtPrice) {
+      baseCents = courtPrice.price_cents
+    } else {
+      // 3. Fall back to global default
+      const { data: defaultPrice } = await supabase
+        .from('app_config')
+        .select('value')
+        .eq('key', 'session_price_default')
+        .single()
+
+      baseCents = defaultPrice?.value ?? 1000
+    }
+  }
+
+  // 4. Apply tourist surcharge
+  let surchargeCents = 0
+  let isTouristPrice = false
+
+  if (!input.isLocal) {
+    const { data: surchargeConfig } = await supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'tourist_surcharge_pct')
+      .single()
+
+    const pct = surchargeConfig?.value ?? 0
+    if (pct > 0) {
+      surchargeCents = Math.round(baseCents * pct / 100)
+      isTouristPrice = true
+    }
+  }
+
+  return {
+    baseCents,
+    surchargeCents,
+    totalCents: baseCents + surchargeCents,
+    isTouristPrice,
+    specialLabel,
+  }
+}
+```
+
+### Pattern 2: Snapshot Pricing at Booking Time
+
+**What:** Store the calculated price on the reservation row at booking time. Never re-derive price from current pricing tables.
+
+**Why:** Prices change. If admin changes Monday price from $5 to $7, existing Monday reservations should still show $5. The existing codebase already follows this pattern with `reservation_user_first_name` (snapshot of name at booking time). The `price_cents` column on reservations already serves as a price snapshot. Adding `is_tourist_price` extends this pattern.
+
+### Pattern 3: Admin Controls via app_config + Dedicated Table
+
+**What:** Use `app_config` for scalar settings (surcharge percentage) and a dedicated table for structured data (day-of-week prices).
+
+**Why:** This matches the existing pattern. `app_config` already stores `session_price_default`, `cancellation_window_hours`, etc. Adding `tourist_surcharge_pct` there is consistent. But day-of-week prices have structure (7 days x 2 modes with labels), which is better served by a proper table with constraints.
+
+### Pattern 4: Country as User Profile Data
+
+**What:** Store country on the `profiles` table, not in auth metadata or a separate table.
+
+**Why:** The signup flow already inserts into `profiles` via `supabaseAdmin` (see auth.ts line 62). Adding `country` to the same insert is one line of code. The reservation action already queries `profiles` for name snapshot (line 38-42). Adding `country` to the same select is one field. No new queries, no new joins.
+
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Real-Time Price Calculation at Stripe Checkout
+
+**What:** Computing the price in `createSessionPaymentAction()` instead of reading it from the reservation.
+
+**Why bad:** The reservation already has `price_cents` stored. Recalculating at checkout time means: (a) prices could differ if admin changed pricing between reservation creation and payment, (b) race conditions between price lookup and Stripe session creation, (c) duplicated logic.
+
+**Instead:** Keep `createSessionPaymentAction()` unchanged. It already reads `reservation.price_cents` and passes to Stripe.
+
+### Anti-Pattern 2: Per-Court Per-Day Pricing Matrix
+
+**What:** Adding `court_id` to `session_pricing` to allow different day-specials per court.
+
+**Why bad:** With 3 courts x 7 days x 2 modes = 42 pricing configurations for the admin to manage. The business requirement is "$5 Mondays" across all courts, not per-court-per-day variation.
+
+**Instead:** Day-of-week specials are global. Per-court pricing stays in `court_pricing` as the fallback.
+
+### Anti-Pattern 3: Storing Classification Instead of Source Data
+
+**What:** Adding a `user_type: 'local' | 'tourist'` column to profiles.
+
+**Why bad:** Classification logic may change. Store the source data (country code) and derive the classification at query time. If you store the derived classification, you must migrate all rows when the rule changes.
+
+**Instead:** Store `country TEXT` on profiles. Derive `isLocal = country === 'DO'` in application code.
+
+### Anti-Pattern 4: Querying Pricing Tables on Every Page Load
+
+**What:** Fetching session_pricing and surcharge config on every reservation page render.
+
+**Why bad:** These values change rarely. Fetching on every page load adds unnecessary database queries.
+
+**Instead:** Use `getSessionPricePreviewAction()` only when the user selects a specific date and time slot. The price preview is per-interaction, not per-page-load.
+
+## Migration Strategy
+
+### Database Migration: `0008_session_pricing.sql`
 
 ```sql
--- Members can only see their own reservations
-create policy "members_own_reservations" on reservations
-  for all using (auth.uid() = user_id);
+-- 1. Add country to profiles
+ALTER TABLE profiles ADD COLUMN country TEXT;
 
--- Only active members can insert reservations (checked against memberships table)
-create policy "active_members_can_reserve" on reservations
-  for insert with check (
-    exists (
-      select 1 from memberships
-      where user_id = auth.uid()
-      and status = 'active'
-    )
-  );
+-- 2. Create session_pricing table
+CREATE TABLE session_pricing (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+  mode        TEXT NOT NULL CHECK (mode IN ('full_court', 'open_play')),
+  price_cents INT NOT NULL,
+  label_es    TEXT,
+  label_en    TEXT,
+  is_active   BOOLEAN NOT NULL DEFAULT true,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (day_of_week, mode)
+);
+ALTER TABLE session_pricing ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "All authenticated can read session_pricing"
+  ON session_pricing FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Anon can read session_pricing"
+  ON session_pricing FOR SELECT TO anon USING (true);
+CREATE POLICY "Service role full access on session_pricing"
+  ON session_pricing FOR ALL TO service_role USING (true) WITH CHECK (true);
 
--- Public can read content blocks (marketing pages)
-create policy "public_read_content_blocks" on content_blocks
-  for select using (true);
+-- 3. Add tourist price flag to reservations
+ALTER TABLE reservations
+  ADD COLUMN is_tourist_price BOOLEAN NOT NULL DEFAULT false;
 
--- Only admins can write content blocks
-create policy "admin_write_content_blocks" on content_blocks
-  for all using (auth.jwt() ->> 'role' = 'admin');
-
--- Admin role stored in app_metadata (set via service role, not user-editable)
+-- 4. Add tourist surcharge config
+INSERT INTO app_config (key, value) VALUES
+  ('tourist_surcharge_pct', '25'::jsonb)
+ON CONFLICT (key) DO NOTHING;
 ```
 
-**Important:** Admin role must live in `app_metadata` (not `user_metadata`). `app_metadata` cannot be modified by the user themselves — only the service role key can write to it.
-
----
-
-## Scaling Considerations
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| 0–500 members | Current monolith is ideal. Vercel hobby/pro plan, Supabase free/pro. No changes needed. |
-| 500–5k members | Add Supabase connection pooler (pgBouncer, already available). Enable ISR for marketing pages. Consider Supabase Realtime for map availability updates. |
-| 5k–50k members (national expansion) | Shard courts by `location_id` for RLS performance. Add read replicas if needed. Consider extracting chatbot to a dedicated service. Redis for reservation lock to prevent race conditions at booking time. |
-
-### Scaling Priorities
-
-1. **First bottleneck:** Court reservation race conditions (double-booking). Solve with `select ... for update` or Postgres advisory locks in a Server Action — this is a day-one concern at any scale.
-2. **Second bottleneck:** Marketing page DB reads. Solve with ISR (`revalidate` on `content_blocks` tag) so pages are served from CDN edge without hitting Supabase.
-
----
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Using `getSession()` in Middleware
-
-**What people do:** Call `supabase.auth.getSession()` in middleware to check auth.
-**Why it's wrong:** `getSession()` reads the JWT from the cookie without verifying it against Supabase servers. A tampered cookie passes the check. Route guards become security theater.
-**Do this instead:** Always use `supabase.auth.getUser()` in middleware. It makes a network call to Supabase to validate the JWT. Yes, it's slightly slower — that is the correct trade-off for security.
-
-### Anti-Pattern 2: Using Service Role Key in Client Components
-
-**What people do:** Expose `SUPABASE_SERVICE_ROLE_KEY` in a client-side Supabase instance to bypass RLS for convenience.
-**Why it's wrong:** The service role key bypasses all RLS — any user who inspects the bundle can exfiltrate all data. It is a complete security failure.
-**Do this instead:** Service role key is used only in: (1) Stripe webhook route handler, (2) Edge Functions, (3) Server Actions that require admin-level writes (e.g., setting `app_metadata.role` when onboarding an admin). Never in `'use client'` files.
-
-### Anti-Pattern 3: Importing Leaflet in Server Components
-
-**What people do:** Import `react-leaflet` or `leaflet` at the top of a page component.
-**Why it's wrong:** Leaflet accesses `window` at import time. Next.js SSR throws `ReferenceError: window is not defined`.
-**Do this instead:** Use `dynamic(() => import('./LeafletMapInner'), { ssr: false })` in a client component wrapper. The inner map component can use Leaflet normally.
-
-### Anti-Pattern 4: Trusting Stripe Redirect Query Params for Membership Status
-
-**What people do:** On the post-checkout success page, read `?session_id=...` from the URL and immediately mark the user as a member in the UI.
-**Why it's wrong:** The webhook may not have fired yet. The user can also manually construct a success URL with a fake session ID.
-**Do this instead:** On the success page, poll Supabase `memberships` table (or subscribe via Realtime) until `status = 'active'` appears. Show a "Processing your membership..." state until confirmed.
-
-### Anti-Pattern 5: Hardcoding Admin Role Check in Next.js Middleware Only
-
-**What people do:** Enforce admin access only in middleware, relying on route protection.
-**Why it's wrong:** Route protection can be bypassed by direct API calls or if middleware config is misconfigured. Data remains exposed at the DB level.
-**Do this instead:** Defense in depth — middleware blocks the UI, but RLS policies enforce access at the database layer independently. Both must be correct.
-
----
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| Stripe | Server Action creates Checkout Session; webhook Route Handler handles events | Never expose secret key client-side; always verify webhook signature |
-| Supabase Auth | `@supabase/ssr` with separate server/client factories; middleware refreshes tokens | Use `getUser()` not `getSession()` for security; role in `app_metadata` |
-| Resend | HTTP API called from Server Actions (immediate emails) and Edge Functions (reminders) | Deno-compatible; Supabase Edge Functions use `fetch`, not Node.js SDK |
-| OpenAI / Anthropic | Route handler `/api/chatbot` streams response; no direct DB access from AI | System prompt includes content_blocks for knowledge base; never expose API key to client |
-| Leaflet | Dynamic import with `ssr: false`; court coordinates fetched server-side, passed as props | Import Leaflet CSS in the inner component file, not in globals (breaks SSR) |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| Server Components ↔ Supabase | Direct query via server client | No REST over the wire — direct Postgres via `@supabase/ssr` |
-| Client Components ↔ Supabase | Browser client for real-time subscriptions only; mutations via Server Actions | Avoid direct DB mutations from client components |
-| Server Actions ↔ Supabase | Server client with user session for member actions; service role for admin actions | Server Actions run server-side — safe to use secret keys |
-| Next.js ↔ Stripe | Stripe SDK in server-only code; client only receives Checkout Session URL | `client_reference_id` links Stripe customer to Supabase user |
-| Edge Functions ↔ Supabase DB | Service role client inside Edge Function | Edge Functions share the same Supabase project — use internal URL |
-| Admin Panel ↔ All Tables | Server Components + Server Actions with admin role verification | Double-check: middleware blocks UI, RLS blocks DB — both required |
-
----
+**Migration is fully additive:** No columns dropped, no tables altered destructively, no data changed. Existing reservations get `is_tourist_price = false` (correct -- all pre-v1.1 reservations were flat-rate). Existing profiles get `country = NULL` (users can update via profile settings).
 
 ## Suggested Build Order
 
-The following order minimizes rework by ensuring each layer is stable before the next depends on it.
+Based on dependency analysis:
 
-1. **Database schema + RLS** — Define all tables, relationships, and policies. Everything else depends on this being correct. Generate TypeScript types with `supabase gen types typescript`.
-2. **Supabase client setup + middleware** — Establish the server/client split and auth cookie refresh before writing any pages. Auth bugs discovered late are expensive.
-3. **Auth flow** — Signup, login, password reset. Validate the full cookie lifecycle works across RSC and client components.
-4. **Stripe integration** — Checkout Session creation + webhook handler. Test with Stripe CLI locally (`stripe listen --forward-to localhost:3000/api/stripe/webhook`). Do not proceed to reservations until membership status writes correctly.
-5. **Marketing pages + CMS** — Content blocks table + public pages. These are statically rendered and unblock design review while backend work continues in parallel.
-6. **Member dashboard + reservations** — Depends on auth + membership being stable. Include race condition guard at this step.
-7. **Interactive court map** — Depends on courts table and reservation system. Leaflet dynamic import pattern should be established in a stub first.
-8. **Admin panel** — Depends on all tables existing. Build last because it's CRUD over already-defined data models.
-9. **AI chatbot** — Independent of other features. Can be built in parallel with admin panel. Wire in content_blocks as context.
-10. **Edge Functions (session reminders)** — Build after reservations are stable. Requires confirmed `reminder_sent` column and Resend integration.
+### Step 1: Database migration + types (foundation, no UI dependency)
+- Write and apply `0008_session_pricing.sql`
+- Create `lib/types/pricing.ts`
+- Update `AppConfigKey` union type in `lib/types/reservations.ts`
 
----
+### Step 2: Pricing calculation function (depends on Step 1)
+- Create `lib/pricing/calculateSessionPrice.ts`
+- Unit testable with mocked Supabase client
+
+### Step 3: Signup country collection (depends on Step 1, independent of Step 2)
+- Add country dropdown to `SignupForm.tsx` and `CompleteProfileForm.tsx`
+- Modify `signUpAction()` and `completeOAuthProfileAction()` to store country
+- Add country field to profile settings for existing users
+
+### Step 4: Reservation pricing integration (depends on Steps 1-3)
+- Modify `createReservationAction()` to use `calculateSessionPrice()`
+- Modify `adminCreateReservationAction()` to add local/tourist toggle
+- Create `getSessionPricePreviewAction()` for UI price display
+- Modify `CourtCard.tsx` to show price with surcharge indicator
+
+### Step 5: Admin pricing panel (depends on Step 1, parallel with Steps 2-4)
+- Create admin pricing page with day-of-week price CRUD
+- Create surcharge percentage editor
+- Add nav link in AdminSidebar
+
+### Step 6: Integration testing (depends on all above)
+- End-to-end: local user books Monday special, pays $5
+- End-to-end: tourist user books Monday special, pays $6.25 (25% surcharge)
+- Admin walk-in: set tourist, verify price calculation
+- Edge case: no day-of-week special configured, falls back to court_pricing
+- Edge case: user with no country set, defaults to tourist pricing
+
+## Scalability Considerations
+
+| Concern | Current (3 courts) | Future (20+ courts) | Recommendation |
+|---------|---------------------|---------------------|----------------|
+| Pricing table size | 14 rows max (7 days x 2 modes) | Same 14 rows (day specials are global) | No scaling issue |
+| Price calculation queries | 3-4 queries per reservation | Same 3-4 queries | Batch into single RPC function if latency becomes concern |
+| Admin pricing management | 14 rows to manage | Same 14 rows | No scaling issue |
+| Country classification | Single column check | Same single check | If expansion crosses borders, make "local countries" a config list in app_config |
 
 ## Sources
 
-- Next.js App Router project structure (official docs, verified 2026-02-27): https://nextjs.org/docs/app/getting-started/project-structure
-- Next.js route groups convention: https://nextjs.org/docs/app/api-reference/file-conventions/route-groups
-- Supabase SSR package (`@supabase/ssr`) — createServerClient, createBrowserClient, middleware patterns: https://supabase.com/docs/guides/auth/server-side/nextjs (HIGH confidence from training data + package changelog)
-- Stripe webhook best practices (signature verification, idempotency, client_reference_id): https://stripe.com/docs/webhooks (HIGH confidence — stable API pattern)
-- Supabase Edge Functions with Deno + pg_cron scheduling: https://supabase.com/docs/guides/functions/schedule-functions (MEDIUM confidence — confirmed pattern, Deno runtime constraint verified)
-- Leaflet + Next.js dynamic import requirement: documented in react-leaflet FAQ and Next.js dynamic imports docs (HIGH confidence — well-established constraint)
-- Supabase RLS app_metadata for admin roles: https://supabase.com/docs/guides/database/postgres/row-level-security (HIGH confidence — official recommended pattern)
-
----
-
-*Architecture research for: NELL Pickleball Club Platform (Next.js 15 + Supabase + Stripe)*
-*Researched: 2026-03-07*
+- Codebase analysis: `supabase/migrations/0001_initial_schema.sql` (profiles, courts, reservations tables)
+- Codebase analysis: `supabase/migrations/0003_reservations.sql` (court_config, court_pricing, app_config, reservation columns)
+- Codebase analysis: `app/actions/reservations.ts` (reservation creation with price lookup)
+- Codebase analysis: `app/actions/sessionPayment.ts` (Stripe checkout using reservation.price_cents)
+- Codebase analysis: `lib/stripe/webhookHandlers.ts` (handleOneTimePaymentCompleted confirmation flow)
+- Codebase analysis: `app/actions/auth.ts` (signup profile insertion)
+- Codebase analysis: `app/actions/admin/reservations.ts` (admin walk-in reservation creation)
+- Codebase analysis: `app/api/stripe/webhook/route.ts` (webhook dispatch)

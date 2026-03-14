@@ -1,569 +1,409 @@
-# Pitfalls Research
+# Domain Pitfalls: v1.1 Local vs Tourist Differential Pricing
 
-**Domain:** Sports club membership + court reservation platform (Next.js App Router + Supabase + Stripe)
-**Researched:** 2026-03-07
-**Confidence:** HIGH (training data through Aug 2025 covers all technologies at their current stable versions; these are well-documented production failure modes)
+**Domain:** Adding dynamic per-session pricing with tourist surcharge to existing Supabase + Stripe booking platform
+**Researched:** 2026-03-14
+**Confidence:** HIGH (based on direct codebase analysis of existing reservation/payment flow + Stripe API patterns + Postgres concurrency patterns)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Supabase Auth Cookie Handling — Using `createClient` Instead of `createServerClient`
+Mistakes that cause incorrect charges, security vulnerabilities, or data corruption requiring rollback.
+
+### Pitfall 1: Price Calculation on the Client — Tourist Surcharge Bypass
 
 **What goes wrong:**
-Developers import `createClient` from `@supabase/supabase-js` directly in Server Components, API routes, and middleware instead of using `@supabase/ssr`'s `createServerClient`. The result: the server reads an empty session every request (user appears logged out), auth state is never persisted across navigation, and Server Components always render the unauthenticated state.
+The price displayed to the user is computed in the browser (base price + surcharge percentage) and sent to the server action, which passes it directly to Stripe Checkout's `price_data.unit_amount`. An attacker modifies the form data to send `price_cents: 0` or the local price, bypassing the tourist surcharge entirely. The existing `createReservationAction` in `app/actions/reservations.ts` already accepts the price from `court_pricing` lookup on the server (line 135-142), but the new surcharge logic introduces a temptation to compute on the client for display purposes and then trust that value.
 
 **Why it happens:**
-The old `@supabase/auth-helpers-nextjs` package had `createServerComponentClient`, `createRouteHandlerClient`, etc. These were deprecated in favor of a single `createServerClient` from `@supabase/ssr`. Tutorials and AI completions still reference the old API. The import works without a type error, so the failure is silent until runtime.
+The UI needs to display the final price (base + surcharge) before the user submits. Developers compute the price client-side for display, then reuse that computed value in the form submission rather than recomputing it server-side.
 
-**How to avoid:**
-- Use `@supabase/ssr` exclusively for server-side clients. Never use `@supabase/supabase-js`'s `createClient` in Server Components or Route Handlers.
-- Create two utility files at project start: `utils/supabase/server.ts` (using `createServerClient` with `cookies()`) and `utils/supabase/client.ts` (using `createBrowserClient` for Client Components).
-- Middleware must use `createServerClient` and both read AND write cookies: read to get the session, write because Supabase rotates tokens on every request. If middleware only reads, tokens expire and users get randomly logged out.
+**Consequences:**
+- Tourist users pay local prices by manipulating form data
+- Revenue loss proportional to tourist surcharge percentage
+- Stripe records show correct (manipulated) amounts, making auditing difficult
 
-```typescript
-// utils/supabase/middleware.ts — correct pattern
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
+**Prevention:**
+- The server action MUST independently compute the final price: fetch base price from `court_pricing`, fetch surcharge percentage from `app_config`, determine user classification from `profiles.country`, then calculate. Never accept `price_cents` from form data for non-member sessions.
+- The existing pattern at `reservations.ts:134-142` is correct — it fetches `court_pricing` server-side. Extend this pattern: after fetching the base price, apply the surcharge server-side based on the user's stored country.
+- For display purposes, expose a read-only server action or API route that returns the computed price for a given court/mode/user combination. The UI calls this for display but the booking action recomputes independently.
 
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request })
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value)
-            response.cookies.set(name, value, options)  // MUST write to response
-          })
-        },
-      },
-    }
-  )
-  await supabase.auth.getUser()  // triggers token refresh if needed
-  return response
-}
-```
+**Detection:**
+- Audit: compare `price_cents` on reservations against what the pricing rules would produce for that user's classification + day of week. Any mismatch indicates bypass.
+- Log the pricing components (base, surcharge percentage, final) in the reservation record for audit trail.
 
-**Warning signs:**
-- `getSession()` returns `null` in Server Components when the user is clearly logged in
-- Users randomly get logged out after ~1 hour (token expiry without refresh)
-- Middleware auth checks always redirect to login
-- `supabase.auth.getUser()` works in Client Components but not Server Components
-
-**Phase to address:** Phase 1 (Authentication foundation) — set up both client files before writing any auth-dependent code.
+**Phase to address:** Price calculation logic (must be server-side from the start).
 
 ---
 
-### Pitfall 2: Supabase Middleware — Trusting `getSession()` for Auth Decisions
+### Pitfall 2: Race Condition Between Admin Price Update and In-Flight Checkout
 
 **What goes wrong:**
-`supabase.auth.getSession()` reads the session from the cookie without re-validating it with the Supabase server. An attacker can forge or replay a cookie. Middleware that gates admin routes using `getSession()` can be bypassed. Production applications must use `supabase.auth.getUser()` for all security-critical auth checks.
+Admin changes the Monday special from $5 to $10. A user who loaded the reservation page before the change sees "$5" and clicks "Reserve." The server action computes $5 (old price). Meanwhile, the admin save completes. The reservation is created at $5 despite the admin intending $10. Worse: if using Stripe Checkout with `price_data`, the user is charged $5, but the admin dashboard shows the new $10 price, creating confusion.
+
+The inverse is also problematic: admin lowers prices, but in-flight reservations charge the old higher price.
 
 **Why it happens:**
-`getSession()` is faster (no network call) and appears equivalent to `getUser()`. The Supabase docs now explicitly warn against this but many tutorials still use `getSession()`. The distinction is invisible in development where sessions are fresh and valid.
+The `court_pricing` and `app_config` tables have no versioning or locking. The server action reads the price at reservation time, not at page-load time. If the admin updates between page load and form submission, the price is stale relative to what the user saw but current relative to the database — it could go either way depending on exact timing.
 
-**How to avoid:**
-- Use `supabase.auth.getUser()` in middleware and in every Server Component or Route Handler that makes an authorization decision.
-- Reserve `getSession()` only for display purposes (e.g., showing the user's name in a Client Component) where security is not at stake.
-- For the admin panel route group, always call `getUser()` + verify `user.app_metadata.role === 'admin'` before rendering.
+**Consequences:**
+- Users charged prices different from what they saw on screen
+- Admin confusion about which price applied
+- Potential chargebacks if users dispute unexpected charges
 
-**Warning signs:**
-- Middleware uses `getSession()` to decide whether to redirect to login
-- Admin route protection relies on data stored in JWT claims without re-validation
-- Security audit flags unvalidated session reads
+**Prevention:**
+- **Accept the "price at booking time" model explicitly.** The price the server computes at the moment of reservation creation is the price charged. Document this as the business rule.
+- Display a price confirmation step before creating the reservation: "Your session price: $X.XX. Proceed?" This ensures the user sees the actual price that will be charged, even if it changed since they loaded the page.
+- Store the pricing breakdown on the reservation record: `base_price_cents`, `surcharge_percent`, `final_price_cents`. This creates an audit trail showing exactly how the price was computed at booking time.
+- For admin price changes, consider an `effective_date` field so price changes take effect at a future date/time rather than immediately. This eliminates the race window entirely for planned price changes.
 
-**Phase to address:** Phase 1 (Authentication foundation) — establish the `getUser()` pattern immediately, before any protected routes exist.
+**Detection:**
+- Reservation records with `final_price_cents` that don't match current pricing rules (expected — they matched at booking time, not now).
+- Admin sets price, then reviews recent reservations and sees old price — this is correct behavior but must be understood.
+
+**Phase to address:** Database schema design (add pricing audit columns) and admin pricing UI (add effective date option).
 
 ---
 
-### Pitfall 3: Stripe Webhooks — Missing Events and Out-of-Order Processing
+### Pitfall 3: Country Field as Mutable User Classification — Tourist-to-Local Exploit
 
 **What goes wrong:**
-The Stripe webhook handler only listens for `checkout.session.completed` and `invoice.payment_succeeded`. In production, subscriptions pass through many more events: `customer.subscription.updated` (plan change), `customer.subscription.deleted` (cancellation), `invoice.payment_failed` (payment failure), `customer.subscription.trial_will_end`. Missing these means a cancelled subscription remains "active" in Supabase — the member can still book courts after cancelling.
-
-Additionally, Stripe does not guarantee event delivery order. A `customer.subscription.updated` for a cancellation may arrive before `customer.subscription.created`. Code that checks `if subscription.status === 'active'` and writes to the DB without considering event ordering will produce stale data.
+The `profiles` table gets a `country` column. Users can update their own profile (existing RLS policy: `"Users can update own profile" ON profiles FOR UPDATE`). A tourist sets their country to "DO" (Dominican Republic) to get local pricing, books courts at the local rate, then changes it back. Since the existing RLS allows users to update their own profile, there's no restriction on which fields they can modify.
 
 **Why it happens:**
-Tutorials show the minimal happy path. Developers test locally using `stripe listen` which replays events correctly. Production traffic arrives in bursts after network delays, causing out-of-order delivery.
+The existing `profiles` UPDATE policy is a blanket `USING ((SELECT auth.uid()) = id)` — it allows the user to update ANY column on their own profile row. When `country` is added and used for pricing decisions, it becomes a financially significant field that should not be user-editable after initial signup (or at all).
 
-**How to avoid:**
-Handle at minimum these events:
-```
-checkout.session.completed         → provision new subscription
-customer.subscription.created      → set membership to active
-customer.subscription.updated      → handle plan changes, status changes
-customer.subscription.deleted      → revoke membership immediately
-invoice.payment_succeeded          → confirm renewal
-invoice.payment_failed             → mark payment_past_due, send notification
-customer.subscription.trial_will_end → reminder (if trials added later)
-```
+**Consequences:**
+- Any user can self-classify as local to avoid surcharge
+- Revenue loss on every tourist booking
+- Impossible to enforce pricing tiers
 
-For out-of-order safety, never use the webhook event's timestamp to order writes. Instead: fetch the current state from Stripe API inside the handler (`stripe.subscriptions.retrieve(subscriptionId)`) and write that authoritative state to Supabase. This way, even if events arrive out of order, you always write the current truth.
-
-Use idempotency: store `stripe_event_id` in a `webhook_events` table and check for duplicates before processing. Stripe retries failed webhooks up to 3 days — duplicate processing a cancellation twice is harmless, but duplicate processing a plan upgrade could cause double credits.
-
-**Warning signs:**
-- Subscription table only updates on payment events, not on cancellation events
-- No `webhook_events` deduplication table exists
-- Webhook handler has fewer than 5 event types handled
-- Manual Stripe dashboard checks reveal mismatches with Supabase membership status
-
-**Phase to address:** Phase 2 (Membership + Stripe) — build the full event handler before accepting live payments.
-
----
-
-### Pitfall 4: Stripe Webhook Security — Skipping Signature Verification
-
-**What goes wrong:**
-The `/api/webhooks/stripe` route handler does not verify the `Stripe-Signature` header. Any HTTP request to that endpoint can trigger membership provisioning or cancellation. An attacker can POST a fake `customer.subscription.deleted` event to cancel every user's membership, or a fake `checkout.session.completed` to grant free memberships.
-
-**Why it happens:**
-In development, `stripe listen --forward-to localhost:3000/api/webhooks/stripe` signs events automatically. Developers don't notice signature verification is missing until production. Next.js App Router complicates this: verification requires the raw request body, but `request.json()` parses it. Calling `request.json()` before `stripe.webhooks.constructEvent()` destroys the raw body and verification always fails.
-
-**How to avoid:**
-```typescript
-// CORRECT — App Router webhook handler
-export async function POST(request: Request) {
-  const body = await request.text()  // raw body, NOT request.json()
-  const signature = request.headers.get('stripe-signature')!
-
-  let event: Stripe.Event
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
-  } catch (err) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
-  }
-  // process event...
-}
-```
-
-Also: use separate webhook secrets for development (`stripe listen` generates one) and production (Stripe Dashboard generates another). Store the production secret in Vercel environment variables, never in source code.
-
-**Warning signs:**
-- Webhook handler calls `request.json()` before `constructEvent`
-- `STRIPE_WEBHOOK_SECRET` environment variable is absent or the same for dev and prod
-- Webhook endpoint is not rate-limited or IP-restricted
-
-**Phase to address:** Phase 2 (Membership + Stripe) — non-negotiable before going live.
-
----
-
-### Pitfall 5: Court Reservation Double-Booking — Race Condition Without Locks
-
-**What goes wrong:**
-Two members simultaneously check court availability, both see a slot as available, both submit reservations within milliseconds of each other. The application checks availability in JavaScript, then inserts if available — but without a database-level lock, both inserts succeed and the court is double-booked.
-
-This is the single most critical bug for a reservation platform. It will happen at launch if courts become popular.
-
-**Why it happens:**
-The naïve implementation is:
-```sql
--- Step 1 (read): SELECT count(*) FROM reservations WHERE court_id = X AND slot = Y
--- Step 2 (write): INSERT INTO reservations IF count = 0
-```
-Between Step 1 and Step 2 of Request A, Request B can complete both steps. Both insert.
-
-**How to avoid:**
-Use a Postgres unique constraint + conflict handling. This pushes the race condition check to the database engine, which handles concurrent writes atomically:
-
-```sql
--- Schema
-ALTER TABLE reservations
-  ADD CONSTRAINT no_double_booking
-  UNIQUE (court_id, session_start_time);
-
--- Or with a partial index for only active reservations:
-CREATE UNIQUE INDEX reservations_no_double_book
-  ON reservations (court_id, session_start_time)
-  WHERE status != 'cancelled';
-```
-
-Then in the API Route Handler:
-```typescript
-const { data, error } = await supabase
-  .from('reservations')
-  .insert({ court_id, session_start_time, user_id, ... })
-
-if (error?.code === '23505') {  // unique_violation
-  return NextResponse.json({ error: 'This slot was just taken.' }, { status: 409 })
-}
-```
-
-For more complex scenarios (configurable session lengths that overlap), use a Postgres exclusion constraint with `tstzrange`:
-```sql
-ALTER TABLE reservations
-  ADD CONSTRAINT no_overlapping_reservations
-  EXCLUDE USING gist (
-    court_id WITH =,
-    tstzrange(session_start_time, session_end_time, '[)') WITH &&
-  )
-  WHERE (status != 'cancelled');
-```
-This requires the `btree_gist` extension (`CREATE EXTENSION btree_gist`).
-
-**Warning signs:**
-- Availability check is done in application code before insert
-- No unique constraint or exclusion constraint on `(court_id, session_start_time)`
-- Tests only test sequential requests, never concurrent ones
-- No `23505` error handling in the reservation API
-
-**Phase to address:** Phase 3 (Court reservation system) — design the schema with the constraint from day one, not as an afterthought.
-
----
-
-### Pitfall 6: Supabase Row Level Security — Policies That Expose Data or Block Legitimate Access
-
-**What goes wrong:**
-Two failure modes:
-
-**Over-permissive (data exposure):** RLS is enabled but policies are written as `USING (true)` or use `auth.uid()` checks only on write operations, not reads. Any authenticated user can read any other user's reservation history, membership details, or personal information.
-
-**Over-restrictive (broken features):** Policies check `auth.uid() = user_id` but the admin user operations run with the anon key (same RLS applies). Admin can't view all reservations, can't cancel any reservation, can't see membership data. The admin panel silently returns empty results.
-
-**Why it happens:**
-RLS is added as a compliance checkbox late in development. Policies are written without testing both the member role and the admin role against them. Supabase Studio shows data because Studio uses the service role key, which bypasses RLS — developers never see the access failures that real users will hit.
-
-**How to avoid:**
-
-Define roles clearly upfront:
-- `anon`: can read public content (courts, events, about page)
-- `authenticated`: can read/write own data only
-- `admin`: can read/write all data (implemented via `auth.jwt() ->> 'role' = 'admin'` or a profiles table check)
-
-Standard pattern for reservations:
-```sql
--- Members can only see their own reservations
-CREATE POLICY "members_read_own_reservations"
-  ON reservations FOR SELECT
-  USING (auth.uid() = user_id);
-
--- Admins can see all reservations
-CREATE POLICY "admins_read_all_reservations"
-  ON reservations FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
-    )
+**Prevention:**
+- **Do not allow users to update the `country` field via the standard profile update flow.** Options:
+  1. Use a separate table (`user_classifications`) with a service-role-only write policy. Admin or signup flow sets this; users cannot change it.
+  2. Use a column-level trigger that prevents updates to `country` after initial insert (Postgres `BEFORE UPDATE` trigger that raises an exception if `OLD.country != NEW.country`).
+  3. Add a `WITH CHECK` clause to the profile update policy that excludes the country column: this is not directly possible in Postgres RLS (RLS is row-level, not column-level), so use option 1 or 2.
+- **Recommended approach:** Store classification in a separate `user_classifications` table:
+  ```sql
+  CREATE TABLE user_classifications (
+    user_id UUID PRIMARY KEY REFERENCES profiles(id),
+    country TEXT NOT NULL,
+    is_local BOOLEAN GENERATED ALWAYS AS (country = 'DO') STORED,
+    classified_at TIMESTAMPTZ DEFAULT NOW(),
+    classified_by TEXT DEFAULT 'signup' -- 'signup', 'admin_override'
   );
+  -- RLS: users can SELECT own row, only service_role can INSERT/UPDATE
+  ```
+- The `is_local` computed column prevents logic bugs where different parts of the codebase disagree on what constitutes "local."
+- Admin override flow for edge cases (Dominican living abroad, foreign resident of DR).
 
--- Members can insert their own reservations
-CREATE POLICY "members_insert_own_reservations"
-  ON reservations FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+**Detection:**
+- Audit log: if `country` changes on a profile, flag for review.
+- Compare `country` at reservation time vs current `country` — frequent changes indicate gaming.
 
--- Members can only cancel their own future reservations
-CREATE POLICY "members_cancel_own_reservations"
-  ON reservations FOR UPDATE
-  USING (auth.uid() = user_id AND session_start_time > now())
-  WITH CHECK (status = 'cancelled');
-```
-
-Test RLS policies using Supabase's SQL editor with `SET ROLE authenticated; SET LOCAL request.jwt.claims = '{"sub":"user-uuid-here"}';` to simulate different users — do not rely on the Studio UI which uses service role.
-
-**Warning signs:**
-- RLS policies added after tables are populated (not from the start)
-- Admin operations use the anon key (not service role in Route Handlers)
-- No test that verifies User A cannot read User B's data
-- Policy only covers INSERT/UPDATE, not SELECT
-- Admin panel shows empty lists intermittently
-
-**Phase to address:** Phase 1 (Database schema + auth) — write RLS policies simultaneously with table creation.
+**Phase to address:** Database schema design (before adding country to profiles).
 
 ---
 
-### Pitfall 7: Admin Role Management — Over-Permissioning and Single-Layer Checks
+### Pitfall 4: Walk-In Tourist/Local Designation Without Price Recalculation
 
 **What goes wrong:**
-Admin access is controlled at only one layer (e.g., only in the Next.js middleware redirect, or only in the UI). If the middleware check is misconfigured, admin API routes are reachable by any authenticated user. Alternatively, the admin role is stored only in the JWT claims, which are set at signup and never updated — promoting an existing user to admin requires a database migration.
+The existing `adminCreateReservationAction` (in `app/actions/admin/reservations.ts`) hardcodes `price_cents: 0` for all admin-created reservations (line 146). When walk-in pricing is added, the admin must designate local vs tourist, but the action doesn't recalculate price based on this designation. Walk-in tourists are created with `price_cents: 0` regardless of classification.
 
-A common specific mistake: storing `role: 'admin'` only in `user_metadata` (client-writable) rather than `app_metadata` (server-only). Any user can call `supabase.auth.updateUser({ data: { role: 'admin' } })` and grant themselves admin access.
+Additionally, the current walk-in flow uses the admin's `user_id` as `reservationUserId` (line 130). If pricing depends on the user's classification, the system would check the admin's country (likely "DO") instead of the walk-in guest's designation.
 
 **Why it happens:**
-Auth role documentation conflates `user_metadata` (user can write) and `app_metadata` (only service role can write). Tutorials often store roles in `user_metadata` for simplicity.
+The existing admin reservation flow was designed for free walk-in bookings. Adding pricing to it requires rethinking the entire flow — it's not just adding a field.
 
-**How to avoid:**
-- Store admin role in a `profiles` table with RLS policies — not in JWT metadata alone. The profiles table is the authoritative source.
-- Admin API routes must re-verify admin status on every request using the service role client (which bypasses RLS) or by checking `profiles.role` via a verified `getUser()` call.
-- Do not store admin role in `user_metadata`. If using JWT claims for role, populate `app_metadata` using a Supabase service role call or database webhook — `app_metadata` cannot be written by client code.
-- Implement three layers: (1) middleware redirect, (2) Route Handler authorization check, (3) RLS policy.
+**Consequences:**
+- Walk-in tourists never charged the surcharge
+- Revenue leakage on every walk-in tourist booking
+- Cash payment tracking inaccurate (cash_pending with wrong amount)
 
-**Warning signs:**
-- Admin role stored in `user_metadata` not `app_metadata`
-- Admin API routes only check if user is authenticated, not if they're admin
-- Promoting a user to admin requires manual SQL or a new deployment
-- Admin panel accessible via direct URL if middleware is bypassed
+**Prevention:**
+- Add `is_local` boolean field to the admin reservation form for walk-in guests.
+- The `adminCreateReservationAction` must compute price identically to the user-facing flow: fetch base price from day-of-week pricing table, apply surcharge if `is_local === false`.
+- Store the classification on the reservation record itself (not derived from a user profile, since walk-ins don't have profiles): add `is_local_rate BOOLEAN` to the reservations table.
+- The `price_cents` on the reservation must reflect the actual computed price, even for cash payments — it represents what should be collected, not what was collected.
 
-**Phase to address:** Phase 1 (Auth + roles) and Phase 4 (Admin panel) — define role storage strategy in Phase 1, enforce it in Phase 4.
+**Detection:**
+- Query: `SELECT * FROM reservations WHERE created_by_admin = true AND price_cents = 0 AND payment_status = 'cash_pending'` — these should have prices after the pricing feature ships.
+
+**Phase to address:** Admin walk-in flow update (must be updated simultaneously with pricing schema).
 
 ---
 
-### Pitfall 8: Leaflet + Next.js App Router — `window is not defined` SSR Error
+### Pitfall 5: Day-of-Week Pricing Without Timezone Awareness
 
 **What goes wrong:**
-Leaflet reads `window` and `navigator` at module load time. Importing Leaflet in a Server Component (or in a file that gets bundled for SSR) throws `ReferenceError: window is not defined` and crashes the entire page — not just the map component.
+The pricing table has day-of-week specials (e.g., "$5 Mondays"). The server action computes the day of week using `new Date(startTime).getDay()`. But `startTime` is stored as `TIMESTAMPTZ` (UTC in Postgres). A reservation for Monday at 11 PM Dominican time (AST, UTC-4) is actually Tuesday in UTC. The system charges Tuesday's price instead of Monday's special.
+
+The existing codebase stores `starts_at` as `TIMESTAMPTZ` (migration 0001, line 84). The server action receives `startTime` as an ISO string from the form (reservations.ts line 29-30) and creates a `new Date(startTime)`.
 
 **Why it happens:**
-App Router renders all components on the server by default. `import L from 'leaflet'` at the top of a component file executes during SSR before `window` exists. The error is confusing because it manifests as a build error or a cryptic runtime error, not a "Leaflet loaded incorrectly" error.
+JavaScript `Date.getDay()` returns the day in the server's timezone (Vercel runs in UTC by default). The Dominican Republic is UTC-4 (AST, no daylight saving). A reservation at 9 PM Monday AST = 1 AM Tuesday UTC. The day-of-week lookup uses UTC Tuesday, missing Monday's special.
 
-**How to avoid:**
-```typescript
-// MapComponent.tsx — must be a Client Component
-'use client'
+**Consequences:**
+- Incorrect pricing for evening reservations (8 PM - midnight local time)
+- "$5 Monday" specials not applied for the last 4 hours of Monday (Dominican time)
+- Customer complaints about being charged the wrong price
 
-import { useEffect, useRef } from 'react'
-// Do NOT import leaflet at module level — import inside useEffect:
-export function CourtMap({ courts }: Props) {
-  const mapRef = useRef(null)
+**Prevention:**
+- **Always compute day-of-week in Dominican time (America/Santo_Domingo).** Use a timezone-aware date library or Postgres function:
+  ```sql
+  -- In Postgres: extract day of week in local timezone
+  EXTRACT(DOW FROM starts_at AT TIME ZONE 'America/Santo_Domingo')
+  ```
+  Or in TypeScript:
+  ```typescript
+  const dominicanDay = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    timeZone: 'America/Santo_Domingo'
+  }).format(new Date(startTime))
+  ```
+- Store the timezone as a constant (`America/Santo_Domingo`) in `app_config`, not hardcoded in multiple places.
+- The day-of-week pricing table should use integer day (0=Sunday, 6=Saturday) matching `EXTRACT(DOW ...)` or named days matching `to_char(... , 'Day')`. Choose one and be consistent.
+- **Test edge case:** Reservation at 11:30 PM Monday AST should get Monday pricing.
 
-  useEffect(() => {
-    import('leaflet').then((L) => {
-      // initialize map here
-    })
-  }, [])
-}
-```
+**Detection:**
+- Check reservations created between 8 PM - midnight AST: do they have the correct day-of-week pricing applied?
 
-Better yet, use `next/dynamic` with `ssr: false`:
-```typescript
-// courts/page.tsx (Server Component)
-import dynamic from 'next/dynamic'
-
-const CourtMap = dynamic(
-  () => import('@/components/CourtMap'),
-  { ssr: false, loading: () => <div>Loading map...</div> }
-)
-```
-
-Also: Leaflet's default marker icons break in Next.js because the image paths use `__dirname` which doesn't resolve correctly in webpack bundles. Fix by manually setting icon URLs after import:
-```typescript
-import L from 'leaflet'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({ iconUrl: markerIcon.src, shadowUrl: markerShadow.src })
-```
-
-Also import `leaflet/dist/leaflet.css` in the component or global CSS — forgetting this makes the map render without styles (controls overlap, tiles misaligned).
-
-**Warning signs:**
-- `window is not defined` error in build logs or runtime
-- Map container renders but tiles never appear
-- Marker icons show as broken images
-- Map CSS imported in component but `leaflet.css` is not
-
-**Phase to address:** Phase 3 (Court map feature) — use `dynamic` with `ssr: false` from the first line of map component code.
+**Phase to address:** Price calculation logic (must use timezone-aware day computation from the start).
 
 ---
 
-### Pitfall 9: Session Reminder Cron — Supabase Edge Function Timing Unreliability
+## Moderate Pitfalls
+
+Mistakes that cause bugs, data inconsistency, or poor UX but don't cause financial loss or security issues.
+
+### Pitfall 6: Existing `court_pricing` Table Schema Conflict
 
 **What goes wrong:**
-The session reminder ("Your pickleball session ends in 10 minutes") is implemented as a Supabase Edge Function triggered on a pg_cron schedule (e.g., every 5 minutes). In practice: (1) pg_cron runs at the scheduled interval but not at a guaranteed sub-minute offset — a reminder scheduled for "10 minutes before end" may fire 5-14 minutes before; (2) if the Edge Function errors silently, reminders are never sent and no alert fires; (3) sessions that start/end while the cron is running may be missed entirely.
+The existing `court_pricing` table (migration 0003) stores per-court, per-mode pricing: `(court_id, mode, price_cents)` with a unique constraint on `(court_id, mode)`. The new day-of-week pricing needs per-court, per-mode, per-day pricing. Developers add a `day_of_week` column to the existing table, breaking the unique constraint, or create a new table that conflicts with the existing one, leaving two sources of truth for base prices.
 
 **Why it happens:**
-pg_cron's minimum resolution is 1 minute. A cron that runs every minute and looks for sessions ending in 10 minutes has ±30 seconds of accuracy — acceptable. But "every 5 minutes" has ±2.5 minutes of accuracy. Developers set "every 5 minutes" to reduce load and don't account for the window shift.
+The v1.0 `court_pricing` table was designed for static per-court pricing. Day-of-week specials require a different schema. Migrating the existing table is more complex than creating a new one, but creating a new one means the existing code that reads `court_pricing` doesn't know about day-of-week overrides.
 
-**How to avoid:**
-- Run the reminder cron every 1 minute (not every 5). The query is lightweight: `WHERE session_end_time BETWEEN now() + interval '9 minutes' AND now() + interval '11 minutes' AND reminder_sent = false`.
-- Use a `reminder_sent` boolean column on reservations — update it atomically in the same transaction as sending the email. This prevents double-sends on retry.
-- Add a `reminder_sent_at` timestamp for auditing.
-- Log Edge Function invocations to a `cron_runs` table: `{ function_name, invoked_at, reminders_sent, errors }`. Without this, you have no visibility into whether the cron is running.
-- For the actual email send, use Resend's API (not Supabase's built-in email which is rate-limited). Wrap the send in a try/catch and mark `reminder_failed = true` if it errors — don't let email failures crash the entire cron run.
+**Prevention:**
+- **Evolve the existing table rather than creating a parallel one.** Add `day_of_week SMALLINT` (0-6) to `court_pricing` with a default of `NULL` meaning "applies to all days."
+- Update the unique constraint to `(court_id, mode, day_of_week)` with a partial unique index for the NULL case.
+- OR: Create a new `session_pricing` table with `(court_id, mode, day_of_week, price_cents)` and deprecate `court_pricing`. Update ALL existing reads (in `reservations.ts:135-142`) to use the new table.
+- **Do not have two tables that both claim to define the base price.** Pick one source of truth.
+- Price resolution order: day-specific price > default price > app_config `session_price_default`. Document this hierarchy.
 
-```sql
--- Schema additions
-ALTER TABLE reservations ADD COLUMN reminder_sent BOOLEAN DEFAULT false;
-ALTER TABLE reservations ADD COLUMN reminder_sent_at TIMESTAMPTZ;
-```
-
-**Warning signs:**
-- No `reminder_sent` flag — duplicate reminders are possible
-- Cron function has no logging table — failures are invisible
-- Cron interval is > 1 minute with a 10-minute reminder window
-- Email send failure causes the cron to error, leaving `reminder_sent = false` so it retries forever
-
-**Phase to address:** Phase 3 (Reservations + notifications) — build the `reminder_sent` flag and logging into the initial schema.
+**Phase to address:** Database schema migration (must be designed before any pricing logic).
 
 ---
 
-### Pitfall 10: Bilingual i18n — next-intl Hydration Mismatches and Missing Translations
+### Pitfall 7: Surcharge Percentage Stored as Integer vs Decimal Confusion
 
 **What goes wrong:**
-The most common bilingual i18n mistake with Next.js App Router: using `useTranslations()` in a Server Component that renders different content based on the Accept-Language header, but the client hydrates with a different locale determination. This causes React hydration mismatches that surface as flickering text or console errors.
+The tourist surcharge percentage is stored in `app_config` as a JSONB value. Is `25` stored as `25` (meaning 25%) or `0.25`? Different parts of the codebase interpret it differently. The admin enters "25" in the UI (meaning 25%). The calculation code does `base_price * surcharge_value`. If stored as `25`, the tourist pays `$10 * 25 = $250` instead of `$10 * 0.25 = $2.50` surcharge.
 
-Second common mistake: missing translation keys fall back to the key string (`"member.dashboard.greeting"` appears literally in the UI) because error boundaries for missing translations aren't configured.
-
-Third: hardcoding Spanish text in JSX components while "planning to add i18n later." Extracting strings after the fact is expensive — every component must be touched.
+The existing `app_config` stores raw numbers as JSONB (e.g., `'72'::jsonb` for hours — migration 0003, line 44-49). Following this pattern, `25` would be stored as `'25'::jsonb`.
 
 **Why it happens:**
-i18n is added as a "Phase 2 feature" after most components are written. The locale routing with App Router requires a specific middleware + `[locale]` folder structure that must be set up before writing any components — retrofitting it touches every page file.
+No documentation on whether surcharge is stored as a whole number (25 = 25%) or a decimal (0.25 = 25%). The admin UI and the calculation code are written by different developers (or at different times) with different assumptions.
 
-**How to avoid:**
-- Set up `next-intl` (or `next-i18next` for App Router, though `next-intl` is the current recommended choice) in Phase 1, before writing any user-facing text.
-- Use the `[locale]` folder structure from the start: `app/[locale]/page.tsx`, `app/[locale]/layout.tsx`.
-- Create translation files immediately: `messages/es.json` and `messages/en.json`. Even if they only have one key, the infrastructure is in place.
-- Configure a TypeScript-typed `t()` function — this causes a compile error for missing keys rather than a silent runtime fallback.
-- Locale detection: use the `Accept-Language` header in middleware to determine locale, store in a cookie so it's stable across SSR and client hydration.
-- Dominican Republic context: Spanish is primary. Default locale should be `es`. English is secondary. Do not use browser detection as the primary mechanism — many Dominican users have English-language browsers.
+**Consequences:**
+- Tourist price is either 25x the base price (catastrophic overcharge) or 0.25x the base price (undercharge) depending on which interpretation wins.
+- Stripe Checkout will happily charge $250 for a $10 court session.
 
-**Warning signs:**
-- Hardcoded Spanish strings in JSX (`<h1>Reserva tu cancha</h1>`)
-- i18n added after Phase 1
-- Translation files missing keys that exist in the other language
-- `useTranslations()` called in Server Components without the locale passed explicitly
-- Flickering text on page load (hydration mismatch)
+**Prevention:**
+- **Store as whole number (25 = 25%) to match admin mental model.** Convert in code: `surchargeMultiplier = surchargePercent / 100`.
+- Name the config key explicitly: `tourist_surcharge_percent` (not `tourist_surcharge` which is ambiguous).
+- Add a CHECK constraint or validation: surcharge percent must be between 0 and 100 (or whatever the business max is).
+- Add a TypeScript type:
+  ```typescript
+  // In lib/types/reservations.ts
+  type SurchargeConfig = {
+    key: 'tourist_surcharge_percent'
+    value: number // 0-100, whole number percentage
+  }
+  ```
+- **Compute in cents throughout.** `finalPriceCents = basePriceCents + Math.round(basePriceCents * surchargePercent / 100)`. Use `Math.round` to avoid floating-point issues with cents.
 
-**Phase to address:** Phase 1 (Project scaffolding) — folder structure and translation infrastructure before any UI components.
+**Detection:**
+- Any reservation where `price_cents` is more than 2x the base price or less than the base price (for a tourist) indicates a calculation error.
+
+**Phase to address:** Config schema design and price calculation logic.
 
 ---
 
-### Pitfall 11: Content Blocks CMS Pattern — Schema That Becomes Unmaintainable
+### Pitfall 8: Member Sessions Still Free — Surcharge Logic Skipped Entirely
 
 **What goes wrong:**
-The `content_blocks` table starts as:
-```sql
-CREATE TABLE content_blocks (
-  id uuid, page text, block_key text, content text, updated_at timestamptz
-);
-```
-Within 3 months this becomes unmaintainable because:
-1. Some blocks need rich text (HTML), some need plain text, some need image URLs, some need arrays of items (FAQ entries). The `content text` column can't express this.
-2. Bilingual content requires either two rows per block (`block_key + lang`) or a JSON column — developers pick inconsistently.
-3. Admin UI for editing arbitrary JSON is unusable without a schema definition per block type.
-4. No ordering mechanism — FAQ items sort randomly.
+The existing reservation flow (reservations.ts:124-131) checks `if (isMember)` and sets `paymentStatus = 'free'`, `priceCents = 0`, skipping the entire pricing block. If the business wants members to play free (current behavior), this is correct. But if the business later wants tourist members to pay a surcharge, or if the surcharge should apply to non-member sessions only, the conditional must be explicitly documented as a business rule — not an implementation shortcut.
+
+Additionally, the `price_cents = 0` for member reservations means reporting on "total revenue per day" will undercount if it sums `price_cents` across all reservations.
+
+**Prevention:**
+- **Confirm the business rule explicitly:** "Members of any tier play free regardless of local/tourist status." Document this in code comments and the admin UI.
+- Even for free member sessions, consider storing the `would_have_been_price_cents` for reporting purposes (what they would have paid as a non-member).
+- If members should eventually pay surcharges, design the pricing function to always compute a price, and then apply the "member discount" (100% off) as a separate step. This makes it easy to change later.
+
+**Phase to address:** Business rule confirmation before implementation.
+
+---
+
+### Pitfall 9: Stripe Checkout Amount Doesn't Match Reservation Record
+
+**What goes wrong:**
+The reservation is created with `price_cents: 1250` (base $10 + 25% tourist surcharge). The user clicks "Pay" which triggers `createSessionPaymentAction` (in `app/actions/sessionPayment.ts`). This action reads `reservation.price_cents` (line 29) and passes it to Stripe as `unit_amount` (line 68). So far, correct. But if the admin changes the surcharge percentage between reservation creation and payment, the reservation still has the old `price_cents`. This is actually the correct behavior (price locked at booking time), but if someone "fixes" this by re-fetching the current price at payment time, it creates a mismatch.
 
 **Why it happens:**
-Content blocks are modeled as a generic key-value store because it feels flexible. The flexibility becomes a liability when content types diverge.
+A well-intentioned developer sees that the payment uses a "stale" price from the reservation record and "improves" it by re-computing the price at payment time from the current pricing tables. Now the Stripe charge doesn't match what the user agreed to.
 
-**How to avoid:**
-Model content blocks with explicit type awareness:
-```sql
-CREATE TABLE content_blocks (
-  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  page        text NOT NULL,           -- 'home', 'about', 'learn', 'faq'
-  block_key   text NOT NULL,           -- 'hero_title', 'hero_subtitle', 'faq_items'
-  block_type  text NOT NULL,           -- 'text', 'richtext', 'image_url', 'json_array'
-  content_es  text,                    -- Spanish content
-  content_en  text,                    -- English content
-  sort_order  integer DEFAULT 0,
-  updated_at  timestamptz DEFAULT now(),
-  updated_by  uuid REFERENCES auth.users(id),
-  UNIQUE (page, block_key)
-);
-```
+**Consequences:**
+- User sees "$12.50" at booking, but is charged "$15.00" at payment because the surcharge changed
+- Chargebacks and trust issues
 
-For complex blocks (FAQ with question+answer pairs, event cards), use `content_es jsonb` / `content_en jsonb` with a defined JSON schema per `block_type`. Store the schema definition in code (TypeScript types) so the admin UI knows how to render the appropriate editor.
+**Prevention:**
+- **The `price_cents` on the reservation record IS the price. Period.** The `createSessionPaymentAction` must use `reservation.price_cents` exactly as stored. Never re-compute at payment time.
+- Add a code comment in `sessionPayment.ts` explaining this is intentional:
+  ```typescript
+  // IMPORTANT: Use the price locked at reservation time, NOT the current pricing.
+  // Price was computed and stored when the reservation was created.
+  // Re-computing here would charge a different amount than what the user agreed to.
+  ```
+- The existing `sessionPayment.ts` already does this correctly (reads from reservation). Protect this pattern during the pricing refactor.
 
-Limit the scope: only the pages specified in PROJECT.md need this (About, Rules/Learn, FAQ, Homepage). Do not build a generic CMS — build a targeted editor for known content types.
+**Detection:**
+- If `sessionPayment.ts` ever imports from `court_pricing` or `app_config`, something is wrong.
 
-**Warning signs:**
-- `content_blocks` has a single `content text` column
-- No `block_type` field — admin UI can't know what editor to show
-- No `sort_order` — FAQ items have no stable order
-- No language columns — bilingual support retrofitted with `_es`/`_en` suffix rows
-- The `content` column stores raw HTML with `<script>` tags possible (XSS risk)
-
-**Phase to address:** Phase 4 (Admin panel + CMS) — design the full schema before building the admin UI, not after.
+**Phase to address:** Code review checkpoint during payment flow updates.
 
 ---
 
-## Technical Debt Patterns
+### Pitfall 10: RLS Policy Leak on Pricing Tables
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Skip RLS on content_blocks table | Faster development | Any authenticated user can edit CMS content | Never — add RLS from creation |
-| Use service role key in client-side code | Skip auth complexity | Full database access leaked to browser; catastrophic security breach | Never |
-| Hardcode subscription price IDs | Avoids admin price management UI | Price change requires code deployment | MVP only — add Stripe product lookup before launch |
-| Call `getSession()` instead of `getUser()` for auth checks | Saves one network round-trip | Session forgery bypass on auth-gated routes | Never for security decisions |
-| Use `any` TypeScript type for Supabase rows | Faster early development | Database schema changes break silently at runtime | Never — use `supabase gen types typescript` from day one |
-| Skip webhook idempotency table | Simpler webhook handler | Stripe retry loops cause duplicate membership operations | Never — add from day one |
-| Store Stripe `customer_id` only in Stripe metadata, not in Supabase | Less schema design | Every subscription lookup requires a Stripe API call; slow and rate-limited | Never — always mirror in Supabase |
-| Use `next-intl` only in Client Components | Skip server-side i18n complexity | Server-rendered text is not translated; SEO impact for Spanish content | Never for user-facing text |
+**What goes wrong:**
+The new pricing tables (day-of-week prices, surcharge config) need to be readable by all authenticated users (so the UI can display prices) but writable only by admins. The existing `court_pricing` RLS (migration 0003, line 62-63) already follows this pattern: SELECT for `authenticated`, full access for `service_role`. However, if a developer adds an UPDATE policy for `authenticated` to allow the admin UI to work (because admin actions use the user's auth context, not service role), any user can update prices.
+
+The existing admin actions use `supabaseAdmin` (service role client) — see `app/actions/admin/reservations.ts:4`. New admin pricing actions must also use `supabaseAdmin`.
+
+**Prevention:**
+- **All admin pricing mutations must use `supabaseAdmin` (service role client).** Follow the existing pattern in `app/actions/admin/`.
+- Never add UPDATE/INSERT/DELETE RLS policies for `authenticated` on pricing tables.
+- New pricing tables should copy the exact RLS pattern from `court_pricing`:
+  ```sql
+  CREATE POLICY "All authenticated can read [table]" ON [table] FOR SELECT TO authenticated USING (true);
+  CREATE POLICY "Service role full access on [table]" ON [table] FOR ALL TO service_role USING (true) WITH CHECK (true);
+  ```
+- Also make pricing readable by `anon` if non-authenticated users need to see prices before signing up.
+
+**Phase to address:** Database migration for new pricing tables.
 
 ---
 
-## Integration Gotchas
+## Minor Pitfalls
+
+### Pitfall 11: Country Dropdown Missing or Using Non-Standard Codes
+
+**What goes wrong:**
+The signup form adds a "Country" dropdown. Developers use a random list of country names in Spanish, or use 3-letter codes, or mix Spanish and English country names. Later, the `is_local` check compares against "Dominican Republic" but the stored value is "Republica Dominicana" or "DR" or "DOM".
+
+**Prevention:**
+- Use ISO 3166-1 alpha-2 country codes (2-letter: "DO" for Dominican Republic). These are standard, unambiguous, and language-independent.
+- Use a well-maintained country list library (e.g., `i18n-iso-countries` for display names in Spanish/English).
+- The `is_local` check should be: `country === 'DO'`. Simple, consistent, no string matching issues.
+- Store the code, display the localized name.
+
+**Phase to address:** Signup form update.
+
+---
+
+### Pitfall 12: Existing Users Have No Country — NULL Classification
+
+**What goes wrong:**
+The `profiles` table gains a `country` column, but existing users have `NULL`. When the pricing logic checks `is_local = (country === 'DO')`, NULL evaluates to `false` — all existing users are classified as tourists and charged the surcharge.
+
+**Prevention:**
+- Migration should set a sensible default for existing users. Since the club is in the Dominican Republic and existing users are likely local, consider:
+  - Default `country = 'DO'` for all existing users (if business confirms most are local).
+  - OR: Default `country = NULL` and treat NULL as "unclassified" with a separate pricing rule (charge local rate until classified).
+  - OR: Prompt existing users to set their country on next login (profile completion flow).
+- **Never treat NULL country as tourist.** Explicitly handle the NULL case in pricing logic.
+- Add a NOT NULL constraint with a migration that backfills first.
+
+**Phase to address:** Database migration (must include data backfill strategy).
+
+---
+
+### Pitfall 13: i18n Missing for New Pricing UI Strings
+
+**What goes wrong:**
+New pricing-related strings are added in English only, or hardcoded in the component. The existing app is fully bilingual with `next-intl` and externalized strings. New strings like "Tourist surcharge: 25%", "Local rate", "Your price includes a visitor fee" are hardcoded in English.
+
+**Prevention:**
+- Add all new pricing strings to both `messages/es.json` and `messages/en.json` before building UI components. Follow the existing namespace pattern.
+- Key strings needed:
+  - Price display: "Base price", "Tourist surcharge", "Total"
+  - Classification: "Local resident", "Visitor/Tourist"
+  - Admin: "Set surcharge percentage", "Day-of-week pricing", "Effective date"
+- The existing codebase is fully bilingual — maintain this standard.
+
+**Phase to address:** Every UI phase (add strings before components).
+
+---
+
+### Pitfall 14: Admin Pricing UI Without Optimistic Locking
+
+**What goes wrong:**
+Two admin users open the pricing management page. Admin A changes Monday's price from $5 to $7. Admin B (who loaded the page before A's change) changes Tuesday's price. Admin B's save overwrites Admin A's Monday change because B's form still had the old Monday price and submitted all days together.
+
+**Prevention:**
+- Use per-row updates, not bulk "save all pricing" operations. Each day-of-week/court/mode combination is an independent row update.
+- Add an `updated_at` timestamp to the pricing table. On update, check `WHERE updated_at = [value from when page loaded]`. If 0 rows affected, another admin changed it — return a conflict error.
+- Since this is a small club with likely 1 admin, this is LOW priority but worth designing correctly.
+
+**Phase to address:** Admin pricing UI.
+
+---
+
+## Phase-Specific Warnings
+
+| Phase Topic | Likely Pitfall | Mitigation |
+|-------------|---------------|------------|
+| Database migration | Existing users get NULL country, treated as tourist | Backfill existing users as local (DO) or prompt for classification |
+| Database migration | Two pricing tables (old `court_pricing` + new day-of-week) | Evolve existing table or fully deprecate it; single source of truth |
+| Profile/signup update | Country field user-editable, bypasses surcharge | Separate `user_classifications` table with service-role-only writes |
+| Price calculation | Computed client-side, accepted in form data | Server-side recomputation; never trust client-sent price |
+| Price calculation | Day-of-week computed in UTC, not AST | Always use `America/Santo_Domingo` timezone for day extraction |
+| Price calculation | Surcharge stored as 25 vs 0.25 confusion | Name it `_percent`, document convention, validate range |
+| Stripe Checkout | Re-computing price at payment time vs using locked reservation price | Use `reservation.price_cents` exactly; add protective comment |
+| Admin walk-in flow | Walk-in guests created with `price_cents: 0` | Compute walk-in price from designation + day-of-week pricing |
+| Admin pricing management | Price change race with in-flight bookings | Accept "price at booking time" model; store audit trail |
+| Admin pricing management | Bulk save overwrites concurrent admin changes | Per-row updates with `updated_at` optimistic locking |
+| RLS policies | Pricing tables writable by authenticated users | Copy existing `court_pricing` RLS pattern; admin uses `supabaseAdmin` |
+
+---
+
+## Integration Gotchas Specific to This Feature
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Supabase + Next.js | Using `createClient` from `@supabase/supabase-js` in Server Components | Use `createServerClient` from `@supabase/ssr` with cookie read/write |
-| Stripe Webhooks + Next.js App Router | Calling `request.json()` before `constructEvent()` destroys the raw body | Use `request.text()` then pass to `constructEvent()` |
-| Stripe + Supabase | Writing webhook data directly from event payload without re-fetching | Call `stripe.subscriptions.retrieve()` inside handler for authoritative state |
-| Stripe Customer Portal | Redirecting to portal without creating a Billing Portal Configuration in Stripe Dashboard | Configure allowed features (cancel, upgrade, payment method update) in Dashboard first |
-| Leaflet + Next.js | Static import of leaflet in any file that SSR touches | Dynamic import with `ssr: false` using `next/dynamic` |
-| Supabase Storage + RLS | Uploading files without a storage bucket policy | Set bucket to private + add RLS policy; public bucket exposes all files to anyone with a URL |
-| Supabase Edge Functions + Resend | Not setting `RESEND_API_KEY` as a Supabase secret | Use `supabase secrets set RESEND_API_KEY=...` — env vars not available without this |
-| Stripe Checkout + Supabase | Not storing `checkout_session_id` before redirect | On payment success, webhook may arrive before user returns; must handle both paths |
-| next-intl + App Router | Using `useTranslations()` in Server Components without the locale parameter | Always pass locale explicitly; use `getTranslations({ locale })` in Server Components |
-| Supabase pg_cron + Edge Functions | Invoking Edge Functions from pg_cron via `pg_net` without error handling | Wrap in try/catch; log results; `pg_net` calls are fire-and-forget by default |
+| Stripe Checkout + Dynamic Pricing | Using Stripe Price objects (pre-created prices) for dynamic per-session amounts | Use `price_data` with inline `unit_amount` as the existing code already does — this is correct for dynamic pricing |
+| Supabase RLS + Pricing | Adding `authenticated` UPDATE policy on pricing tables for admin UI | Admin actions use `supabaseAdmin` (service role); keep pricing tables read-only for `authenticated` |
+| `app_config` + Surcharge | Storing surcharge as JSONB without documenting if it's 25 or 0.25 | Use explicit key name (`tourist_surcharge_percent`) and validate range 0-100 |
+| Walk-in + Pricing | Using admin's profile country for walk-in price calculation | Walk-in local/tourist is a form field on the admin reservation form, not derived from any user profile |
+| Reservation record + Price audit | Storing only `price_cents` without breakdown | Store `base_price_cents`, `surcharge_percent_applied`, `final_price_cents` for auditability |
+| Day-of-week + Timezone | `new Date().getDay()` on Vercel (UTC) | Use `Intl.DateTimeFormat` with `timeZone: 'America/Santo_Domingo'` or Postgres `AT TIME ZONE` |
 
 ---
 
-## Performance Traps
+## "Looks Done But Isn't" Checklist (v1.1 Specific)
 
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| N+1 queries in reservation list | Admin "all reservations" page loads slowly; each reservation triggers a user profile query | Use Supabase joins: `reservations.select('*, profiles(first_name, last_name)')` | 50+ reservations |
-| No database index on `(court_id, session_start_time)` | Availability check slows as reservations table grows | Add index at schema creation time, not after complaints | ~10,000 reservations |
-| Fetching all content_blocks on every page render | CMS pages slow on each request | Cache with Next.js `revalidate` or use ISR; CMS content changes infrequently | Every page load |
-| Leaflet loading all court markers on initial render | Map interactive delay with many courts | Cluster markers with `leaflet.markercluster`; only render visible viewport | 20+ courts |
-| Stripe API calls in middleware | Every request that hits middleware calls Stripe API | Mirror all needed Stripe data in Supabase; never call Stripe from middleware | Every page load |
-| Real-time subscription on reservations table for all users | Supabase Realtime connection limit hit | Use realtime only for the user's own reservations with a filter | 100+ concurrent users |
-| Storing large base64 images in content_blocks | CMS page response huge; slow admin editor | Store images in Supabase Storage; store URL in content_blocks | Any image > 100KB |
-
----
-
-## Security Mistakes
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| `STRIPE_SECRET_KEY` in client-side code or `.env.local` committed to git | Full Stripe account access; attacker can issue refunds, create charges | Never expose secret key; add `.env.local` to `.gitignore` before first commit |
-| RLS policies missing on INSERT but present on SELECT | Users can insert data as other users (e.g., reservation for another user's `user_id`) | Every table needs policies for ALL operations: SELECT, INSERT, UPDATE, DELETE |
-| Admin role in `user_metadata` (user-writable) | Any user can promote themselves to admin via `supabase.auth.updateUser()` | Store role in `app_metadata` (service-role-only write) or in `profiles` table with strict RLS |
-| Content blocks XSS via unsanitized HTML | Admin-entered richtext with `<script>` executed by members' browsers | Sanitize HTML with DOMPurify before storing; or use a structured richtext format (tiptap output JSON) |
-| Webhook endpoint without rate limiting | DoS via webhook flood; database overloaded | Vercel Edge Config rate limiting or Upstash Redis rate limiter on `/api/webhooks/*` |
-| No login rate limiting | Brute-force credential attacks | Supabase has built-in rate limiting on auth endpoints, but custom login flows need explicit limiting |
-| Storing `stripe_customer_id` without verifying it matches the authenticated user | Horizontal privilege escalation — user modifies their own Stripe customer to another user's | Always derive `stripe_customer_id` from the authenticated user's profile record; never accept it from client input |
-| Supabase Storage bucket set to public for court images | Any URL holder can access all uploaded images without auth | Use private buckets with signed URLs (expires after 1 hour) for member-uploaded content |
-
----
-
-## UX Pitfalls
-
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| Reserving a slot that gets double-booked — error shown after payment attempt | User confused; trust broken; may think they lost money | Check availability immediately on slot selection; disable slot button on optimistic lock; show "Just taken" error before payment |
-| Stripe redirect timeout — user clicks "Subscribe" but Stripe Checkout takes 3+ seconds to redirect | User clicks again, creating duplicate checkout sessions | Show immediate loading state on Subscribe button; disable after first click; use `stripe.redirectToCheckout()` with timeout feedback |
-| Cancellation window confusion — user tries to cancel 25 minutes before session but cutoff is 30 minutes | User sees generic "cannot cancel" error | Show the exact cutoff time on the reservation card ("Cancel by 2:30 PM"); explain in the error message |
-| Membership required gate without clear path to subscribe | User clicks "Reserve Court" → gets "Members only" error → no CTA to subscribe | Gate page must include direct link to membership signup; never dead-end |
-| Password reset email in English for Spanish-primary users | Confusion; user thinks it's spam | Configure Supabase email templates in Spanish; use bilingual templates |
-| Session reminder email sent in English to Spanish-speaking members | Low open rates; reminder misunderstood | Send reminder in user's preferred language (stored in profile); default to Spanish |
-| Court map loads before CSS — unstyled tiles | Jarring visual on page load | Import `leaflet.css` in `_app.tsx` or global CSS, not lazily with the component |
-
----
-
-## "Looks Done But Isn't" Checklist
-
-- [ ] **Stripe Webhooks:** Handler exists and logs events, but only handles `checkout.session.completed` — verify all 5+ subscription lifecycle events are handled.
-- [ ] **Double-booking prevention:** Reservations insert successfully in testing — verify a unique constraint or exclusion constraint exists in the database schema (application-level checks are insufficient).
-- [ ] **RLS policies:** All tables show data in Supabase Studio — verify policies exist for each operation (SELECT, INSERT, UPDATE, DELETE) and test with a non-admin user session.
-- [ ] **Admin route protection:** Admin panel is hidden in the UI — verify the Route Handlers in `/api/admin/*` reject non-admin authenticated requests (not just unauthenticated ones).
-- [ ] **Webhook signature verification:** Webhook endpoint processes events — verify `stripe.webhooks.constructEvent()` is called and a failed verification returns 400 (not silently ignored).
-- [ ] **Bilingual email templates:** Transactional emails send successfully — verify Supabase email templates (password reset, confirmation) are in Spanish, not the default English templates.
-- [ ] **Session reminder deduplication:** Reminder cron runs — verify `reminder_sent = true` is written atomically and a second cron run does not re-send the reminder.
-- [ ] **Content blocks XSS:** Rich text saves and displays — verify HTML is sanitized before storage (search for `dangerouslySetInnerHTML` and confirm a sanitizer wraps it).
-- [ ] **Leaflet SSR:** Map renders — verify `next/dynamic` with `ssr: false` is used (search for `import L from 'leaflet'` at module scope — should not exist).
-- [ ] **Stripe customer_id storage:** Subscriptions process — verify `stripe_customer_id` is stored in the `profiles` table and looked up from there, never accepted from client-side input.
+- [ ] **Country field immutability:** Country is on the signup form and profile shows it — verify users CANNOT change it via profile update (check RLS policies or trigger).
+- [ ] **Server-side price computation:** Price displays correctly in the UI — verify the form submission does NOT send `price_cents` and the server recomputes it independently.
+- [ ] **Timezone-correct day-of-week:** Monday special prices work — verify a reservation at 11 PM Monday AST gets Monday pricing (not Tuesday).
+- [ ] **Walk-in pricing:** Admin can create walk-in reservations — verify `price_cents` is non-zero for non-member walk-ins and reflects local/tourist designation.
+- [ ] **Existing user backfill:** New pricing works for new signups — verify existing users without a country value are not charged tourist rates.
+- [ ] **Surcharge percentage interpretation:** Admin sets 25% surcharge — verify a $10 base session costs $12.50 for tourists (not $260 or $2.50).
+- [ ] **Payment amount matches reservation:** Tourist pays via Stripe — verify the Stripe charge amount exactly matches `reservation.price_cents`.
+- [ ] **Pricing audit trail:** Reservation exists with a price — verify `base_price_cents` and `surcharge_percent_applied` are stored and reconstruct the correct `final_price_cents`.
+- [ ] **Single pricing source:** Day-of-week pricing works — verify the old `court_pricing` table is either evolved or fully deprecated (no two tables defining base prices).
+- [ ] **Admin pricing RLS:** Admin can update prices — verify a non-admin authenticated user CANNOT update pricing tables (test with Supabase client, not Studio).
 
 ---
 
@@ -571,51 +411,25 @@ Limit the scope: only the pages specified in PROJECT.md need this (About, Rules/
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Double-booking discovered in production | HIGH | Add unique constraint (requires deduplication of existing conflicts first); audit all double-booked slots; issue manual refunds or resolutions; notify affected members |
-| RLS misconfiguration exposes user data | HIGH | Immediately add correct RLS policies; audit access logs for the exposure window; notify affected users per GDPR/local regulations; document the incident |
-| Stripe webhooks missed (subscription not cancelled) | MEDIUM | Build a Stripe reconciliation script: list all Stripe subscriptions, compare with Supabase memberships, patch mismatches; add to ops runbook |
-| Admin role in `user_metadata` — unauthorized admin access | HIGH | Migrate role to `app_metadata` via service role; audit actions taken by elevated accounts; rotate Supabase service role key if compromised |
-| Missing i18n — hardcoded strings throughout | MEDIUM | Systematic extraction using `i18n-ally` VS Code extension; create translation files; update each component; plan 2-3 days of work per 100 components |
-| Webhook signature not verified — fake events processed | HIGH | Add signature verification immediately; audit processed webhook log for suspicious events; reverse any fraudulent membership grants |
-| `window is not defined` Leaflet crash in production | LOW | Wrap in `dynamic()` with `ssr: false`; deploy; takes < 1 hour if caught early |
-| Content blocks XSS in production | HIGH | Sanitize all existing `content_blocks` HTML immediately; add DOMPurify to render path; audit for injected scripts in browser console |
-
----
-
-## Pitfall-to-Phase Mapping
-
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| Supabase Auth cookie handling (`createServerClient`) | Phase 1: Auth scaffolding | Auth state persists across Server Components; middleware rotates tokens correctly |
-| `getUser()` vs `getSession()` for security decisions | Phase 1: Auth scaffolding | Audit all auth checks — no `getSession()` on protected routes |
-| Admin role in `app_metadata` vs `user_metadata` | Phase 1: Auth + roles | Confirm role field is not changeable via `supabase.auth.updateUser()` |
-| RLS policies on all tables | Phase 1: Database schema | Test with non-admin user: cannot read other users' data; admin can read all |
-| Bilingual i18n infrastructure (folder structure, next-intl) | Phase 1: Project scaffolding | `app/[locale]/` folder exists; `messages/es.json` and `messages/en.json` exist |
-| Stripe webhook signature verification | Phase 2: Membership + Stripe | Forged webhook POST returns 400; valid Stripe event processes correctly |
-| Stripe webhook event coverage (all lifecycle events) | Phase 2: Membership + Stripe | Test cancellation, upgrade, payment failure — all update Supabase correctly |
-| Stripe webhook idempotency | Phase 2: Membership + Stripe | Replaying the same event ID does not double-process |
-| `stripe_customer_id` stored in Supabase profiles | Phase 2: Membership + Stripe | Subscription lookup uses DB record, not client input |
-| Court reservation double-booking constraint | Phase 3: Reservation system | Concurrent test sends two identical reservations simultaneously; only one succeeds |
-| Leaflet SSR (`next/dynamic` with `ssr: false`) | Phase 3: Court map | Build passes without `window is not defined`; map renders on first load |
-| Session reminder deduplication (`reminder_sent` flag) | Phase 3: Notifications | Cron invoked twice in a row; reminder email sent once |
-| Session reminder logging | Phase 3: Notifications | `cron_runs` table populated after each invocation |
-| Content blocks schema (typed, bilingual, ordered) | Phase 4: Admin panel + CMS | Schema has `block_type`, `content_es`, `content_en`, `sort_order` columns |
-| Content blocks XSS | Phase 4: Admin panel + CMS | Storing `<script>alert(1)</script>` in a content block does not execute on the frontend |
-| Admin route protection (API layer) | Phase 4: Admin panel | Authenticated non-admin user calling `/api/admin/*` receives 403 |
+| Tourist surcharge bypass (client-side price accepted) | HIGH | Audit all tourist reservations for underpayment; fix server action; no way to recover lost revenue from completed transactions |
+| Country field exploited (users self-reclassify) | MEDIUM | Migrate to separate classification table; backfill from signup data; add admin review queue for country changes |
+| Wrong day-of-week pricing (UTC vs AST) | MEDIUM | Fix timezone logic; audit affected reservations (8 PM - midnight AST window); refund overcharges or honor undercharges as goodwill |
+| Surcharge percentage 25x overcharge | HIGH | Immediate hotfix; audit Stripe charges; issue refunds for all affected tourists; customer communication required |
+| Existing users charged tourist rates (NULL country) | MEDIUM | Run backfill migration; refund affected reservations; communicate the fix to users |
+| Walk-in tourists not charged surcharge | LOW | Fix admin action; going forward prices are correct; past undercharges are sunk cost |
 
 ---
 
 ## Sources
 
-- Supabase Auth + SSR documentation: `@supabase/ssr` package (current as of Aug 2025 — replaced deprecated `@supabase/auth-helpers-nextjs`)
-- Supabase official warning on `getSession()` vs `getUser()` for security: https://supabase.com/docs/reference/javascript/auth-getsession (explicitly warns "Do not use getSession() to validate authentication on server-side code")
-- Stripe webhook best practices: Stripe documentation on idempotency keys, event ordering, and signature verification
-- Postgres exclusion constraints for range overlap: `btree_gist` extension documentation; standard pattern for reservation systems
-- Next.js App Router with Leaflet: Known issue documented in Leaflet GitHub issues and Next.js discussions — dynamic import is the canonical fix
-- Stripe `user_metadata` vs `app_metadata` security: Supabase Auth documentation on JWT claims and what client code can modify
-- `next-intl` with App Router: next-intl official docs recommend `[locale]` folder structure with middleware locale detection
-- pg_cron + Supabase Edge Functions: Supabase docs on scheduled functions (minimum 1-minute resolution)
+- Direct codebase analysis: `app/actions/reservations.ts`, `app/actions/sessionPayment.ts`, `app/actions/admin/reservations.ts`, `lib/stripe/webhookHandlers.ts`, `supabase/migrations/0003_reservations.sql`, `supabase/migrations/0001_initial_schema.sql`
+- [Stripe Checkout Session API — `price_data` for dynamic pricing](https://docs.stripe.com/api/checkout/sessions/create)
+- [PostgreSQL advisory locks for race conditions](https://firehydrant.com/blog/using-advisory-locks-to-avoid-race-conditions-in-rails/)
+- [PostgreSQL explicit locking documentation](https://www.postgresql.org/docs/current/explicit-locking.html)
+- [Supabase RLS performance best practices](https://supabase.com/docs/guides/troubleshooting/rls-performance-and-best-practices-Z5Jjwv)
+- [EU pricing discrimination regulations](https://europa.eu/youreurope/citizens/consumers/shopping/pricing-payments/index_en.htm) — context on legal framework for dual pricing (not directly applicable in DR but relevant for tourist-facing platforms)
+- Dominican Republic timezone: America/Santo_Domingo (AST, UTC-4, no daylight saving)
 
 ---
-*Pitfalls research for: NELL Pickleball Club — Next.js App Router + Supabase + Stripe sports club platform*
-*Researched: 2026-03-07*
+*Pitfalls research for: NELL Pickleball Club v1.1 — Local vs Tourist Differential Pricing*
+*Researched: 2026-03-14*
