@@ -1,0 +1,89 @@
+# Requirements: NELL Pickleball Club
+
+**Defined:** 2026-03-14
+**Core Value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
+
+## v1.1 Requirements
+
+Requirements for local vs tourist differential pricing. Each maps to roadmap phases.
+
+### User Classification
+
+- [ ] **UCLS-01**: User can select their country from a bilingual dropdown during signup
+- [ ] **UCLS-02**: Country field stores ISO 3166-1 alpha-2 code on user profile
+- [ ] **UCLS-03**: Users with country "DO" are classified as local; all others as tourist
+
+### Pricing
+
+- [ ] **PRIC-01**: Admin can set base session price per day of week per court
+- [ ] **PRIC-02**: Days without specific pricing fall back to a default base price
+- [ ] **PRIC-03**: Admin can set a global tourist surcharge percentage
+- [ ] **PRIC-04**: Tourist session price is calculated as base price × (1 + surcharge%)
+- [ ] **PRIC-05**: All price calculations happen server-side only
+
+### Reservations
+
+- [ ] **RESV-01**: User sees correct calculated price before confirming a reservation
+- [ ] **RESV-02**: Reservation stores the calculated price at booking time (snapshot)
+- [ ] **RESV-03**: Walk-in reservations created by admin include local/tourist designation
+- [ ] **RESV-04**: Walk-in reservations use correct pricing instead of hardcoded $0
+
+### Admin
+
+- [ ] **ADMN-01**: Admin can manage day-of-week session prices per court via pricing panel
+- [ ] **ADMN-02**: Admin can edit the global tourist surcharge percentage
+- [ ] **ADMN-03**: Admin walk-in form includes local/tourist toggle that affects price
+
+## Future Requirements
+
+### Differentiators (deferred)
+
+- **DIFF-01**: Price breakdown showing base + surcharge on checkout
+- **DIFF-02**: Price preview tooltips on time-slot grid
+- **DIFF-03**: Price included in confirmation email
+- **DIFF-04**: Visual pricing calendar for admin
+- **DIFF-05**: Pricing audit log (who changed what, when)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Separate price tables for locals vs tourists | Surcharge-on-base is simpler, one change propagates everywhere |
+| User self-classification checkbox | Gameable — country field is harder to fake |
+| Per-court surcharge percentages | Over-engineering for single-club use; global surcharge sufficient |
+| IP-based geolocation | Unreliable (VPNs, hotel WiFi), privacy concerns, external dependency |
+| Hourly peak/off-peak pricing | Day-of-week covers immediate needs; hourly is v2+ |
+| Promotional pricing with date ranges | Day-of-week specials cover immediate need; admin can manually adjust |
+| Multi-currency payments | USD only per PROJECT.md constraints |
+| Tourist membership pricing | Tourists unlikely to subscribe; per-session only |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| UCLS-01 | Pending | Pending |
+| UCLS-02 | Pending | Pending |
+| UCLS-03 | Pending | Pending |
+| PRIC-01 | Pending | Pending |
+| PRIC-02 | Pending | Pending |
+| PRIC-03 | Pending | Pending |
+| PRIC-04 | Pending | Pending |
+| PRIC-05 | Pending | Pending |
+| RESV-01 | Pending | Pending |
+| RESV-02 | Pending | Pending |
+| RESV-03 | Pending | Pending |
+| RESV-04 | Pending | Pending |
+| ADMN-01 | Pending | Pending |
+| ADMN-02 | Pending | Pending |
+| ADMN-03 | Pending | Pending |
+
+**Coverage:**
+- v1.1 requirements: 15 total
+- Mapped to phases: 0
+- Unmapped: 15 ⚠️
+
+---
+*Requirements defined: 2026-03-14*
+*Last updated: 2026-03-14 after initial definition*
