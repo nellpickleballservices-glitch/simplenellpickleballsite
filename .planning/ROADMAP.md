@@ -78,10 +78,11 @@ Plans:
   2. Admin can set and update the global tourist surcharge percentage
   3. Price changes take effect for new reservations immediately (no deploy needed)
   4. Admin pricing page is accessible from the admin sidebar navigation
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — Database migration (session_pricing table, tourist surcharge seed) and pricing server actions
+- [ ] 04-02-PLAN.md — Admin pricing UI page (day-of-week grid, surcharge editor) and sidebar link
 
 ### Phase 5: Reservation Flow Integration
 **Goal**: Both user-facing reservations and admin walk-in reservations use the pricing engine to calculate and display correct prices based on local/tourist classification
@@ -108,5 +109,5 @@ Plans:
 | 1. Performance Fixes | post-v1.0 | 4/4 | Complete | 2026-03-14 |
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
 | 3. Signup Country Collection | v1.1 | 2/2 | Complete | 2026-03-14 |
-| 4. Admin Pricing Panel | v1.1 | 0/? | Not started | - |
+| 4. Admin Pricing Panel | v1.1 | 0/2 | In progress | - |
 | 5. Reservation Flow Integration | v1.1 | 0/? | Not started | - |
