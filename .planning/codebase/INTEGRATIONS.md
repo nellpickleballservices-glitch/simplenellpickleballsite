@@ -4,174 +4,168 @@
 
 ## APIs & External Services
 
-**Payments (Stripe):**
-- Stripe SDK v20.4.1, API version `2026-02-25.clover`
-- SDK/Client: `stripe` package, initialized in `lib/stripe/index.ts`
-- Auth env var: `STRIPE_SECRET_KEY`
-- Used for:
-  - Subscription checkout (VIP $50/mo, Basic $35/mo) via `app/actions/billing.ts`
-  - One-time per-session payments via `app/actions/sessionPayment.ts`
-  - Customer billing portal via `app/actions/billing.ts` (`createPortalSessionAction`)
-  - Webhook event processing via `app/api/stripe/webhook/route.ts`
-- Stripe Price IDs: `STRIPE_PRICE_ID_VIP`, `STRIPE_PRICE_ID_BASIC`
-- Webhook secret: `STRIPE_WEBHOOK_SECRET`
+**Payments - Stripe:**
+- Purpose: Membership subscriptions (VIP/Basic plans) and per-session one-time payments
+- SDK: `stripe` ^20.4.1 (API version `2026-02-25.clover`)
+- Client singleton: `lib/stripe/index.ts`
+- Auth: `STRIPE_SECRET_KEY` env var
+- Webhook secret: `STRIPE_WEBHOOK_SECRET` env var
+- Price IDs: `STRIPE_PRICE_ID_VIP`, `STRIPE_PRICE_ID_BASIC` env vars
+- Features used:
+  - Checkout Sessions (subscription mode for memberships, payment mode for per-session)
+  - Billing Portal (member self-service subscription management)
+  - Webhooks (event-driven membership sync)
+  - Subscription retrieval
 
-**AI Chatbot (OpenAI):**
-- OpenAI SDK v6.27.0
-- Model: `gpt-4o-mini` (streaming, max 500 tokens, temperature 0.7)
-- SDK/Client: `openai` package, instantiated per-request in `app/api/chat/route.ts`
-- Auth env var: `OPENAI_API_KEY`
-- Purpose: "Nelly" chatbot — answers questions about the club using CMS content blocks and upcoming events as context
-- Rate limiting: 20 messages per session per hour (in-memory Map)
-- Response format: Server-Sent Events (SSE) stream
-
-**Email (Resend):**
-- Resend SDK v6.9.3
-- SDK/Client: `resend` package, initialized in `lib/resend/index.ts`
-- Auth env var: `RESEND_API_KEY`
+**Email - Resend:**
+- Purpose: Transactional emails (booking confirmations, session-end reminders)
+- SDK: `resend` ^6.9.3
+- Client singleton: `lib/resend/index.ts`
+- Auth: `RESEND_API_KEY` env var
 - From address: `NELL Pickleball Club <onboarding@resend.dev>`
 - Email types:
-  - Booking confirmation (bilingual en/es) — `lib/resend/emails.ts` (`sendConfirmationEmail`)
-  - Session-ending reminder (bilingual en/es) — `lib/resend/emails.ts` (`sendReminderEmail`)
-  - Session reminder via Edge Function — `supabase/functions/session-reminder/index.ts` (uses Resend REST API directly, not SDK)
+  - Booking confirmation (`lib/resend/emails.ts` -> `sendConfirmationEmail()`)
+  - Session-end 10-minute reminder (`lib/resend/emails.ts` -> `sendReminderEmail()`)
+- Bilingual support: All emails sent in user's locale preference (en/es)
+- Also called directly via REST API from Edge Function (`supabase/functions/session-reminder/index.ts`)
+
+**AI Chatbot - OpenAI:**
+- Purpose: "Nelly" AI assistant for club visitors
+- SDK: `openai` ^6.27.0
+- Auth: `OPENAI_API_KEY` env var
+- Model: `gpt-4o-mini`
+- Endpoint: `app/api/chat/route.ts` (POST `/api/chat`)
+- Features: Streaming SSE responses, CMS-enriched system prompt, bilingual
+- Rate limiting: DB-backed via `chat_rate_limits` table, 20 messages/hour per session
+- Rate limit logic: `lib/chat/rate-limit.ts`
 
 ## Data Storage
 
-**Database (Supabase / PostgreSQL):**
+**Database - Supabase (PostgreSQL):**
 - Provider: Supabase (hosted PostgreSQL)
-- Connection env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-- Admin env var: `SUPABASE_SERVICE_ROLE_KEY` (bypasses RLS)
-
-**Client patterns (3 variants):**
-- Browser client: `lib/supabase/client.ts` — uses `createBrowserClient` from `@supabase/ssr`
-- Server client: `lib/supabase/server.ts` — uses `createServerClient` with cookie-based auth
-- Admin client: `lib/supabase/admin.ts` — uses `createClient` with service role key (bypasses RLS)
-
-**Database tables (from migrations):**
-- `profiles` — User profiles linked to `auth.users` (RLS: own row only)
-- `locations` — Club locations with GPS coordinates
-- `courts` — Courts per location with status (open/closed/maintenance)
-- `memberships` — User memberships with Stripe subscription tracking
-- `reservations` — Court bookings with double-booking prevention (GiST exclusion constraint)
-- `events` — Club events with bilingual content (en/es)
-- `content_blocks` — CMS content with bilingual text (en/es), keyed by `block_key`
-- `court_config` — Per-court schedule configuration (weekday/weekend)
-- `court_pricing` — Per-court pricing by booking mode (full_court/open_play)
-- `app_config` — Key-value application configuration
-- `webhook_events` — Stripe webhook idempotency tracking
-
-**Migrations:** 6 sequential files in `supabase/migrations/`
-- `0001_initial_schema.sql` — Core tables (profiles, locations, courts, memberships, reservations, events, content_blocks)
-- `0002_webhook_events.sql` — Webhook deduplication table
-- `0003_reservations.sql` — Enhanced reservation system (booking modes, pricing, exclusion constraints)
-- `0004_pg_cron_reminder.sql` — pg_cron setup for session reminders
-- `0005_admin_events_cms.sql` — Admin events and CMS enhancements
-- `0006_footer_social_links.sql` — Social links content
-
-**Row Level Security (RLS):**
-- Enabled on all tables
-- Pattern: authenticated users read own data, service_role has full access
-- Exceptions: `events` and `content_blocks` are public-readable (anon + authenticated)
-- Reservations are readable by all authenticated users (for availability display)
+- Connection: `NEXT_PUBLIC_SUPABASE_URL` env var
+- Clients:
+  - Browser client: `lib/supabase/client.ts` (uses `createBrowserClient` from `@supabase/ssr`)
+  - Server client: `lib/supabase/server.ts` (uses `createServerClient` from `@supabase/ssr`, cookie-based)
+  - Admin client: `lib/supabase/admin.ts` (uses `createClient` from `@supabase/supabase-js`, bypasses RLS)
+- Auth keys:
+  - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Anon key (public, RLS enforced)
+  - `SUPABASE_SERVICE_ROLE_KEY` - Service role key (server only, bypasses RLS)
+- Tables (10 total):
+  - `profiles` - User profiles (linked to `auth.users`)
+  - `locations` - Club locations
+  - `courts` - Courts per location
+  - `court_config` - Per-court schedule (weekday/weekend open/close times, mode windows)
+  - `court_pricing` - Per-court pricing by booking mode (full_court/open_play)
+  - `memberships` - User membership records (Stripe-synced)
+  - `reservations` - Court bookings with exclusion constraints preventing double-booking
+  - `events` - Club events (bilingual, with types: tournament/training/social)
+  - `content_blocks` - CMS content (bilingual rich text/plain text)
+  - `webhook_events` - Stripe webhook idempotency tracking
+  - `app_config` - Key-value application configuration
+  - `chat_rate_limits` - Chat session rate limiting
+- RLS: Enabled on all tables. Users see own data; `service_role` has full access.
+- Realtime: Enabled for `memberships` table (post-checkout subscription listener)
+- Migrations: `supabase/migrations/0001_initial_schema.sql` through `0007_admin_view_rpc_ratelimit_index.sql`
 
 **File Storage:**
-- Not currently used (avatar_url column exists in profiles but no upload implementation)
+- Local filesystem / public directory only (no Supabase Storage or S3 detected)
+- Event images referenced via `image_url` column (external URLs)
 
 **Caching:**
-- None (no Redis, no Next.js cache configuration beyond defaults)
+- Membership status cached in signed HMAC cookie (5-minute TTL)
+  - Implementation: `lib/middleware/cookie-signing.ts`
+  - Cookie name: `nell_membership_cache`
+  - Signing secret: `MEMBERSHIP_COOKIE_SECRET` env var
 
 ## Authentication & Identity
 
-**Auth Provider: Supabase Auth**
-- Email/password authentication
-- PKCE flow with auth callback: `app/auth/callback/route.ts`
-- Cookie-based session management via `@supabase/ssr`
-- JWT validation: Always uses `getUser()` (never `getSession()`) per security best practice
-- Password reset flow: Email link -> callback -> update password form
+**Auth Provider - Supabase Auth:**
+- Implementation: Email/password authentication via Supabase Auth
+- Auth flow:
+  - Signup/Login: Server actions in `app/actions/auth.ts`
+  - OAuth callback: `app/auth/callback/route.ts` (code exchange)
+  - Password reset: `app/[locale]/(auth)/reset-password/` flow
+  - Profile completion: `app/[locale]/(auth)/signup/complete-profile/`
+- Session management: Cookie-based via `@supabase/ssr`
+- JWT validation: `supabase.auth.getUser()` in middleware (never trust session alone)
+- Admin role: Stored in `app_metadata.role` (set via `lib/supabase/admin.ts` -> `assignAdminRole()`)
+- Middleware auth: `middleware.ts` handles route protection, auth redirects, admin gating, membership checks
 
-**Auth actions:** `app/actions/auth.ts`
-- `signUpAction` — Creates user + profile row (uses admin client for profile insert)
-- `loginAction` — Email/password sign-in
-- `logoutAction` — Sign out and redirect
-- `resetPasswordAction` — Send reset email
-- `updatePasswordAction` — Set new password
-
-**Authorization layers (in `middleware.ts`):**
-1. Unauthenticated users blocked from `/dashboard` and `/admin` routes (redirect to `/login`)
-2. Non-admin users blocked from `/admin/*` routes (checks `app_metadata.role === 'admin'`)
-3. Non-member users blocked from `/member/*` routes (queries `memberships` table, redirect to `/pricing`)
-4. Exception: `/reservations` and `/checkout-session` routes are open to all authenticated users
-
-**Admin role assignment:**
-- `lib/supabase/admin.ts` (`assignAdminRole`) — Sets `app_metadata.role: 'admin'` via service role client
+**Route Protection (middleware.ts):**
+- Public routes: No auth check, i18n only
+- Auth redirect routes (`/login`, `/signup`): Redirect authenticated users to `/member/dashboard`
+- Protected routes (`/member/*`): Require authentication
+- Admin routes (`/admin/*`): Require `app_metadata.role === 'admin'`
+- Member routes: Require active membership (DB-checked with cookie cache)
+- Reservation routes: Open to ALL authenticated users (members and non-members)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- None (no Sentry, Datadog, or similar)
+- None (no Sentry, Datadog, or similar detected)
 
 **Logs:**
-- `console.error` / `console.warn` throughout server actions and API routes
+- `console.error` / `console.warn` throughout server-side code
 - No structured logging framework
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Not explicitly configured; Next.js App Router project (Vercel-compatible)
+- Vercel (inferred from Next.js App Router conventions)
 
 **CI Pipeline:**
-- No CI configuration files detected (no `.github/workflows/`, no `vercel.json`)
+- Not detected (no `.github/workflows/`, no `vercel.json` found)
 - Playwright config has CI-aware settings (`forbidOnly`, `retries`, `workers`)
 
 ## Environment Configuration
 
-**Required env vars:**
-- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL (public)
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — Supabase anon key (public)
-- `SUPABASE_SERVICE_ROLE_KEY` — Supabase admin key (server-only)
-- `STRIPE_SECRET_KEY` — Stripe API key (server-only)
-- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret (server-only)
-- `STRIPE_PRICE_ID_VIP` — Stripe Price ID for VIP membership (server-only)
-- `STRIPE_PRICE_ID_BASIC` — Stripe Price ID for Basic membership (server-only)
-- `OPENAI_API_KEY` — OpenAI API key (server-only)
-- `RESEND_API_KEY` — Resend email API key (server-only)
-- `NEXT_PUBLIC_SITE_URL` — Production site URL for redirects (optional, falls back to localhost)
+**Required env vars (app runtime):**
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Supabase anon/publishable key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
+- `STRIPE_SECRET_KEY` - Stripe API secret key
+- `STRIPE_WEBHOOK_SECRET` - Stripe webhook signing secret
+- `STRIPE_PRICE_ID_VIP` - Stripe price ID for VIP membership
+- `STRIPE_PRICE_ID_BASIC` - Stripe price ID for Basic membership
+- `RESEND_API_KEY` - Resend transactional email API key
+- `OPENAI_API_KEY` - OpenAI API key for chatbot
+- `MEMBERSHIP_COOKIE_SECRET` - HMAC secret for membership cookie signing
+- `NEXT_PUBLIC_SITE_URL` - Public site URL (fallback for Stripe redirects)
 
-**Supabase Edge Function env vars (separate from Next.js):**
-- `SUPABASE_URL` — Set automatically by Supabase
-- `SUPABASE_SERVICE_ROLE_KEY` — Set automatically by Supabase
-- `RESEND_API_KEY` — Must be configured in Supabase Edge Function secrets
+**Required env vars (Supabase Edge Functions):**
+- `SUPABASE_URL` - Auto-provided by Supabase runtime
+- `SUPABASE_SERVICE_ROLE_KEY` - Auto-provided by Supabase runtime
+- `RESEND_API_KEY` - Must be set via `supabase secrets set`
 
 **Secrets location:**
 - `.env.local` (local development, gitignored)
-- Supabase dashboard (Edge Function secrets)
-- Hosting provider dashboard (production env vars)
+- Supabase Vault (pg_cron secrets: `project_url`, `anon_key`)
+- Supabase Secrets (Edge Function secrets)
+- Vercel Environment Variables (production, inferred)
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- `POST /api/stripe/webhook` — Stripe webhook endpoint (`app/api/stripe/webhook/route.ts`)
+- `POST /api/stripe/webhook` (`app/api/stripe/webhook/route.ts`)
   - Signature verification via `stripe.webhooks.constructEvent()`
-  - Idempotency via `webhook_events` table (unique constraint on `stripe_event_id`)
+  - Idempotency via `webhook_events` table (deduplicates by `stripe_event_id`)
   - Handled events:
-    - `checkout.session.completed` — Upserts membership (subscription) or updates reservation (one-time payment)
-    - `customer.subscription.updated` — Updates membership plan/status
-    - `customer.subscription.deleted` — Cancels membership
-    - `invoice.payment_succeeded` — Updates period end, sets active
-    - `invoice.payment_failed` — Sets membership to past_due
-  - Handler logic: `lib/stripe/webhookHandlers.ts`
+    - `checkout.session.completed` (subscription) -> upsert membership as active
+    - `checkout.session.completed` (payment) -> update reservation to paid/confirmed
+    - `customer.subscription.updated` -> sync plan/status changes
+    - `customer.subscription.deleted` -> mark membership cancelled
+    - `invoice.payment_succeeded` -> update period end, set active
+    - `invoice.payment_failed` -> set membership to past_due
 
 **Outgoing:**
-- None (no outgoing webhook dispatching)
+- None (no outgoing webhook dispatches detected)
 
-**Scheduled Tasks:**
-- Supabase Edge Function `session-reminder` (`supabase/functions/session-reminder/index.ts`)
+**Scheduled Jobs:**
+- `session-reminder` Edge Function (`supabase/functions/session-reminder/index.ts`)
   - Triggered every minute by pg_cron via pg_net
-  - Sends 10-minute session-ending email reminders via Resend REST API
-  - Expires stale `pending_payment` reservations past the hold window
-
-**Auth Callbacks:**
-- `GET /auth/callback` — Supabase PKCE auth code exchange (`app/auth/callback/route.ts`)
+  - Sends 10-minute session-end reminder emails via Resend REST API
+  - Expires stale `pending_payment` reservations based on `app_config.pending_payment_hold_hours`
 
 ---
 

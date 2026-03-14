@@ -4,187 +4,204 @@
 
 ## Pattern Overview
 
-**Overall:** Next.js App Router with Server Actions, Supabase as BaaS (Backend-as-a-Service), Stripe for payments
+**Overall:** Next.js 16 App Router with Server Actions, Supabase backend, and Stripe billing
 
 **Key Characteristics:**
-- Server-first rendering: pages are async Server Components that fetch data directly from Supabase
-- Mutations via Server Actions (`'use server'` functions in `app/actions/`) invoked by client forms using `useActionState`
-- Three-layer admin protection: middleware (Layer 1) -> layout (Layer 2) -> Server Action guard (Layer 3)
-- Supabase RLS enforces row-level data isolation; admin operations bypass RLS via service-role client
-- Bilingual (es/en) via `next-intl` with locale-prefixed routes (`/dashboard` for es, `/en/dashboard` for en)
-- Stripe webhooks drive membership lifecycle; the app never writes membership status directly except through webhook handlers
+- Server-first rendering: pages are async Server Components by default; client interactivity added via `'use client'` leaf components
+- Server Actions (`'use server'`) handle all mutations (auth, reservations, billing, admin CRUD) -- no custom REST endpoints except webhooks and chat
+- Supabase as sole database and auth provider; Stripe for payments; OpenAI for AI chatbot
+- Internationalization via `next-intl` with `[locale]` dynamic segment and `as-needed` prefix (Spanish default, English prefixed)
+- Middleware layers: i18n routing + Supabase auth + membership gating + admin role check
 
 ## Layers
 
-**Presentation Layer (Pages & Components):**
-- Purpose: Render UI, handle form submissions, display data
-- Location: `app/[locale]/` (pages), `components/` (shared UI)
-- Contains: Server Components (pages), Client Components (forms, interactive UI)
-- Depends on: Server Actions, lib/queries, lib/content
-- Used by: End users (browser)
+**Middleware (Edge):**
+- Purpose: Route classification, auth checks, membership caching, i18n locale resolution
+- Location: `middleware.ts`
+- Contains: Supabase JWT validation, signed cookie membership cache, admin role gate, i18n middleware composition
+- Depends on: `@/lib/middleware/route-helpers`, `@/lib/middleware/cookie-signing`, `@supabase/ssr`, `next-intl/middleware`
+- Used by: All non-API requests matching the config matcher
 
-**Server Actions Layer:**
-- Purpose: Handle all mutations (create, update, delete) with auth validation
-- Location: `app/actions/`
-- Contains: `auth.ts`, `billing.ts`, `reservations.ts`, `sessionPayment.ts`, `profile.ts`, `admin.ts`
-- Depends on: `lib/supabase/server`, `lib/supabase/admin`, `lib/stripe`, `lib/resend`
-- Used by: Client Components via `useActionState` and direct invocation
+**Route Groups (Presentation):**
+- Purpose: Organize pages by access level and layout
+- Location: `app/[locale]/(admin)/`, `app/[locale]/(auth)/`, `app/[locale]/(marketing)/`, `app/[locale]/(member)/`
+- Contains: Page components (Server Components), co-located client form components
+- Depends on: Server Actions, lib/queries, lib/content, components/
+- Used by: End users via browser
 
-**Query Layer:**
-- Purpose: Read-only data fetching with business logic (availability computation, content retrieval)
-- Location: `lib/queries/`, `lib/content.ts`
-- Contains: `reservations.ts` (court availability + time slot generation), `content.ts` (CMS block fetching)
-- Depends on: `lib/supabase/server`, `lib/types/`
-- Used by: Server Component pages
+**Server Actions (Business Logic):**
+- Purpose: All mutations and form handling
+- Location: `app/actions/` (top-level) and `app/[locale]/(auth)/signup/complete-profile/actions.ts`, `app/[locale]/(member)/reservations/actions.ts`
+- Contains: Auth flows, billing, reservations, profile updates, admin CRUD
+- Depends on: `lib/supabase/server`, `lib/supabase/admin`, `lib/stripe`, `lib/resend/emails`, `lib/utils/*`
+- Used by: Page components via `useActionState` hook
 
-**Integration Layer:**
-- Purpose: Wrap external service SDKs with app-specific configuration
-- Location: `lib/stripe/`, `lib/supabase/`, `lib/resend/`
-- Contains: Client factories, webhook handlers, email templates
-- Depends on: Environment variables, external APIs
-- Used by: Server Actions, API routes, Query layer
+**API Routes (Webhooks & Chat):**
+- Purpose: External service callbacks and streaming API
+- Location: `app/api/stripe/webhook/route.ts`, `app/api/chat/route.ts`, `app/auth/callback/route.ts`
+- Contains: Stripe webhook handler with idempotency, OpenAI streaming chat, Supabase auth callback
+- Depends on: `lib/stripe`, `lib/stripe/webhookHandlers`, `lib/supabase/admin`, `lib/chat/rate-limit`
+- Used by: Stripe (webhook), ChatWidget (chat), Supabase Auth (callback)
 
-**API Routes Layer:**
-- Purpose: Handle inbound webhooks and streaming AI responses (non-form HTTP endpoints)
-- Location: `app/api/`
-- Contains: `stripe/webhook/route.ts`, `chat/route.ts`
-- Depends on: `lib/stripe`, `lib/supabase/admin`, OpenAI SDK
-- Used by: Stripe (webhooks), ChatWidget component (SSE stream)
+**Library Layer (Shared Logic):**
+- Purpose: Reusable modules for external service clients, queries, types, and utilities
+- Location: `lib/`
+- Contains: Supabase clients (server/client/admin), Stripe client, Resend email, reservation queries, type definitions, middleware helpers
+- Depends on: External SDKs (`@supabase/ssr`, `stripe`, `resend`, `openai`)
+- Used by: Server Actions, API Routes, Pages, Middleware
 
-**Database Layer:**
-- Purpose: Persistent storage with row-level security
-- Location: `supabase/migrations/`
-- Contains: 6 migration files defining 11 tables, RLS policies, exclusion constraints, seed data
-- Depends on: Supabase hosted PostgreSQL
-- Used by: All server-side layers via Supabase clients
+**Components (UI):**
+- Purpose: Shared React components
+- Location: `components/`
+- Contains: Layout (Navbar, Footer), admin UI (sidebar, dialogs), public marketing components, chatbot, motion/animation wrappers, visual effects
+- Depends on: `next-intl`, `motion`, `@tiptap/*` (CMS editor)
+- Used by: Page components across all route groups
+
+**i18n Configuration:**
+- Purpose: Locale routing and message loading
+- Location: `i18n/routing.ts`, `i18n/request.ts`, `i18n/navigation.ts`
+- Contains: Locale definitions (es, en), routing config, request-level message loader
+- Depends on: `next-intl`
+- Used by: `middleware.ts`, `next.config.ts`, all page components
 
 ## Data Flow
 
-**Member Subscription Flow:**
+**User Signup:**
+1. User submits `SignupForm` (`app/[locale]/(auth)/signup/SignupForm.tsx`)
+2. `signUpAction` server action validates input, calls `supabase.auth.signUp()` with user metadata
+3. Profile row inserted via `supabaseAdmin` (service role) since no session exists pre-confirmation
+4. Redirect to `/?welcome=1` triggers `WelcomeBanner` component
 
-1. User selects plan on `/pricing` -> `PricingCards.tsx` calls `createCheckoutSessionAction()` in `app/actions/billing.ts`
-2. Action creates Stripe Checkout Session with `client_reference_id = user.id`, redirects to Stripe
-3. After payment, Stripe sends `checkout.session.completed` webhook to `app/api/stripe/webhook/route.ts`
-4. Webhook route deduplicates via `webhook_events` table, dispatches to `handleCheckoutCompleted()` in `lib/stripe/webhookHandlers.ts`
-5. Handler upserts row in `memberships` table with `status: 'active'`
-6. Middleware (`middleware.ts`) checks `memberships` table on subsequent requests to gate `/member/` routes
+**Reservation Booking:**
+1. `app/[locale]/(member)/reservations/page.tsx` loads court availability via `getCourtAvailability()` from `lib/queries/reservations.ts`
+2. User selects court, time slot, and booking mode via `ReservationForm` + `TimeSlotGrid` + `CourtCard`
+3. `createReservationAction` validates auth, membership, booking window, conflicts, then inserts reservation
+4. For non-members: returns `needsPayment: true`, triggering `PaymentPanel` which calls `createSessionPaymentAction`
+5. Non-member payment: Stripe Checkout (mode: payment), webhook updates reservation status via `handleOneTimePaymentCompleted`
+6. Confirmation email sent via Resend (fire-and-forget)
 
-**Court Reservation Flow:**
+**Membership Subscription:**
+1. User clicks plan on `PricingCards` component
+2. `createCheckoutSessionAction` creates Stripe Checkout session (mode: subscription)
+3. Stripe redirects to `/checkout-success?session_id=...`
+4. Webhook `checkout.session.completed` fires `handleCheckoutCompleted` which upserts `memberships` row
+5. Subsequent billing events (`subscription.updated`, `subscription.deleted`, `invoice.*`) sync membership state
 
-1. Server Component `app/[locale]/(member)/reservations/page.tsx` calls `getCourtAvailability()` from `lib/queries/reservations.ts`
-2. Query fetches courts, configs, pricing, and existing reservations in parallel via `Promise.all`
-3. `generateTimeSlots()` computes per-hour availability with spot-level granularity
-4. User submits form -> `createReservationAction()` in `app/actions/reservations.ts`
-5. Action validates: auth, pending payment block, membership check, advance booking window, location restriction, conflict check
-6. Inserts reservation row, sends confirmation email via `lib/resend/emails.ts` (fire-and-forget)
-7. Non-members get `status: 'pending_payment'` -> redirected to Stripe one-time checkout via `createSessionPaymentAction()` in `app/actions/sessionPayment.ts`
+**Admin Operations:**
+1. Admin layout (`app/[locale]/(admin)/admin/layout.tsx`) performs server-side role check
+2. Admin pages call server actions from `app/actions/admin/` (barrel-exported via `app/actions/admin.ts`)
+3. All admin actions call `requireAdmin()` which validates `app_metadata.role === 'admin'`
+4. Admin actions use both `createClient()` (user-scoped) and `supabaseAdmin` (service role) depending on operation
 
-**Admin CMS Flow:**
-
-1. Admin navigates to `/admin/cms` -> `page.tsx` calls `getContentBlocksAction()` from `app/actions/admin.ts`
-2. Content blocks are fetched via `supabaseAdmin` (service role, bypasses RLS), grouped by prefix (`home_`, `about_`, `learn_`, `faq_`)
-3. Admin edits content in `ContentEditor.tsx` (TipTap rich text editor)
-4. Save calls `updateContentBlockAction()` which updates the row and calls `revalidatePath('/')` for ISR cache invalidation
-5. Public pages fetch content via `getContentBlocks()` from `lib/content.ts` using the anon-role Supabase client
+**AI Chatbot:**
+1. `ChatWidget` component opens `ChatPanel` with streaming messages
+2. `POST /api/chat` fetches CMS content blocks and upcoming events from Supabase
+3. System prompt constructed with club knowledge base, then sent to OpenAI `gpt-4o-mini` with streaming
+4. Rate limiting via DB-backed `chat_rate_limits` table
 
 **State Management:**
-- No client-side state management library (no Redux, Zustand, etc.)
-- Server Components fetch fresh data on each request
-- Client Components use React's `useActionState` for form state and `useState` for local UI state
-- Auth state managed by Supabase cookies, refreshed in `middleware.ts` on every request
+- No client-side state library (no Redux, Zustand, etc.)
+- Server state via React Server Components with direct Supabase queries
+- Form state via React 19 `useActionState` hook
+- Membership status cached in HMAC-signed httpOnly cookie (5-minute TTL) to avoid DB roundtrip on every protected page load
 
 ## Key Abstractions
 
-**Supabase Client Trio:**
-- Purpose: Three Supabase client types for different security contexts
-- `lib/supabase/server.ts` - Server Component/Action client (uses cookies, respects RLS)
-- `lib/supabase/client.ts` - Browser client (uses cookies, respects RLS)
-- `lib/supabase/admin.ts` - Service-role client (bypasses ALL RLS, server-only)
-- Pattern: Server Actions use `createClient()` for user-scoped queries, `supabaseAdmin` for cross-user admin queries
+**Supabase Client Factory:**
+- Purpose: Provides context-appropriate Supabase clients
+- Examples: `lib/supabase/server.ts` (cookie-based, RSC/Server Actions), `lib/supabase/client.ts` (browser), `lib/supabase/admin.ts` (service role, bypasses RLS)
+- Pattern: Factory function per environment; server client requires async cookie store (Next.js 16)
 
-**Route Group Segmentation:**
-- Purpose: Separate layout and auth concerns by user role
-- `(marketing)` - Public pages with Footer, ChatWidget, MotionProvider animations
-- `(auth)` - Login/signup/reset-password pages, no special layout
-- `(member)` - Authenticated member pages (dashboard, reservations, settings)
-- `(admin)` - Admin panel with sidebar layout, triple-layer auth protection
-
-**Server Action Pattern:**
-- Purpose: Standardized mutation pattern across the app
-- Pattern: `(prevState, formData) => Promise<ActionState>` compatible with `useActionState`
+**Server Actions with `useActionState`:**
+- Purpose: Type-safe form mutations with progressive enhancement
 - Examples: `app/actions/auth.ts`, `app/actions/reservations.ts`, `app/actions/profile.ts`
-- All actions begin with `await supabase.auth.getUser()` for authentication
+- Pattern: `(prevState: State, formData: FormData) => Promise<State>` signature; return `{ errors?, message?, success? }`
+
+**Court Availability Engine:**
+- Purpose: Generates time slots with availability from court config and existing reservations
+- Examples: `lib/queries/reservations.ts` (`getCourtAvailability`, `generateTimeSlots`)
+- Pattern: Fetches courts, configs, pricing, reservations in parallel; computes per-slot availability with open_play (4 spots) vs full_court modes
 
 **Webhook Handler Pattern:**
 - Purpose: Process Stripe events with idempotency
-- `app/api/stripe/webhook/route.ts` - Entry point with signature verification and dedup
-- `lib/stripe/webhookHandlers.ts` - Individual handlers that receive typed Stripe objects and a SupabaseClient
-- Pattern: Handlers are pure functions that take `(StripeObject, SupabaseClient)` for testability
+- Examples: `app/api/stripe/webhook/route.ts`, `lib/stripe/webhookHandlers.ts`
+- Pattern: Signature verification -> idempotency guard via `webhook_events` table (unique constraint) -> event dispatch to typed handlers
+
+**Admin Action Modules:**
+- Purpose: Domain-organized admin server actions with barrel re-export
+- Examples: `app/actions/admin/auth.ts`, `app/actions/admin/courts.ts`, `app/actions/admin/events.ts`, `app/actions/admin/cms.ts`, `app/actions/admin/users.ts`, `app/actions/admin/reservations.ts`, `app/actions/admin/stats.ts`
+- Pattern: Each domain file has own `'use server'` directive; barrel file `app/actions/admin.ts` re-exports all
+
+**CMS Content Blocks:**
+- Purpose: Admin-editable bilingual content rendered on marketing pages
+- Examples: `lib/content.ts` (`getContentBlocks`, `getContentBlock`)
+- Pattern: Fetch by key prefix from `content_blocks` table, select locale-specific column (`content_es`/`content_en`)
 
 ## Entry Points
 
-**Web Application:**
+**Root Layout:**
 - Location: `app/[locale]/layout.tsx`
-- Triggers: Browser navigation
-- Responsibilities: Font loading, i18n provider, global Navbar
+- Triggers: All page renders
+- Responsibilities: Font loading (Bebas Neue, Poppins, Bungee), `NextIntlClientProvider`, `MotionProvider`, `Navbar`
 
 **Middleware:**
 - Location: `middleware.ts`
-- Triggers: Every non-static request (matcher excludes `api`, `_next`, static files)
-- Responsibilities: Supabase token refresh, auth redirects, admin role check, membership gate, i18n locale routing
+- Triggers: All non-static requests
+- Responsibilities: Public route bypass (skip auth for marketing pages), auth validation, admin role check, membership gating with cookie cache, i18n locale routing
+
+**Homepage:**
+- Location: `app/[locale]/page.tsx`
+- Triggers: Root URL `/` or `/en`
+- Responsibilities: Hero section, features, pricing plans, CTA; fetches CMS content blocks and optional user welcome banner
 
 **Stripe Webhook:**
 - Location: `app/api/stripe/webhook/route.ts`
-- Triggers: Stripe event delivery (POST)
-- Responsibilities: Signature verification, idempotency dedup, event dispatch to handlers
+- Triggers: Stripe event delivery
+- Responsibilities: Signature verification, idempotency, event dispatch to handlers that sync membership/payment state
 
 **Auth Callback:**
 - Location: `app/auth/callback/route.ts`
-- Triggers: OAuth/email-link redirect from Supabase Auth
-- Responsibilities: Exchange auth code for session, redirect to intended destination
-
-**Chat API:**
-- Location: `app/api/chat/route.ts`
-- Triggers: ChatWidget POST requests
-- Responsibilities: Rate limiting, CMS knowledge loading, OpenAI streaming via SSE
-
-**Supabase Edge Function:**
-- Location: `supabase/functions/session-reminder/index.ts`
-- Triggers: pg_cron schedule (configured in `0004_pg_cron_reminder.sql`)
-- Responsibilities: Send session reminder emails 10 minutes before court time
+- Triggers: Supabase auth redirects (email confirmation, password reset)
+- Responsibilities: Exchange auth code for session, redirect to target page
 
 ## Error Handling
 
 **Strategy:** Return error objects from Server Actions; never throw in user-facing flows
 
 **Patterns:**
-- Server Actions return `{ error: string }` or `{ errors: Record<string, string> }` for validation failures
-- Admin actions throw `new Error()` for unexpected failures (caught by error boundaries)
-- Webhook handlers throw errors so the route returns 500 and Stripe retries
-- Email sending is fire-and-forget: failures are logged but never block the primary operation
-- Database constraint violations (e.g., `23P01` exclusion violation) are caught and mapped to user-friendly error codes like `'slot_taken'`
+- Server Actions return typed result objects: `{ errors?: Record<string, string>, message?: string, success?: boolean }`
+- Supabase errors checked via `if (error)` pattern, mapped to user-facing error keys (e.g., `'slot_taken'`, `'beyond_booking_window'`)
+- Webhook handlers throw on critical failures (returns 500 for Stripe retry), use `console.warn` for non-critical issues
+- Email sending wrapped in try/catch with fire-and-forget pattern -- booking succeeds even if email fails
+- DB constraint violations caught by error code (e.g., `23P01` exclusion violation, `23505` unique violation)
 
 ## Cross-Cutting Concerns
 
-**Logging:** `console.error` only, no structured logging framework. Used for email failures, DB errors, and OpenAI errors.
+**Logging:** `console.error` / `console.warn` only; no structured logging framework
 
 **Validation:**
-- Server-side validation in every Server Action before database writes
-- Shared validators: `lib/utils/normalizeName.ts`, `lib/utils/passwordValidation.ts`
-- Database-level constraints as last line of defense (CHECK, EXCLUDE, UNIQUE)
-- No client-side validation library; forms rely on HTML5 attributes and server-side checks
+- Server-side validation in every Server Action before DB operations
+- Shared validators: `lib/utils/normalizeName.ts` (name sanitization), `lib/utils/passwordValidation.ts`
+- No client-side validation library; form validation happens on submit via Server Actions
 
 **Authentication:**
-- Supabase Auth with email/password (no OAuth providers configured)
-- JWT validated on every request via `middleware.ts` calling `supabase.auth.getUser()`
-- Admin role stored in `app_metadata.role` (set via service-role client)
-- Three-layer admin protection: middleware redirect -> layout server-side check -> `requireAdmin()` in actions
+- Supabase Auth with email/password (no OAuth providers)
+- JWT validated via `supabase.auth.getUser()` (server roundtrip, not session-based)
+- Admin role stored in `app_metadata.role` (set via service role client)
+- Three-layer admin protection: middleware check -> layout server-side check -> `requireAdmin()` in each action
+
+**Authorization:**
+- RLS on Supabase tables (users see own data)
+- Service role (`supabaseAdmin`) used for cross-user operations (admin, webhooks, signup profile creation)
+- Membership status gates access to `/member/*` routes (except `/reservations`)
+- Reservation routes open to all authenticated users (non-members pay per session)
 
 **Internationalization:**
-- `next-intl` v4 with `localePrefix: 'as-needed'` (Spanish is default, no prefix)
-- Static translations in `messages/es.json` and `messages/en.json`
-- Dynamic content (CMS) stored as `content_es` / `content_en` columns in `content_blocks` table
-- Locale detection in Server Actions via referer header sniffing for Stripe redirect URLs
+- `next-intl` v4 with `[locale]` dynamic segment
+- Two locales: `es` (default, no prefix), `en` (prefixed `/en/...`)
+- Translation files: `messages/es.json`, `messages/en.json`
+- CMS content stored with dual columns: `content_es`, `content_en`
+- Emails sent in user's locale preference
 
 ---
 

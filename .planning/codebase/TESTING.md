@@ -5,273 +5,299 @@
 ## Test Framework
 
 **Unit Test Runner:**
-- Vitest v4.0.18
+- Vitest 4.x
 - Config: `vitest.config.ts`
 - Environment: `node`
-- Globals enabled (`describe`, `it`, `test`, `expect` available without import, though most files import them explicitly)
+- Globals: enabled (`describe`, `it`, `expect` available without import, though most files import them explicitly)
 
 **E2E Test Runner:**
-- Playwright v1.58.2
+- Playwright 1.58.x
 - Config: `playwright.config.ts`
 - Browser: Chromium only
 - Base URL: `http://localhost:3000`
 
 **Assertion Library:**
-- Vitest built-in `expect` (unit tests)
-- Playwright built-in `expect` (E2E tests)
+- Vitest built-in `expect` (Chai-compatible)
+- Playwright built-in `expect`
 
 **Run Commands:**
 ```bash
-npm test                  # Run all unit tests (vitest run)
-npm run test:unit         # Run unit tests only (vitest run tests/unit)
-npm run test:e2e          # Run E2E tests (playwright test)
+npm test                # Run all unit tests (vitest run)
+npm run test:unit       # Run only unit tests (vitest run tests/unit)
+npm run test:e2e        # Run E2E tests (playwright test)
 ```
 
 ## Test File Organization
 
 **Location:**
-- All tests in a separate `tests/` directory (not co-located with source)
+- All tests in a separate `tests/` directory at project root (not co-located with source)
+- Unit tests: `tests/unit/`
+- Auth E2E tests: `tests/auth/`
+- i18n E2E tests: `tests/i18n/`
+
+**Naming:**
+- Unit tests: `{camelCaseDescriptor}.test.ts` (e.g., `cookieSigning.test.ts`, `chatRateLimit.test.ts`, `middlewareRouting.test.ts`)
+- E2E tests: `{kebab-case-descriptor}.spec.ts` (e.g., `login.spec.ts`, `locale-routing.spec.ts`)
 
 **Structure:**
 ```
 tests/
-├── unit/                           # Vitest unit tests
-│   ├── passwordValidation.test.ts  # Pure function tests
-│   ├── normalizeName.test.ts       # Pure function tests
-│   ├── noHardcodedStrings.test.ts  # Codebase lint/guard test
-│   ├── proxyUsesGetUser.test.ts    # Source code security check
-│   ├── billing.test.ts             # Stubbed/skipped tests
-│   ├── webhookHandler.test.ts      # Stubbed/skipped tests
-│   ├── checkoutSuccess.test.ts     # Stubbed/skipped tests
-│   ├── rls-policies.test.ts        # TODO placeholders
-│   ├── adminRole.test.ts           # TODO placeholders
-│   └── proxyMembership.test.ts     # Stubbed/skipped tests
-├── auth/                           # Playwright E2E tests
-│   ├── login.spec.ts
-│   ├── signup.spec.ts
-│   ├── session-persist.spec.ts
-│   ├── route-protection.spec.ts
-│   └── password-reset.spec.ts
-└── i18n/                           # Playwright E2E tests
-    └── locale-routing.spec.ts
+  unit/
+    adminExports.test.ts        # Barrel file re-export verification
+    adminRole.test.ts           # Admin role assignment (todo stubs)
+    billing.test.ts             # Checkout/portal actions (skipped stubs)
+    chatRateLimit.test.ts       # Rate limiting logic (fully implemented)
+    checkoutSuccess.test.ts     # Checkout success page (skipped stubs)
+    cookieSigning.test.ts       # HMAC cookie signing (fully implemented)
+    middlewareRouting.test.ts    # Route classification helpers (fully implemented)
+    noHardcodedStrings.test.ts  # i18n enforcement (fully implemented)
+    normalizeName.test.ts       # Name normalization (fully implemented)
+    passwordValidation.test.ts  # Password validation (fully implemented)
+    proxyMembership.test.ts     # Membership gating (skipped stubs)
+    proxyUsesGetUser.test.ts    # Security check - source code scan (fully implemented)
+    rls-policies.test.ts        # RLS verification (todo stubs)
+    webhookHandler.test.ts      # Stripe webhook handler (skipped stubs)
+  auth/
+    login.spec.ts               # Login flow (skipped stubs)
+    password-reset.spec.ts      # Password reset (skipped stubs)
+    route-protection.spec.ts    # Route protection (skipped stubs)
+    session-persist.spec.ts     # Session persistence (skipped stubs)
+    signup.spec.ts              # Signup flow (skipped stubs)
+  i18n/
+    locale-routing.spec.ts      # Locale routing (skipped stubs)
 ```
-
-**Naming:**
-- Unit tests: `*.test.ts` (Vitest convention)
-- E2E tests: `*.spec.ts` (Playwright convention)
-- Test file names match the feature or module they test (e.g., `passwordValidation.test.ts` tests `lib/utils/passwordValidation.ts`)
 
 ## Test Structure
 
-**Unit Test Pattern (implemented):**
+**Unit Test Suite Organization:**
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { normalizeName, validateName } from '@/lib/utils/normalizeName'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { functionUnderTest } from '@/lib/module'
 
-describe('normalizeName', () => {
-  it('trims leading and trailing whitespace', () => {
-    expect(normalizeName('  JUAN  ')).toBe('Juan')
+describe('functionUnderTest', () => {
+  it('describes expected behavior for specific input', () => {
+    const result = functionUnderTest(input)
+    expect(result).toBe(expectedOutput)
   })
 
-  it('capitalizes first letter of each word', () => {
-    expect(normalizeName('jose urizar')).toBe('Jose Urizar')
+  it('handles edge case', () => {
+    expect(functionUnderTest(edgeInput)).toBeNull()
   })
-})
-```
-
-**Unit Test Pattern (stubbed - majority of tests):**
-```typescript
-import { describe, test, expect } from 'vitest'
-
-describe('createCheckoutSessionAction', () => {
-  test.skip('passes correct price ID for VIP plan', () => {
-    expect(true).toBe(true)
-  })
-})
-```
-
-**Unit Test Pattern (TODO placeholders):**
-```typescript
-describe('RLS policies', () => {
-  describe('profiles table', () => {
-    it.todo('RLS is enabled on profiles table')
-    it.todo('user can read their own profile row')
-  })
-})
-```
-
-**E2E Test Pattern (all skipped):**
-```typescript
-import { test, expect } from '@playwright/test'
-
-test.describe('Login flow (AUTH-04)', () => {
-  test.skip('login page renders email/password form', async () => {})
-  test.skip('valid credentials redirect to home page', async () => {})
 })
 ```
 
 **Patterns:**
-- Use `describe()` for grouping by feature/function
-- Use nested `describe()` for sub-categories (e.g., webhook event types)
-- Use `it()` or `test()` interchangeably (codebase uses both)
-- Test descriptions reference requirement IDs in parentheses: `'Route protection (SEC-05)'`, `'Locale routing (I18N-01)'`
-- Setup/teardown hooks: not currently used
+- `describe` blocks group by function or feature
+- Nested `describe` blocks for sub-categories (see `webhookHandler.test.ts`)
+- `it`/`test` descriptions are concise and specific: `'rejects passwords shorter than 8 characters'`
+- No `beforeAll`/`afterAll` unless module requires env setup (see `cookieSigning.test.ts`)
+- `beforeEach` for mock reset and fake timer setup
 
-## Test Categories
-
-**1. Pure Function Tests (IMPLEMENTED):**
-- Files: `tests/unit/passwordValidation.test.ts`, `tests/unit/normalizeName.test.ts`
-- These are the only tests with actual assertions that run
-- Test pure utility functions from `lib/utils/`
-- Pattern: import function, call with input, assert output
-
-**2. Source Code Guard Tests (IMPLEMENTED):**
-- Files: `tests/unit/noHardcodedStrings.test.ts`, `tests/unit/proxyUsesGetUser.test.ts`
-- Read source files with `fs.readFileSync` and assert patterns
-- `noHardcodedStrings.test.ts`: Recursively scans all `.tsx` files for `TODO: i18n` comments
-- `proxyUsesGetUser.test.ts`: Verifies `proxy.ts` uses `getUser()` not `getSession()` (security invariant)
-- Pattern: filesystem scanning + string assertions
-
-**3. Stubbed/Skipped Tests (NOT IMPLEMENTED):**
-- Files: `billing.test.ts`, `webhookHandler.test.ts`, `checkoutSuccess.test.ts`, `proxyMembership.test.ts`
-- All use `test.skip()` with placeholder `expect(true).toBe(true)`
-- Serve as documentation of what should be tested
-- Organized by feature with descriptive test names
-
-**4. TODO Placeholder Tests (NOT IMPLEMENTED):**
-- Files: `rls-policies.test.ts`, `adminRole.test.ts`
-- Use `it.todo()` — no test body at all
-- Document future integration tests requiring Supabase test client
-
-**5. E2E Tests (NOT IMPLEMENTED):**
-- Files: `tests/auth/*.spec.ts`, `tests/i18n/*.spec.ts`
-- All use `test.skip()` with empty async bodies
-- Test descriptions document expected user flows
+**Stub Patterns (three kinds):**
+- `test.skip('description', () => { expect(true).toBe(true) })` - Placeholder with no-op body, skipped
+- `it.todo('description')` - Pure stub with no body (used in `adminRole.test.ts`, `rls-policies.test.ts`)
+- `test.skip('description', async () => {})` - Async placeholder, skipped (used in Playwright E2E tests)
 
 ## Mocking
 
-**Framework:** None currently used
+**Framework:** Vitest built-in `vi`
 
-**Current state:** No mocking patterns are established. The codebase has no examples of:
-- Vitest `vi.mock()` or `vi.fn()`
-- Module mocking for Supabase or Stripe clients
-- Test doubles or fixtures
-
-**What would need mocking (for stubbed tests):**
-- `@/lib/supabase/server` — mock `createClient()` return
-- `@/lib/stripe` — mock Stripe API calls
-- `@supabase/ssr` — mock cookie-based auth
-- `next/navigation` — mock `redirect()`
-
-**Recommendation for future tests:**
+**Environment Variable Mocking:**
 ```typescript
-// Pattern to follow when implementing stubbed tests:
-import { vi } from 'vitest'
+// Set env BEFORE importing the module under test
+vi.stubEnv('MEMBERSHIP_COOKIE_SECRET', 'test-secret-key-for-hmac-signing-32b')
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(() => ({
-    auth: { getUser: vi.fn() },
-    from: vi.fn(() => ({ select: vi.fn(), insert: vi.fn() })),
-  })),
-}))
+// Dynamic import after env is set
+let sign: (payload: string) => Promise<string>
+beforeAll(async () => {
+  const mod = await import('@/lib/middleware/cookie-signing')
+  sign = mod.sign
+})
+```
+
+**Supabase Client Mocking (chainable query builder):**
+```typescript
+function createMockSupabase() {
+  const mockMaybeSingle = vi.fn()
+  const mockInsert = vi.fn()
+  const mockUpdateEq = vi.fn()
+  const mockUpdate = vi.fn().mockReturnValue({ eq: mockUpdateEq })
+  const mockEq = vi.fn().mockReturnValue({ maybeSingle: mockMaybeSingle })
+  const mockSelect = vi.fn().mockReturnValue({ eq: mockEq })
+  const mockFrom = vi.fn().mockImplementation(() => ({
+    select: mockSelect,
+    insert: mockInsert,
+    update: mockUpdate,
+  }))
+
+  return {
+    from: mockFrom,
+    _mocks: { mockFrom, mockSelect, mockEq, mockMaybeSingle, mockInsert, mockUpdate, mockUpdateEq },
+  }
+}
+```
+- Key pattern: mirror Supabase's chainable API (`.from().select().eq().maybeSingle()`)
+- Expose `_mocks` object for assertion access
+- Cast to `as any` when passing to function under test
+
+**NextRequest/NextResponse Cookie Mocking:**
+```typescript
+function createMockRequest(cookies: Record<string, string> = {}) {
+  return {
+    cookies: {
+      get(name: string) {
+        return cookies[name] ? { value: cookies[name] } : undefined
+      },
+    },
+  } as any
+}
+
+function createMockResponse() {
+  const cookieStore: Record<string, { value: string; options: any }> = {}
+  return {
+    cookies: {
+      set(name: string, value: string, options: any) {
+        cookieStore[name] = { value, options }
+      },
+    },
+    _cookieStore: cookieStore,
+  } as any
+}
+```
+
+**Fake Timers:**
+```typescript
+beforeEach(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(new Date('2026-03-14T12:00:00Z'))
+})
+```
+
+**What to Mock:**
+- Supabase client (database calls)
+- Environment variables (via `vi.stubEnv`)
+- System time (via `vi.useFakeTimers` + `vi.setSystemTime`)
+- NextRequest/NextResponse cookie APIs
+
+**What NOT to Mock:**
+- Pure utility functions (`normalizeName`, `validatePassword*`) -- test directly
+- Route helper functions (`isProtectedRoute`, etc.) -- test directly
+- Crypto operations (`sign`, `verify` in cookie-signing) -- test with real Web Crypto API
+
+## Source Code Scanning Tests
+
+A unique pattern in this codebase: some unit tests read source files directly with `fs.readFileSync` to verify structural invariants rather than testing runtime behavior.
+
+**Pattern: Verify barrel file completeness**
+```typescript
+// tests/unit/adminExports.test.ts
+const barrelContent = read('app/actions/admin.ts')
+const expectedFunctions = ['requireAdmin', 'getAdminStatsAction', ...]
+
+it('barrel file re-exports all action functions', () => {
+  for (const fn of expectedFunctions) {
+    expect(barrelContent, `Missing re-export for ${fn}`).toContain(fn)
+  }
+})
+```
+
+**Pattern: Verify security constraints in source code**
+```typescript
+// tests/unit/proxyUsesGetUser.test.ts
+const source = readFileSync(proxyPath, 'utf-8')
+expect(source).toContain('getUser()')
+expect(source).not.toContain('getSession()')
+```
+
+**Pattern: Enforce i18n compliance across all .tsx files**
+```typescript
+// tests/unit/noHardcodedStrings.test.ts
+// Recursively scans all .tsx files for 'TODO: i18n' comments
+for (const file of tsxFiles) {
+  const content = readFileSync(file, 'utf-8')
+  if (content.includes('TODO: i18n')) {
+    violations.push(file)
+  }
+}
+expect(violations).toHaveLength(0)
+```
+
+**Pattern: Verify server action conventions**
+```typescript
+// tests/unit/adminExports.test.ts
+for (const file of domainFiles) {
+  it(`${file} has 'use server' directive`, () => {
+    const content = read(file)
+    expect(content.startsWith("'use server'")).toBe(true)
+  })
+}
 ```
 
 ## Fixtures and Factories
 
 **Test Data:**
-- No fixtures, factories, or shared test data exist
-- Pure function tests use inline test data
-- No `__fixtures__/`, `__mocks__/`, or shared test utility directory
+- Inline test data within each test case (no shared fixture files)
+- Mock Supabase responses created per-test via `mockResolvedValue`:
+```typescript
+supabase._mocks.mockMaybeSingle.mockResolvedValue({
+  data: {
+    message_count: 5,
+    window_start: new Date('2026-03-14T11:30:00Z').toISOString(),
+  },
+  error: null,
+})
+```
 
 **Location:**
-- Not applicable — no fixtures exist
+- No dedicated fixtures directory
+- Mock helper functions defined at the top of each test file (e.g., `createMockSupabase`, `createMockRequest`, `createMockResponse`)
 
 ## Coverage
 
-**Requirements:** None enforced
+**Requirements:** None enforced (no coverage thresholds configured)
 
-**No coverage configuration:**
-- No `coverage` key in `vitest.config.ts`
-- No coverage script in `package.json`
-- `@vitest/ui` is installed as a dev dependency but no UI script configured
-
-**To add coverage:**
+**View Coverage:**
 ```bash
-npx vitest run --coverage    # Requires @vitest/coverage-v8 or similar
+npx vitest run --coverage    # Not configured in scripts but works via CLI
 ```
 
-## Vitest Configuration Details
+## Test Types
 
-**`vitest.config.ts`:**
-```typescript
-import { defineConfig } from 'vitest/config'
-import path from 'path'
+**Unit Tests (Vitest):**
+- Test pure utility functions directly (normalizeName, passwordValidation, route-helpers)
+- Test library logic with mocked dependencies (rate-limit with mocked Supabase)
+- Test crypto/security functions with real Web Crypto API (cookie-signing)
+- Source-code scanning tests for structural invariants (exports, directives, security patterns)
+- Many stub/placeholder tests (`test.skip`, `it.todo`) for features not yet tested: billing, webhooks, RLS, admin role
 
-export default defineConfig({
-  test: {
-    environment: 'node',
-    include: ['tests/unit/**/*.test.ts'],
-    globals: true,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, '.'),
-    },
-  },
-})
-```
-
-- Only `tests/unit/**/*.test.ts` included (E2E tests excluded via pattern)
-- Path alias `@` resolved to project root (matches `tsconfig.json`)
-- Node environment (no jsdom/happy-dom — no component rendering tests)
-
-## Playwright Configuration Details
-
-**`playwright.config.ts`:**
-```typescript
-export default defineConfig({
-  testDir: './tests',
-  testIgnore: ['**/unit/**'],
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'list',
-  use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-  },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-})
-```
-
-- Excludes `unit/` directory (handles E2E only)
-- Chromium-only testing (no Firefox/Safari)
-- CI-aware: retries twice, single worker in CI
-- Trace capture on first retry for debugging
-
-## Test Implementation Status Summary
-
-| Category | Files | Implemented | Status |
-|----------|-------|-------------|--------|
-| Pure function tests | 2 | YES | Running, passing |
-| Source code guards | 2 | YES | Running, passing |
-| Server Action tests | 4 | NO | Stubbed with `test.skip` |
-| RLS/Auth integration | 2 | NO | `it.todo` placeholders |
-| Auth E2E flows | 5 | NO | Stubbed with `test.skip` |
-| i18n E2E flows | 1 | NO | Stubbed with `test.skip` |
-
-**Total: 16 test files, 4 implemented, 12 stubbed/placeholder**
+**E2E Tests (Playwright):**
+- All currently skipped stubs (no implemented E2E tests)
+- Organized by feature: `tests/auth/` and `tests/i18n/`
+- Target `http://localhost:3000` (requires running dev server)
+- Chromium only, parallel execution enabled
+- Trace capture on first retry
 
 ## Common Patterns
 
 **Async Testing:**
-- Not yet established (no async tests implemented)
-- Stubbed tests suggest future pattern: Server Action tests will need async/await with mocked Supabase
+```typescript
+it('allows first message and inserts a new row', async () => {
+  supabase._mocks.mockMaybeSingle.mockResolvedValue({ data: null, error: null })
+  supabase._mocks.mockInsert.mockResolvedValue({ error: null })
+
+  const result = await checkRateLimit(supabase as any, 'session-1')
+
+  expect(result).toEqual({ allowed: true })
+  expect(supabase._mocks.mockInsert).toHaveBeenCalledWith({
+    session_id: 'session-1',
+    message_count: 1,
+    window_start: new Date('2026-03-14T12:00:00Z').toISOString(),
+  })
+})
+```
 
 **Error Testing:**
 ```typescript
-// Pure function error testing pattern (from passwordValidation.test.ts):
 it('rejects passwords shorter than 8 characters', () => {
   const result = validatePasswordLength('1234567')
   expect(result).not.toBeNull()
@@ -279,41 +305,72 @@ it('rejects passwords shorter than 8 characters', () => {
 })
 ```
 
-**Filesystem-based Testing:**
+**Null/Valid Return Testing:**
 ```typescript
-// Source code guard pattern (from noHardcodedStrings.test.ts):
-import { readdirSync, readFileSync } from 'fs'
-
-function findTsxFiles(dir: string): string[] {
-  // Recursive directory scan
-}
-
-it('no .tsx files contain TODO: i18n comments', () => {
-  const files = findTsxFiles(join(process.cwd(), 'app'))
-  const violations: string[] = []
-  for (const file of files) {
-    const content = readFileSync(file, 'utf-8')
-    if (content.includes('TODO: i18n')) {
-      violations.push(file.replace(process.cwd(), ''))
-    }
-  }
-  expect(violations).toHaveLength(0)
+it('returns null for a valid name', () => {
+  expect(validateName('jose')).toBeNull()
 })
 ```
 
-## Adding New Tests
+**Cookie Security Testing:**
+```typescript
+it('sets httpOnly, secure, sameSite=lax, maxAge=300, path=/', async () => {
+  const res = createMockResponse()
+  const data: MembershipCache = { active: true, planType: 'basic', cachedAt: Date.now() }
+  await setMembershipCookie(res, data)
 
-**New unit test:**
-1. Create `tests/unit/<feature>.test.ts`
+  const cookie = res._cookieStore['nell_membership_cache']
+  expect(cookie.options.httpOnly).toBe(true)
+  expect(cookie.options.secure).toBe(true)
+  expect(cookie.options.sameSite).toBe('lax')
+  expect(cookie.options.maxAge).toBe(300)
+})
+```
+
+## Test Gaps and Stub Status
+
+**Fully implemented unit tests (8 files):**
+- `cookieSigning.test.ts` - HMAC sign/verify, cookie get/set
+- `chatRateLimit.test.ts` - Rate limit logic with mocked Supabase
+- `middlewareRouting.test.ts` - Route classification helpers
+- `normalizeName.test.ts` - Name normalization and validation
+- `passwordValidation.test.ts` - Password length and match validation
+- `noHardcodedStrings.test.ts` - i18n compliance scan
+- `proxyUsesGetUser.test.ts` - Security source code check
+- `adminExports.test.ts` - Barrel file and convention verification
+
+**Stub-only tests (6 files, all `test.skip` or `it.todo`):**
+- `billing.test.ts` - Checkout and portal session actions
+- `webhookHandler.test.ts` - Stripe webhook event handling
+- `checkoutSuccess.test.ts` - Checkout success page states
+- `proxyMembership.test.ts` - Membership gating logic
+- `adminRole.test.ts` - Admin role assignment
+- `rls-policies.test.ts` - Row Level Security verification
+
+**E2E tests (all stubs, 6 files):**
+- `tests/auth/login.spec.ts`
+- `tests/auth/signup.spec.ts`
+- `tests/auth/password-reset.spec.ts`
+- `tests/auth/route-protection.spec.ts`
+- `tests/auth/session-persist.spec.ts`
+- `tests/i18n/locale-routing.spec.ts`
+
+## Writing New Tests
+
+**For a new unit test:**
+1. Create `tests/unit/{camelCaseDescriptor}.test.ts`
 2. Import from vitest: `import { describe, it, expect } from 'vitest'`
-3. Import module under test using `@/` alias
-4. Follow `describe`/`it` nesting pattern
+3. Import module under test via `@/` alias: `import { fn } from '@/lib/module'`
+4. Group with `describe`, name tests with `it` or `test`
 
-**New E2E test:**
-1. Create `tests/<feature>/<scenario>.spec.ts`
+**For a new E2E test:**
+1. Create `tests/{feature}/{kebab-case}.spec.ts`
 2. Import from Playwright: `import { test, expect } from '@playwright/test'`
-3. Use `test.describe()` with requirement ID reference
-4. Ensure dev server running on `localhost:3000`
+3. Use `test.describe` for grouping
+
+**For mocking Supabase in new tests:**
+- Follow the chainable mock pattern from `chatRateLimit.test.ts`
+- Mirror the exact chain your code uses (e.g., `.from().select().eq().single()`)
 
 ---
 
