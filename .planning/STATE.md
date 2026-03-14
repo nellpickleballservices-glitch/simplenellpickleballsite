@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: Local vs Tourist Pricing
 status: planning
 stopped_at: Roadmap created, ready to plan Phase 2
-last_updated: "2026-03-14T19:22:51.787Z"
+last_updated: "2026-03-14T19:28:41.962Z"
 last_activity: 2026-03-14 — Roadmap created for v1.1
 progress:
   total_phases: 4
