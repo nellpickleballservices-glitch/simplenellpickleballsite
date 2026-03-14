@@ -13,6 +13,7 @@ import { FloatingParticles } from '@/components/effects/FloatingParticles'
 import { GlowButton } from '@/components/effects/GlowButton'
 import { GlowCard } from '@/components/effects/GlowCard'
 import { AnimatedHeroAccents, AnimatedCtaAccents } from '@/components/effects/AnimatedAccents'
+import { HeroVideo } from '@/components/effects/HeroVideo'
 import type { Metadata } from 'next'
 
 interface HomePageProps {
@@ -78,15 +79,15 @@ async function HomePage({ searchParams }: HomePageProps) {
         {/* -- HERO -- */}
         <section className="relative flex flex-col items-center justify-center min-h-screen px-6 text-center overflow-hidden">
 
-          {/* Animated background shapes */}
-          <AnimatedHeroAccents />
+          {/* Background video with dark overlay */}
+          <HeroVideo />
 
-          {/* Floating particles */}
+          {/* Floating particles on top of video */}
           <FloatingParticles count={20} />
 
           <HeroEntrance className="relative z-10 flex flex-col items-center">
-            {/* Location badge */}
-            <div className="flex items-center gap-2 mb-8">
+            {/* Location badge — pill style */}
+            <div className="flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-offwhite/15 bg-midnight/40 backdrop-blur-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -106,7 +107,7 @@ async function HomePage({ searchParams }: HomePageProps) {
             </div>
 
             {/* Main headline — animated gradient text */}
-            <h1 className="font-bebas-neue text-[clamp(4rem,14vw,9rem)] leading-none tracking-widest gradient-text mb-4">
+            <h1 className="font-bebas-neue text-[clamp(4rem,14vw,9rem)] leading-none tracking-widest gradient-text mb-4 drop-shadow-[0_4px_30px_rgba(163,255,18,0.15)]">
               {t('heroHeadline')}
             </h1>
 
@@ -115,15 +116,18 @@ async function HomePage({ searchParams }: HomePageProps) {
               {t('title')}&nbsp;{t('subtitle')}
             </p>
 
+            {/* Thin accent divider */}
+            <div className="w-20 h-px bg-gradient-to-r from-transparent via-lime/60 to-transparent mb-6" />
+
             {/* Sub-headline -- CMS content or i18n fallback */}
-            <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed mb-10">
+            <p className="text-offwhite/80 text-base sm:text-lg max-w-xl leading-relaxed mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
               {t('heroSubheadline')}
             </p>
 
             {/* CMS hero content */}
             {content.home_hero && (
               <div
-                className="text-offwhite/70 text-base max-w-xl leading-relaxed mb-10 prose prose-invert"
+                className="text-offwhite/80 text-base max-w-xl leading-relaxed mb-10 prose prose-invert drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
                 dangerouslySetInnerHTML={{ __html: content.home_hero }}
               />
             )}
@@ -140,8 +144,8 @@ async function HomePage({ searchParams }: HomePageProps) {
             className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50"
             style={{ animation: 'scroll-hint-bounce 2s ease-in-out infinite' }}
           >
-            <div className="w-px h-8 bg-offwhite" />
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-offwhite">
+            <div className="w-px h-8 bg-offwhite/70" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-offwhite/70">
               <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v13.19l5.47-5.47a.75.75 0 111.06 1.06l-6.75 6.75a.75.75 0 01-1.06 0l-6.75-6.75a.75.75 0 111.06-1.06l5.47 5.47V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
             </svg>
           </div>
