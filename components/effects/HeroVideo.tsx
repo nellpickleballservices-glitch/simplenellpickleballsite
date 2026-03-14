@@ -3,14 +3,13 @@
 import { useRef, useEffect } from 'react'
 
 /**
- * Full-bleed looping background video for the hero section.
+ * Full-bleed hero background: looping video on desktop, static image on mobile.
  * Includes a dark gradient overlay for text legibility.
  */
 export function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    // Ensure autoplay on mount (some browsers block autoplay until interaction)
     const video = videoRef.current
     if (video) {
       video.play().catch(() => {
@@ -21,10 +20,17 @@ export function HeroVideo() {
 
   return (
     <div className="absolute inset-0 z-0" aria-hidden="true">
-      {/* Video layer */}
+      {/* Mobile: static image */}
+      <img
+        src="/images/hero-mobile-img.png"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover md:hidden"
+      />
+
+      {/* Desktop: looping video */}
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover hidden md:block"
         src="/videos/hero-video.mp4"
         autoPlay
         loop
