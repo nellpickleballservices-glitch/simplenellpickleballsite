@@ -1,67 +1,69 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-03-13
+**Analysis Date:** 2026-03-14
 
 ## Test Framework
 
 **Unit Test Runner:**
-- Vitest 4.x
+- Vitest v4.0.18
 - Config: `vitest.config.ts`
 - Environment: `node`
-- Globals: enabled (`describe`, `it`, `test`, `expect` available without import)
+- Globals enabled (`describe`, `it`, `test`, `expect` available without import, though most files import them explicitly)
 
 **E2E Test Runner:**
-- Playwright 1.58.x
+- Playwright v1.58.2
 - Config: `playwright.config.ts`
 - Browser: Chromium only
 - Base URL: `http://localhost:3000`
 
 **Assertion Library:**
-- Vitest built-in `expect` (compatible with Jest API)
-- Playwright built-in `expect` for E2E
+- Vitest built-in `expect` (unit tests)
+- Playwright built-in `expect` (E2E tests)
 
 **Run Commands:**
 ```bash
-npm test                # Run all unit tests (vitest run)
-npm run test:unit       # Run unit tests only (vitest run tests/unit)
-npm run test:e2e        # Run E2E tests (playwright test)
+npm test                  # Run all unit tests (vitest run)
+npm run test:unit         # Run unit tests only (vitest run tests/unit)
+npm run test:e2e          # Run E2E tests (playwright test)
 ```
 
 ## Test File Organization
 
-**Location:** Separate `tests/` directory at project root (not co-located with source)
-
-**Naming:**
-- Unit tests: `*.test.ts` (in `tests/unit/`)
-- E2E/integration tests: `*.spec.ts` (in `tests/auth/`, `tests/i18n/`)
+**Location:**
+- All tests in a separate `tests/` directory (not co-located with source)
 
 **Structure:**
 ```
 tests/
-  unit/
-    adminRole.test.ts          # Admin role assignment
-    billing.test.ts            # Checkout/portal actions
-    checkoutSuccess.test.ts    # Checkout success page
-    noHardcodedStrings.test.ts # I18n compliance check
-    normalizeName.test.ts      # Name normalization utility
-    passwordValidation.test.ts # Password validation utility
-    proxyMembership.test.ts    # Membership gating
-    proxyUsesGetUser.test.ts   # Security: getUser vs getSession
-    rls-policies.test.ts       # RLS policy verification
-    webhookHandler.test.ts     # Stripe webhook handler
-  auth/
-    login.spec.ts              # Login flow E2E
-    password-reset.spec.ts     # Password reset E2E
-    route-protection.spec.ts   # Route protection E2E
-    session-persist.spec.ts    # Session persistence E2E
-    signup.spec.ts             # Signup flow E2E
-  i18n/
-    locale-routing.spec.ts     # Locale routing E2E
+├── unit/                           # Vitest unit tests
+│   ├── passwordValidation.test.ts  # Pure function tests
+│   ├── normalizeName.test.ts       # Pure function tests
+│   ├── noHardcodedStrings.test.ts  # Codebase lint/guard test
+│   ├── proxyUsesGetUser.test.ts    # Source code security check
+│   ├── billing.test.ts             # Stubbed/skipped tests
+│   ├── webhookHandler.test.ts      # Stubbed/skipped tests
+│   ├── checkoutSuccess.test.ts     # Stubbed/skipped tests
+│   ├── rls-policies.test.ts        # TODO placeholders
+│   ├── adminRole.test.ts           # TODO placeholders
+│   └── proxyMembership.test.ts     # Stubbed/skipped tests
+├── auth/                           # Playwright E2E tests
+│   ├── login.spec.ts
+│   ├── signup.spec.ts
+│   ├── session-persist.spec.ts
+│   ├── route-protection.spec.ts
+│   └── password-reset.spec.ts
+└── i18n/                           # Playwright E2E tests
+    └── locale-routing.spec.ts
 ```
+
+**Naming:**
+- Unit tests: `*.test.ts` (Vitest convention)
+- E2E tests: `*.spec.ts` (Playwright convention)
+- Test file names match the feature or module they test (e.g., `passwordValidation.test.ts` tests `lib/utils/passwordValidation.ts`)
 
 ## Test Structure
 
-**Unit Test Pattern (implemented tests):**
+**Unit Test Pattern (implemented):**
 ```typescript
 import { describe, it, expect } from 'vitest'
 import { normalizeName, validateName } from '@/lib/utils/normalizeName'
@@ -74,184 +76,245 @@ describe('normalizeName', () => {
   it('capitalizes first letter of each word', () => {
     expect(normalizeName('jose urizar')).toBe('Jose Urizar')
   })
-
-  it('handles accented characters: "maria" -> "Maria"', () => {
-    expect(normalizeName('maria')).toBe('Maria')
-  })
 })
 ```
 
-**Unit Test Pattern (placeholder/stub tests):**
+**Unit Test Pattern (stubbed - majority of tests):**
 ```typescript
 import { describe, test, expect } from 'vitest'
 
-describe('Stripe webhook handler', () => {
-  describe('checkout.session.completed', () => {
-    test.skip('upserts memberships row with active status', () => {
-      expect(true).toBe(true)
-    })
+describe('createCheckoutSessionAction', () => {
+  test.skip('passes correct price ID for VIP plan', () => {
+    expect(true).toBe(true)
   })
 })
 ```
 
-**Unit Test Pattern (source-code inspection tests):**
+**Unit Test Pattern (TODO placeholders):**
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'fs'
-import { join } from 'path'
-
-describe('proxy.ts security checks', () => {
-  it('proxy.ts uses getUser() not getSession()', () => {
-    const source = readFileSync(join(process.cwd(), 'proxy.ts'), 'utf-8')
-    expect(source).toContain('getUser()')
-    expect(source).not.toContain('getSession()')
+describe('RLS policies', () => {
+  describe('profiles table', () => {
+    it.todo('RLS is enabled on profiles table')
+    it.todo('user can read their own profile row')
   })
 })
 ```
 
-**Unit Test Pattern (filesystem scan for compliance):**
-```typescript
-import { describe, it, expect } from 'vitest'
-import { readdirSync, readFileSync } from 'fs'
-
-describe('No hardcoded UI strings (I18N-02)', () => {
-  it('no .tsx files contain TODO: i18n comments', () => {
-    const files = findTsxFiles(join(process.cwd(), 'app'))
-    const violations: string[] = []
-    for (const file of files) {
-      const content = readFileSync(file, 'utf-8')
-      if (content.includes('TODO: i18n')) {
-        violations.push(file.replace(process.cwd(), ''))
-      }
-    }
-    expect(violations, `Files still have hardcoded strings:\n${violations.join('\n')}`).toHaveLength(0)
-  })
-})
-```
-
-**E2E Test Pattern (all currently skipped stubs):**
+**E2E Test Pattern (all skipped):**
 ```typescript
 import { test, expect } from '@playwright/test'
 
 test.describe('Login flow (AUTH-04)', () => {
   test.skip('login page renders email/password form', async () => {})
   test.skip('valid credentials redirect to home page', async () => {})
-  test.skip('invalid credentials show inline error message', async () => {})
 })
 ```
 
 **Patterns:**
-- Setup/teardown: Not used; tests are stateless
-- Grouping: `describe()` blocks group by feature/module, nested `describe()` for sub-categories
-- Both `it()` and `test()` are used interchangeably (implemented tests tend to use `it()`, stub tests use `test()`)
-- Custom assertion messages: passed as second argument to `expect()` for violations lists
+- Use `describe()` for grouping by feature/function
+- Use nested `describe()` for sub-categories (e.g., webhook event types)
+- Use `it()` or `test()` interchangeably (codebase uses both)
+- Test descriptions reference requirement IDs in parentheses: `'Route protection (SEC-05)'`, `'Locale routing (I18N-01)'`
+- Setup/teardown hooks: not currently used
+
+## Test Categories
+
+**1. Pure Function Tests (IMPLEMENTED):**
+- Files: `tests/unit/passwordValidation.test.ts`, `tests/unit/normalizeName.test.ts`
+- These are the only tests with actual assertions that run
+- Test pure utility functions from `lib/utils/`
+- Pattern: import function, call with input, assert output
+
+**2. Source Code Guard Tests (IMPLEMENTED):**
+- Files: `tests/unit/noHardcodedStrings.test.ts`, `tests/unit/proxyUsesGetUser.test.ts`
+- Read source files with `fs.readFileSync` and assert patterns
+- `noHardcodedStrings.test.ts`: Recursively scans all `.tsx` files for `TODO: i18n` comments
+- `proxyUsesGetUser.test.ts`: Verifies `proxy.ts` uses `getUser()` not `getSession()` (security invariant)
+- Pattern: filesystem scanning + string assertions
+
+**3. Stubbed/Skipped Tests (NOT IMPLEMENTED):**
+- Files: `billing.test.ts`, `webhookHandler.test.ts`, `checkoutSuccess.test.ts`, `proxyMembership.test.ts`
+- All use `test.skip()` with placeholder `expect(true).toBe(true)`
+- Serve as documentation of what should be tested
+- Organized by feature with descriptive test names
+
+**4. TODO Placeholder Tests (NOT IMPLEMENTED):**
+- Files: `rls-policies.test.ts`, `adminRole.test.ts`
+- Use `it.todo()` — no test body at all
+- Document future integration tests requiring Supabase test client
+
+**5. E2E Tests (NOT IMPLEMENTED):**
+- Files: `tests/auth/*.spec.ts`, `tests/i18n/*.spec.ts`
+- All use `test.skip()` with empty async bodies
+- Test descriptions document expected user flows
 
 ## Mocking
 
-**Framework:** No mocking framework in use
+**Framework:** None currently used
 
-**Current State:**
-- No mocks, spies, or stubs are implemented
-- Tests that would require mocking (Supabase client, Stripe API) are marked as `test.skip()` or `it.todo()`
-- The only fully implemented tests are pure function tests (`normalizeName`, `passwordValidation`) and filesystem inspection tests (`noHardcodedStrings`, `proxyUsesGetUser`)
+**Current state:** No mocking patterns are established. The codebase has no examples of:
+- Vitest `vi.mock()` or `vi.fn()`
+- Module mocking for Supabase or Stripe clients
+- Test doubles or fixtures
 
-**Dependency Injection Pattern for Future Mocking:**
-- Webhook handlers in `lib/stripe/webhookHandlers.ts` accept `SupabaseClient` as a parameter, enabling mock injection
-- Example: `handleCheckoutCompleted(session: Stripe.Checkout.Session, supabase: SupabaseClient)`
-- This pattern should be followed for any new functions that need Supabase access and testability
+**What would need mocking (for stubbed tests):**
+- `@/lib/supabase/server` — mock `createClient()` return
+- `@/lib/stripe` — mock Stripe API calls
+- `@supabase/ssr` — mock cookie-based auth
+- `next/navigation` — mock `redirect()`
 
-**What to Mock (when implementing skipped tests):**
-- `@/lib/supabase/server` `createClient()` - for server action tests
-- `@/lib/supabase/admin` `supabaseAdmin` - for admin action tests
-- `stripe` SDK methods - for checkout/webhook tests
-- `next/navigation` `redirect()` - for action redirect tests
-- `next/headers` `headers()` and `cookies()` - for server context tests
+**Recommendation for future tests:**
+```typescript
+// Pattern to follow when implementing stubbed tests:
+import { vi } from 'vitest'
 
-**What NOT to Mock:**
-- Pure utility functions (`normalizeName`, `validatePasswordLength`)
-- Type definitions
-- Static configuration
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn(() => ({
+    auth: { getUser: vi.fn() },
+    from: vi.fn(() => ({ select: vi.fn(), insert: vi.fn() })),
+  })),
+}))
+```
 
 ## Fixtures and Factories
 
 **Test Data:**
-- No fixture files or factory functions exist
-- Test data is defined inline within test cases
-- Example: `normalizeName('jose urizar')` uses inline string literals
+- No fixtures, factories, or shared test data exist
+- Pure function tests use inline test data
+- No `__fixtures__/`, `__mocks__/`, or shared test utility directory
 
 **Location:**
-- No dedicated fixtures directory
+- Not applicable — no fixtures exist
 
 ## Coverage
 
-**Requirements:** None enforced. No coverage thresholds configured.
+**Requirements:** None enforced
 
-**View Coverage:**
+**No coverage configuration:**
+- No `coverage` key in `vitest.config.ts`
+- No coverage script in `package.json`
+- `@vitest/ui` is installed as a dev dependency but no UI script configured
+
+**To add coverage:**
 ```bash
-npx vitest run --coverage    # Not configured, would need @vitest/coverage-v8
+npx vitest run --coverage    # Requires @vitest/coverage-v8 or similar
 ```
 
-## Test Types
+## Vitest Configuration Details
 
-**Unit Tests (`tests/unit/`):**
-- Pure function tests: `normalizeName.test.ts`, `passwordValidation.test.ts` (fully implemented, passing)
-- Source-code inspection tests: `proxyUsesGetUser.test.ts`, `noHardcodedStrings.test.ts` (implemented, reads source files to verify conventions)
-- Stub/placeholder tests: `billing.test.ts`, `webhookHandler.test.ts`, `checkoutSuccess.test.ts`, `proxyMembership.test.ts` (all `test.skip()` with placeholder assertions)
-- TODO tests: `rls-policies.test.ts`, `adminRole.test.ts` (all `it.todo()` with no implementation)
+**`vitest.config.ts`:**
+```typescript
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
-**E2E Tests (`tests/auth/`, `tests/i18n/`):**
-- All currently `test.skip()` stubs with empty async bodies
-- Organized by feature area: auth flows, i18n locale routing
-- Use Playwright `test.describe()` blocks with requirement IDs in names (e.g., `'Login flow (AUTH-04)'`, `'Route protection (SEC-05)'`)
+export default defineConfig({
+  test: {
+    environment: 'node',
+    include: ['tests/unit/**/*.test.ts'],
+    globals: true,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '.'),
+    },
+  },
+})
+```
 
-**Integration Tests:**
-- Not present as a separate category
-- RLS policy tests (`rls-policies.test.ts`) are intended as integration tests against a real Supabase instance but are currently `it.todo()`
+- Only `tests/unit/**/*.test.ts` included (E2E tests excluded via pattern)
+- Path alias `@` resolved to project root (matches `tsconfig.json`)
+- Node environment (no jsdom/happy-dom — no component rendering tests)
+
+## Playwright Configuration Details
+
+**`playwright.config.ts`:**
+```typescript
+export default defineConfig({
+  testDir: './tests',
+  testIgnore: ['**/unit/**'],
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'list',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+  },
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+})
+```
+
+- Excludes `unit/` directory (handles E2E only)
+- Chromium-only testing (no Firefox/Safari)
+- CI-aware: retries twice, single worker in CI
+- Trace capture on first retry for debugging
+
+## Test Implementation Status Summary
+
+| Category | Files | Implemented | Status |
+|----------|-------|-------------|--------|
+| Pure function tests | 2 | YES | Running, passing |
+| Source code guards | 2 | YES | Running, passing |
+| Server Action tests | 4 | NO | Stubbed with `test.skip` |
+| RLS/Auth integration | 2 | NO | `it.todo` placeholders |
+| Auth E2E flows | 5 | NO | Stubbed with `test.skip` |
+| i18n E2E flows | 1 | NO | Stubbed with `test.skip` |
+
+**Total: 16 test files, 4 implemented, 12 stubbed/placeholder**
 
 ## Common Patterns
 
 **Async Testing:**
-```typescript
-// Not yet used in implemented tests - all implemented tests are synchronous
-// Skipped tests indicate the pattern would be:
-test.skip('some async operation', async () => {
-  // await action(...)
-  // expect(result).toBe(...)
-})
-```
+- Not yet established (no async tests implemented)
+- Stubbed tests suggest future pattern: Server Action tests will need async/await with mocked Supabase
 
 **Error Testing:**
 ```typescript
+// Pure function error testing pattern (from passwordValidation.test.ts):
 it('rejects passwords shorter than 8 characters', () => {
   const result = validatePasswordLength('1234567')
   expect(result).not.toBeNull()
   expect(result).toBe('Password must be at least 8 characters')
 })
+```
 
-it('returns null for valid input', () => {
-  expect(validatePasswordLength('12345678')).toBeNull()
+**Filesystem-based Testing:**
+```typescript
+// Source code guard pattern (from noHardcodedStrings.test.ts):
+import { readdirSync, readFileSync } from 'fs'
+
+function findTsxFiles(dir: string): string[] {
+  // Recursive directory scan
+}
+
+it('no .tsx files contain TODO: i18n comments', () => {
+  const files = findTsxFiles(join(process.cwd(), 'app'))
+  const violations: string[] = []
+  for (const file of files) {
+    const content = readFileSync(file, 'utf-8')
+    if (content.includes('TODO: i18n')) {
+      violations.push(file.replace(process.cwd(), ''))
+    }
+  }
+  expect(violations).toHaveLength(0)
 })
 ```
-- Validation functions return `string | null` (error message or null for valid)
-- Tests check both the non-null assertion and the exact error string
 
-**Path Alias in Tests:**
-- `@/` alias is configured in `vitest.config.ts` via `resolve.alias`
-- Use `@/lib/utils/normalizeName` style imports in test files
+## Adding New Tests
 
-## Test Maturity Summary
+**New unit test:**
+1. Create `tests/unit/<feature>.test.ts`
+2. Import from vitest: `import { describe, it, expect } from 'vitest'`
+3. Import module under test using `@/` alias
+4. Follow `describe`/`it` nesting pattern
 
-| Category | Implemented | Skipped/Todo | Total |
-|----------|------------|--------------|-------|
-| Pure function unit tests | 10 assertions | 0 | 10 |
-| Source inspection tests | 2 tests | 0 | 2 |
-| Server action unit tests | 0 | 13 | 13 |
-| RLS/security integration | 0 | 9 (todo) | 9 |
-| E2E auth flows | 0 | 13 (skip) | 13 |
-| E2E i18n routing | 0 | 5 (skip) | 5 |
-
-Approximately 12 tests are fully implemented and passing. Approximately 40 tests are stubbed/skipped/todo.
+**New E2E test:**
+1. Create `tests/<feature>/<scenario>.spec.ts`
+2. Import from Playwright: `import { test, expect } from '@playwright/test'`
+3. Use `test.describe()` with requirement ID reference
+4. Ensure dev server running on `localhost:3000`
 
 ---
 
-*Testing analysis: 2026-03-13*
+*Testing analysis: 2026-03-14*

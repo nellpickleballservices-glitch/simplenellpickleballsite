@@ -1,200 +1,190 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-03-13
+**Analysis Date:** 2026-03-14
 
 ## Tech Debt
 
-**admin.ts is a 902-line monolith:**
-- Issue: All admin server actions (events, CMS, courts, reservations, user management) live in a single file
+**Admin action file is a monolith (902 lines):**
+- Issue: `app/actions/admin.ts` bundles events, CMS, courts, reservations, and user management into a single 902-line file with 20+ exported functions.
 - Files: `app/actions/admin.ts`
-- Impact: Difficult to navigate, review, and test. High merge-conflict risk if multiple features touch admin logic simultaneously
-- Fix approach: Split into domain-specific files: `app/actions/admin/events.ts`, `app/actions/admin/courts.ts`, `app/actions/admin/users.ts`, `app/actions/admin/reservations.ts`, `app/actions/admin/cms.ts`. Keep `requireAdmin()` in a shared `app/actions/admin/guard.ts`
+- Impact: Hard to navigate, test, and review. Any change risks merge conflicts across unrelated features.
+- Fix approach: Split into domain-specific action files: `app/actions/admin/events.ts`, `app/actions/admin/courts.ts`, `app/actions/admin/users.ts`, `app/actions/admin/reservations.ts`, `app/actions/admin/cms.ts`. Extract shared `requireAdmin()` into `app/actions/admin/auth.ts`.
 
-**listUsers with hardcoded perPage: 1000:**
-- Issue: `supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 })` is called in two places to find user emails. This fetches ALL auth users into memory on every admin search/page load
-- Files: `app/actions/admin.ts` (lines 685, 752)
-- Impact: Breaks when user count exceeds 1000. Wastes memory and bandwidth. Called on every `enrichProfilesWithAuthAndMembership` invocation and every search query
-- Fix approach: Store email on the `profiles` table (denormalized) and query it directly instead of round-tripping through auth admin API. Alternatively, paginate through auth users or use a Supabase database function
-
-**Resend sandbox sender address hardcoded:**
-- Issue: All emails use `onboarding@resend.dev` (Resend's sandbox address) across 4 locations. This address only delivers to verified emails in development
-- Files: `lib/resend/emails.ts` (line 3), `app/actions/admin.ts` (lines 409, 891), `supabase/functions/session-reminder/index.ts` (line 92)
-- Impact: Emails will not deliver to real users in production. Must configure a custom domain in Resend and update the FROM_ADDRESS
-- Fix approach: Move sender address to an environment variable (e.g., `EMAIL_FROM_ADDRESS`) and configure it per environment
-
-**Sequential database updates in reorderContentBlocksAction:**
-- Issue: Updates each content block sort_order one at a time in a loop with no transaction wrapper
+**Sequential N+1 queries in `reorderContentBlocksAction`:**
+- Issue: Updates each content block one at a time in a loop instead of a batch operation.
 - Files: `app/actions/admin.ts` (lines 249-255)
-- Impact: If one update fails mid-loop, sort_order becomes inconsistent. N database round-trips for N blocks
-- Fix approach: Use a single Supabase RPC function or batch update via a Postgres function
+- Impact: For N blocks, makes N sequential Supabase round-trips. Slow and fragile if one update fails mid-loop (partial reorder with no rollback).
+- Fix approach: Use a Postgres function or a single RPC call that accepts an array of `{id, sort_order}` pairs and updates atomically.
 
-**In-memory rate limiting for chat API:**
-- Issue: Rate limiter uses a `Map` stored in process memory. State is lost on server restart and not shared across instances
-- Files: `app/api/chat/route.ts` (lines 8-36)
-- Impact: Rate limiting is ineffective in multi-instance deployments (e.g., Vercel serverless). A user can bypass limits by hitting different instances
-- Fix approach: Use Redis, Upstash, or Supabase-backed rate limiting for persistent, shared state
+**Sequential N+1 queries in `searchUsersForReservationAction`:**
+- Issue: After finding profiles, fetches each user's email individually via `getUserById` in a loop.
+- Files: `app/actions/admin.ts` (lines 626-638)
+- Impact: Linear latency growth with result count (up to 10 sequential auth API calls).
+- Fix approach: Use `listUsers` with a batch approach or join with a view that exposes email.
 
-**Hardcoded timezone `America/Santo_Domingo` and UTC offset `-04:00`:**
-- Issue: Admin stats use a hardcoded timezone string and hardcoded `-04:00` offset
-- Files: `app/actions/admin.ts` (lines 39-50)
-- Impact: The Dominican Republic does not observe DST so this is technically correct, but hardcoding the offset is fragile and undocumented. If the club expands to other timezones, this breaks
-- Fix approach: Extract timezone to `app_config` or an environment variable
+**Stale git worktree:**
+- Issue: A `.worktrees/admin-court-enhancements` directory exists with duplicated source files (1073-line admin.ts variant, modified reservation queries, new CourtEditPanel.tsx).
+- Files: `.worktrees/admin-court-enhancements/`
+- Impact: Confusing for developers; duplicated code may be mistaken for authoritative source. Inflates file counts in searches and wc analysis.
+- Fix approach: If the branch is merged, remove with `git worktree remove admin-court-enhancements`. If active, document its purpose.
 
-## Known Bugs
-
-**Confirmation email receives raw ISO strings instead of formatted date/time:**
-- Symptoms: The `sendConfirmationEmail` call in `createReservationAction` passes `date` (from formData, format unknown) and `formattedTime` built from raw `startTime`/`endTime` form values which are ISO timestamps, not human-readable times
-- Files: `app/actions/reservations.ts` (lines 213-215)
-- Trigger: Any reservation booking by a member
-- Workaround: Emails still send, but time format in the email body may be unreadable (full ISO string)
-
-**Session reminder queries status `paid` but schema only has `confirmed`:**
-- Symptoms: The edge function filters `.in('status', ['confirmed', 'paid'])` but the reservation status CHECK constraint only allows `confirmed`, `pending_payment`, `cancelled`, `expired`. There is no `paid` status
-- Files: `supabase/functions/session-reminder/index.ts` (line 49), `supabase/migrations/0003_reservations.sql` (line 87)
-- Trigger: This means the filter effectively only matches `confirmed` reservations. The `paid` clause is dead code
-- Workaround: None needed functionally since `confirmed` is the correct post-payment status, but the dead filter branch is misleading
+**Hardcoded timezone offset:**
+- Issue: Admin stats use hardcoded `-04:00` offset for America/Santo_Domingo timezone instead of dynamically computing the offset.
+- Files: `app/actions/admin.ts` (lines 46, 50)
+- Impact: Dominican Republic does not observe daylight saving time, so `-04:00` is always correct. Low risk, but the pattern is brittle if copied to locales that do observe DST.
+- Fix approach: Use a timezone library or compute offset dynamically if this pattern is reused elsewhere.
 
 ## Security Considerations
 
-**SQL injection via ilike user search:**
-- Risk: The admin user search constructs ilike patterns by interpolating the search query directly into the Supabase `.or()` filter string: `first_name.ilike.%${query}%`
+**SQL injection risk in Supabase `.ilike` and `.or` filters:**
+- Risk: User-supplied search strings are interpolated directly into `.ilike` and `.or` filter strings without escaping special Postgres pattern characters (`%`, `_`, `\`).
 - Files: `app/actions/admin.ts` (lines 621, 681)
-- Current mitigation: `requireAdmin()` gate means only admin users can trigger this. Supabase client library parameterizes internally, so raw SQL injection is unlikely. However, special PostgREST characters (e.g., `.`, `(`, `)`) in the search term could cause unexpected filter behavior
-- Recommendations: Sanitize the search query to strip PostgREST-special characters, or use a dedicated Postgres text search function via RPC
+- Current mitigation: These are admin-only functions (behind `requireAdmin()`), limiting exposure to trusted users. Supabase parameterizes the value, so full SQL injection is not possible -- but wildcard characters in user input could cause unexpected match behavior.
+- Recommendations: Escape `%` and `_` in user input before building ilike patterns.
 
-**Non-null assertions on environment variables:**
-- Risk: Multiple `process.env.VAR!` non-null assertions will throw at runtime if env vars are missing, with unhelpful error messages
-- Files: `lib/stripe/index.ts` (line 3), `lib/supabase/admin.ts` (lines 7-8), `middleware.ts` (lines 12-13), `app/api/stripe/webhook/route.ts` (line 30), `app/actions/billing.ts` (lines 17-18)
-- Current mitigation: The chat API route (line 43) does check `OPENAI_API_KEY` before use -- this pattern should be applied everywhere
-- Recommendations: Add startup validation (e.g., in `next.config.ts` or a shared `lib/env.ts`) that validates all required env vars exist and fails early with clear error messages
+**All auth users fetched for email search (data exposure risk):**
+- Risk: `searchUsersAction` calls `listUsers({ perPage: 1000 })` to get ALL auth users, then filters client-side. This loads all user emails and metadata into server memory.
+- Files: `app/actions/admin.ts` (lines 685, 752)
+- Current mitigation: Admin-only function behind `requireAdmin()`.
+- Recommendations: When user count exceeds 1000, this silently misses users. Implement server-side email filtering or paginate through all pages.
 
-**Non-null assertion on user.email:**
-- Risk: `user.email!` is used without null check in two places. Supabase auth users created via phone or SSO may not have an email
-- Files: `app/actions/profile.ts` (line 74), `app/actions/reservations.ts` (line 218)
-- Current mitigation: Current signup flow requires email, so this is safe for now
-- Recommendations: Add explicit null check before using `user.email` and handle the no-email case gracefully
+**Non-null assertions on `process.env` values:**
+- Risk: 12 instances of `process.env.VARIABLE!` (non-null assertion). If any env var is missing, the app crashes with an unhelpful runtime error instead of a clear startup message.
+- Files: `lib/stripe/index.ts`, `lib/resend/index.ts`, `lib/supabase/server.ts`, `lib/supabase/admin.ts`, `lib/supabase/client.ts`, `middleware.ts`, `app/api/stripe/webhook/route.ts`, `app/actions/billing.ts`
+- Current mitigation: None.
+- Recommendations: Add a startup validation script that checks all required env vars and fails fast with descriptive error messages. Or use a typed env schema (e.g., `zod` parsing of `process.env`).
 
-**All reservations are readable by all authenticated users:**
-- Risk: RLS policy `All authenticated can read court reservations` (SELECT on reservations) exposes all reservation data (user names, booking times, guest names) to any logged-in user
-- Files: `supabase/migrations/0003_reservations.sql` (lines 117-122)
-- Current mitigation: Necessary for availability display. The app layer filters what is shown. Name snapshots are already on the reservation row
-- Recommendations: Consider a Postgres VIEW that exposes only court_id/time/booking_mode/status for availability checks, keeping personal details restricted
+**Non-null assertion on `user.email!`:**
+- Risk: Two places assume `user.email` is always present, but Supabase users can exist without email (e.g., phone auth, SSO).
+- Files: `app/actions/reservations.ts` (line 218), `app/actions/profile.ts` (line 74)
+- Current mitigation: The app only supports email-based signup, so this is currently safe.
+- Recommendations: Add a guard clause or use optional chaining with a fallback.
 
-**Webhook handler swallows errors silently:**
-- Risk: The Stripe webhook route catches handler errors and returns 500, but logs nothing about which handler failed or why
-- Files: `app/api/stripe/webhook/route.ts` (lines 92-94)
-- Current mitigation: Stripe will retry on 500
-- Recommendations: Add `console.error` with the error and event type before returning 500
+**Emails sent from Resend sandbox address:**
+- Risk: All emails use `onboarding@resend.dev` (Resend's test/sandbox sender). In production, emails may be rejected or flagged as spam.
+- Files: `lib/resend/emails.ts` (line 3), `app/actions/admin.ts` (lines 409, 891), `supabase/functions/session-reminder/index.ts` (line 92)
+- Current mitigation: None -- this is a development placeholder.
+- Recommendations: Register a custom domain with Resend and update the FROM_ADDRESS to a verified domain sender (e.g., `notifications@nellpickleball.com`).
 
 ## Performance Bottlenecks
 
-**N+1 queries in searchUsersForReservationAction:**
-- Problem: For each profile match, makes an individual `getUserById` call to fetch email
-- Files: `app/actions/admin.ts` (lines 628-635)
-- Cause: Up to 10 sequential auth admin API calls (one per matched profile)
-- Improvement path: Store email on profiles table, or batch-fetch via `listUsers` and filter client-side
+**Full auth user list fetched on every admin search and page load:**
+- Problem: `enrichProfilesWithAuthAndMembership` calls `listUsers({ perPage: 1000 })` on every invocation, including when paging through the user table with no search query.
+- Files: `app/actions/admin.ts` (line 752)
+- Cause: Supabase Admin API has no batch `getUsersByIds` endpoint, so the code fetches all users and filters in memory.
+- Improvement path: Cache the auth user list briefly (e.g., 30s in-memory), or create a Postgres view/function that joins `auth.users` with `profiles` server-side, avoiding the Admin API entirely.
 
-**enrichProfilesWithAuthAndMembership fetches all 1000 auth users:**
-- Problem: Even when enriching just 20 profiles, fetches all auth users (`perPage: 1000`) to build a lookup map
-- Files: `app/actions/admin.ts` (lines 752-755)
-- Cause: Supabase auth admin API lacks a batch-get-by-ids endpoint
-- Improvement path: Denormalize email onto profiles table. Query only needed user IDs via `getUserById` in parallel, or cache the auth user list with a short TTL
+**Chat API rate limiter uses in-memory Map:**
+- Problem: Rate limiting state lives in a `Map<string, SessionEntry>` in the API route handler. In a multi-instance or serverless deployment, each instance has its own map, making rate limiting ineffective.
+- Files: `app/api/chat/route.ts` (lines 8-36)
+- Cause: Serverless functions are stateless across invocations; the Map resets on cold starts.
+- Improvement path: Move rate limiting to Redis, Supabase, or use Vercel's Edge Config/KV store. Alternatively, use Stripe-style idempotency via the `webhook_events` pattern already in use.
 
-**Middleware runs membership DB query on every protected page load:**
-- Problem: For authenticated users accessing `/member/` routes, middleware queries the `memberships` table on every request
-- Files: `middleware.ts` (lines 64-78)
-- Cause: Membership status is not cached in the JWT or session
-- Improvement path: Store membership status in JWT custom claims (via Supabase auth hook) and check claims in middleware instead of querying DB. This eliminates a DB round-trip per page load
+**Reservation availability query fetches all reservations for a date:**
+- Problem: `getCourtAvailability` fetches ALL reservations for a date across ALL courts, then filters in JavaScript.
+- Files: `lib/queries/reservations.ts` (lines 186-205)
+- Cause: A single broad query is used even when `courtId` is specified.
+- Improvement path: When `courtId` is provided, filter reservations by `court_id` in the query itself.
 
 ## Fragile Areas
 
-**Reservation conflict detection (TOCTOU race):**
-- Files: `app/actions/reservations.ts` (lines 146-172)
-- Why fragile: Application-level conflict check runs before the INSERT. Between the SELECT (check) and INSERT (write), another request could book the same slot. The DB-level EXCLUDE constraint (`no_double_booking`) is the true safety net
-- Safe modification: The EXCLUDE constraint in `0003_reservations.sql` (lines 101-111) protects against actual double-bookings. The app-level check is a UX optimization to show friendly errors. Always rely on the DB constraint as the source of truth; never remove it
-- Test coverage: `tests/unit/rls-policies.test.ts` exists but does not test the exclusion constraint race condition
+**Stripe webhook handler swallows errors silently:**
+- Files: `app/api/stripe/webhook/route.ts` (line 92)
+- Why fragile: The outer `catch` block on line 92 returns 500 with no error details logged. If a handler fails, there is no trace of what went wrong.
+- Safe modification: Add `console.error` logging inside the catch block before returning the 500 response.
+- Test coverage: `tests/unit/webhookHandler.test.ts` exists but only tests the handlers in `lib/stripe/webhookHandlers.ts`, not the route dispatch logic.
 
-**Stripe webhook handler chain:**
-- Files: `app/api/stripe/webhook/route.ts`, `lib/stripe/webhookHandlers.ts`
-- Why fragile: Six event types are handled. If Stripe changes its API shape (e.g., the `parent.subscription_details` path for invoices, which was already adapted for API version `2026-02-25.clover`), handlers silently break
-- Safe modification: Always test webhook handlers with Stripe CLI (`stripe trigger`) after any Stripe SDK upgrade. The `getSubscriptionIdFromInvoice` helper (lines 38-42) is particularly version-sensitive
-- Test coverage: `tests/unit/webhookHandler.test.ts` exists -- verify it covers all 6 event types
+**Reservation conflict check has a TOCTOU race:**
+- Files: `app/actions/reservations.ts` (lines 147-172)
+- Why fragile: The application-level conflict check (step 10) and the INSERT (step 11) are not atomic. Two concurrent requests could both pass the check and then one fails at the DB exclusion constraint. The code handles this gracefully (catches `23P01`), so it is correct but the pre-check is redundant complexity.
+- Safe modification: Remove the application-level check and rely solely on the `no_double_booking` exclusion constraint in the database. This simplifies the code and eliminates the race window.
+- Test coverage: No test covers concurrent booking scenarios.
 
-**Locale detection via referer header sniffing:**
-- Files: `app/actions/billing.ts` (lines 24-26, 68-70), `app/actions/sessionPayment.ts` (lines 57-59)
-- Why fragile: Locale is determined by checking if `referer` header contains `/en/`. If the referer is missing (direct API call, redirect chain), locale defaults to `es`. Stripe redirect URLs will use wrong locale prefix
-- Safe modification: Pass locale explicitly from the client via form data or query parameter instead of sniffing headers
+**Middleware performs a database query on every request:**
+- Files: `middleware.ts` (lines 64-78)
+- Why fragile: For authenticated users accessing `/member/` routes, the middleware queries the `memberships` table. This adds latency to every request in these routes and creates a dependency on database availability for page loads.
+- Safe modification: Consider caching membership status in a short-lived cookie or JWT claim to reduce per-request queries.
+- Test coverage: `tests/unit/proxyMembership.test.ts` and `tests/unit/proxyUsesGetUser.test.ts` exist but are file-content tests, not integration tests.
+
+**Confirmation email sends wrong time format:**
+- Files: `app/actions/reservations.ts` (lines 213-214)
+- Why fragile: `formattedDate` is set to the raw `date` form field, and `formattedTime` is built from raw `startTime` and `endTime` form values (which are ISO timestamps like `2026-03-14T07:00:00`). The email shows ISO strings rather than human-readable times.
+- Safe modification: Format the date and time using `Intl.DateTimeFormat` with the user's locale before passing to the email function.
+- Test coverage: No test covers email content formatting.
 
 ## Scaling Limits
 
-**Auth admin API pagination at 1000 users:**
-- Current capacity: Works for up to 1000 registered users
-- Limit: When user count exceeds 1000, `listUsers({ perPage: 1000 })` misses users beyond the first page. Admin user search and enrichment will return incomplete results
-- Scaling path: Denormalize email onto `profiles` table. Add a Postgres trigger on auth.users inserts/updates to sync email to profiles
+**`listUsers({ perPage: 1000 })` hard cap:**
+- Current capacity: 1000 users maximum visible in admin search and user enrichment.
+- Limit: When user count exceeds 1000, email-based search silently misses users and `enrichProfilesWithAuthAndMembership` silently omits email/ban status for users not in the first 1000.
+- Scaling path: Paginate through all auth users or (better) create a database view that joins `auth.users.email` into `profiles`, eliminating the Admin API dependency entirely.
 
-**In-memory chat rate limiter:**
-- Current capacity: Works on a single server instance
-- Limit: Serverless environments (Vercel) create new instances per request; each has its own empty Map. Rate limiting is effectively disabled
-- Scaling path: Use Upstash Redis or a database-backed counter
+**Chat rate limiter Map grows unbounded:**
+- Current capacity: Entries are cleaned on each request, but between cleanups the Map can grow to match the number of unique session IDs.
+- Limit: High-traffic or bot scenarios could create millions of entries before cleanup runs.
+- Scaling path: Switch to a bounded LRU cache or external store.
 
 ## Dependencies at Risk
 
-**Resend sandbox mode:**
-- Risk: All production emails will fail to deliver to unverified addresses while using `onboarding@resend.dev`
-- Impact: Confirmation emails, session reminders, password resets, and maintenance notifications will not reach users
-- Migration plan: Register a custom domain in Resend, verify DNS, and update `FROM_ADDRESS` in `lib/resend/emails.ts` and all hardcoded occurrences
+**Resend SDK at sandbox stage:**
+- Risk: All emails use Resend's sandbox domain (`onboarding@resend.dev`). This limits to 100 emails/day and recipient restrictions.
+- Impact: Production email delivery will fail or be severely limited.
+- Migration plan: Verify a custom domain in Resend, update `FROM_ADDRESS` in `lib/resend/emails.ts` and inline email sends in `app/actions/admin.ts`.
 
-**OpenAI dependency for chatbot:**
-- Risk: The chatbot hardcodes `gpt-4o-mini` model. OpenAI may deprecate this model
-- Impact: Chat feature becomes unavailable
-- Migration plan: Extract model name to environment variable or `app_config`. Consider adding a fallback model
+**OpenAI dependency for chatbot without fallback:**
+- Risk: If OpenAI API is down or rate-limited, the chatbot returns a generic error with no useful fallback.
+- Impact: User-facing feature becomes entirely unavailable.
+- Migration plan: Add a static FAQ fallback that serves pre-written answers when the AI is unavailable. The CMS content blocks already exist and could serve this purpose.
 
 ## Missing Critical Features
 
-**No Stripe refund flow:**
-- Problem: When a paid reservation is cancelled (admin or user), the Stripe charge is not refunded
-- Blocks: Fair cancellation policy for paying non-member users. Currently `adminCancelReservationAction` sets status to `cancelled` but does not issue a Stripe refund
+**No Stripe refund handling:**
+- Problem: When an admin cancels a paid reservation (`adminCancelReservationAction`), the status is set to `cancelled` but no Stripe refund is issued.
+- Files: `app/actions/admin.ts` (lines 512-524)
+- Blocks: Proper financial reconciliation for cancelled paid bookings.
 
-**No email validation on signup:**
-- Problem: Supabase `signUp` is called but there is no check for email confirmation before the user is redirected to `/?welcome=1`
-- Blocks: Nothing prevents users from signing up with invalid emails. The profile is created immediately via admin client regardless of email confirmation status
+**No admin audit trail:**
+- Problem: Admin actions (cancel reservation, disable user, maintenance mode) have no audit log. There is no record of which admin performed which action or when.
+- Files: All admin actions in `app/actions/admin.ts`
+- Blocks: Accountability and debugging of admin operations.
 
-**No admin audit logging:**
-- Problem: Admin actions (ban user, cancel reservation, mark cash paid, create reservation) have no audit trail
-- Blocks: No accountability for admin actions. Cannot investigate disputes about cancelled reservations or banned users
+**No location assignment for Basic plan subscriptions:**
+- Problem: When a user subscribes to the Basic plan via Stripe checkout, the `handleCheckoutCompleted` webhook handler does not set `location_id` on the membership. The `location_id` column exists but is never populated through the subscription flow.
+- Files: `lib/stripe/webhookHandlers.ts` (lines 48-83), `supabase/migrations/0001_initial_schema.sql` (line 66)
+- Blocks: Basic plan location restriction (`app/actions/reservations.ts` lines 99-109) can never trigger because `memberLocationId` is always null.
 
 ## Test Coverage Gaps
 
-**No integration tests for server actions:**
-- What's not tested: All files in `app/actions/` (auth, admin, billing, reservations, sessionPayment, profile) have zero test coverage for their actual Supabase interactions
-- Files: `app/actions/auth.ts`, `app/actions/admin.ts`, `app/actions/reservations.ts`, `app/actions/billing.ts`, `app/actions/sessionPayment.ts`, `app/actions/profile.ts`
-- Risk: Reservation booking logic (conflict detection, membership checks, advance booking windows) is complex and entirely untested
+**No tests for server actions:**
+- What's not tested: All 20+ functions in `app/actions/admin.ts`, `app/actions/reservations.ts`, and `app/actions/billing.ts` have zero test coverage.
+- Files: `app/actions/admin.ts`, `app/actions/reservations.ts`, `app/actions/billing.ts`
+- Risk: Business logic for reservations, payments, membership management, and admin operations can break silently.
 - Priority: High
 
-**No tests for Stripe webhook idempotency:**
-- What's not tested: The idempotency guard in `app/api/stripe/webhook/route.ts` (duplicate event detection via `webhook_events` table) is not tested
+**No tests for webhook handler route dispatch:**
+- What's not tested: The `POST` handler in `app/api/stripe/webhook/route.ts` (signature verification, idempotency guard, event dispatch) is untested. Only the individual handler functions in `lib/stripe/webhookHandlers.ts` have unit tests.
 - Files: `app/api/stripe/webhook/route.ts`
-- Risk: Duplicate webhook deliveries could create duplicate memberships or double-confirm reservations
-- Priority: High
-
-**No tests for middleware auth/membership gating:**
-- What's not tested: The middleware logic that redirects unauthenticated users, non-admin users, and non-members is tested only via static analysis (`tests/unit/proxyUsesGetUser.test.ts`, `tests/unit/proxyMembership.test.ts`) not via actual request simulation
-- Files: `middleware.ts`
-- Risk: Middleware regressions could expose admin routes to non-admin users or member routes to non-members
+- Risk: Webhook routing bugs (wrong handler called, incorrect HTTP status codes) would not be caught.
 - Priority: Medium
 
-**No tests for chat API rate limiting or streaming:**
-- What's not tested: Chat API rate limiter logic, SSE streaming output format, and CMS knowledge injection
-- Files: `app/api/chat/route.ts`
-- Risk: Rate limiter bugs could allow abuse or block legitimate users. Streaming format changes could break the chat UI
-- Priority: Low
-
-**E2E tests exist but no CI runner configured:**
-- What's not tested: Playwright specs exist in `tests/auth/` and `tests/i18n/` but there is no CI pipeline (no `.github/workflows/`, no Vercel CI config)
+**No integration or E2E tests for reservation flow:**
+- What's not tested: The full reservation flow (select court, pick slot, submit, pay, confirm) has no E2E test. Playwright tests exist only for auth flows and i18n routing.
 - Files: `tests/auth/*.spec.ts`, `tests/i18n/*.spec.ts`
-- Risk: Tests may be passing locally but are not enforced on every commit. Regressions can ship
+- Risk: Reservation booking, the core business feature, can regress without detection.
+- Priority: High
+
+**No tests for chat API:**
+- What's not tested: The chat endpoint rate limiting, CMS knowledge injection, OpenAI streaming, and error handling are entirely untested.
+- Files: `app/api/chat/route.ts`
+- Risk: Rate limiter bypass, prompt injection via CMS content, or streaming errors could go undetected.
+- Priority: Medium
+
+**No tests for edge function:**
+- What's not tested: The Supabase Edge Function `session-reminder` (reminder emails, hold expiration) has no tests.
+- Files: `supabase/functions/session-reminder/index.ts`
+- Risk: Reminder emails could stop sending or hold cleanup could fail without notice.
 - Priority: Medium
 
 ---
 
-*Concerns audit: 2026-03-13*
+*Concerns audit: 2026-03-14*
