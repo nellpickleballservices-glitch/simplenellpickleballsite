@@ -34,7 +34,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 - [x] **Phase 2: Schema and Pricing Engine** - Database schema for pricing tables and shared price calculation function (completed 2026-03-14)
 - [x] **Phase 3: Signup Country Collection** - Country field on signup to classify users as local or tourist (completed 2026-03-14)
 - [ ] **Phase 4: Admin Pricing Panel** - Admin UI for day-of-week base prices and tourist surcharge percentage
-- [ ] **Phase 5: Reservation Flow Integration** - Wire pricing into user booking and admin walk-in flows
+- [x] **Phase 5: Reservation Flow Integration** - Wire pricing into user booking and admin walk-in flows (completed 2026-03-15)
 
 ## Phase Details
 
@@ -112,4 +112,4 @@ Plans:
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
 | 3. Signup Country Collection | v1.1 | 2/2 | Complete | 2026-03-14 |
 | 4. Admin Pricing Panel | v1.1 | 1/2 | In progress | - |
-| 5. Reservation Flow Integration | 3/4 | In Progress|  | - |
+| 5. Reservation Flow Integration | 4/4 | Complete   | 2026-03-15 | - |

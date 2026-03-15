@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
 status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-03-15T04:47:45Z"
-last_activity: 2026-03-15 — Completed Plan 05-03 (CourtCard dynamic pricing display)
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-03-15T06:00:00Z"
+last_activity: 2026-03-15 — Completed Plan 05-04 (Admin walk-in tourist toggle and reservation list badges)
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
-  percent: 83
+  completed_phases: 2
+  total_plans: 7
+  completed_plans: 7
+  percent: 100
 ---
 
 # Project State
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 5 of 6 (Reservation Flow Integration)
-Plan: 3 of 4 complete
-Status: In progress
-Last activity: 2026-03-15 — Completed Plan 05-03 (CourtCard dynamic pricing display)
+Plan: 4 of 4 complete
+Status: Phase complete
+Last activity: 2026-03-15 — Completed Plan 05-04 (Admin walk-in tourist toggle and reservation list badges)
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (v1.1)
-- Average duration: ~2.5min
-- Total execution time: ~15min
+- Total plans completed: 7 (v1.1)
+- Average duration: ~2.7min
+- Total execution time: ~19min
 
 **By Phase:**
 
@@ -45,7 +45,7 @@ Progress: [████████░░] 83%
 |-------|-------|-------|----------|
 | 03-signup-country-collection | 2/2 | ~6min | ~3min |
 | 04-admin-pricing-panel | 2/2 | ~4min | ~2min |
-| 05-reservation-flow-integration | 3/4 | ~7min | ~2.3min |
+| 05-reservation-flow-integration | 4/4 | ~11min | ~2.8min |
 
 ## Accumulated Context
 
@@ -78,6 +78,9 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [05-03] All price calculation server-side only -- CourtCard never imports calculateSessionPrice (PRIC-05)
 - [05-03] displayPriceCents computed in getAvailabilityAction using user profile country + membership status
 - [05-03] onPriceChange callback propagates price updates from TimeSlotGrid date tab switches to CourtCard
+- [05-04] Guest walk-in Local/Tourist toggle defaults to Local (conservative pricing default)
+- [05-04] Registered user classification is read-only based on profile country (admin cannot override)
+- [05-04] Price preview uses lightweight server action (getSessionPricePreviewAction) not full pricing engine import
 
 
 ### Key Research Findings (v1.1)
@@ -98,6 +101,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-15T04:47:45Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-03-15T06:00:00Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None
