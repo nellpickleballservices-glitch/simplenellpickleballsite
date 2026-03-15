@@ -94,11 +94,13 @@ Plans:
   3. Admin walk-in form includes a local/tourist toggle that affects the displayed and stored price
   4. Walk-in reservations use the calculated price instead of hardcoded $0 (bug fix)
   5. Tourist reservations are flagged with `is_tourist_price = true` for audit purposes
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — Pure pricing functions (calculateSessionPrice, isTourist) with TDD + default price migration
+- [ ] 05-02-PLAN.md — Wire pricing engine into createReservationAction, adminCreateReservationAction, and queries
+- [ ] 05-03-PLAN.md — CourtCard dynamic pricing display with day-of-week updates
+- [ ] 05-04-PLAN.md — Admin walk-in local/tourist toggle, price preview, reservation list badges and filter
 
 ## Progress
 
@@ -110,4 +112,4 @@ Plans:
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
 | 3. Signup Country Collection | v1.1 | 2/2 | Complete | 2026-03-14 |
 | 4. Admin Pricing Panel | v1.1 | 1/2 | In progress | - |
-| 5. Reservation Flow Integration | v1.1 | 0/? | Not started | - |
+| 5. Reservation Flow Integration | v1.1 | 0/4 | Not started | - |
