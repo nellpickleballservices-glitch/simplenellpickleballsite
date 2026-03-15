@@ -51,9 +51,14 @@ export default function CourtCard({
   today,
 }: CourtCardProps) {
   const t = useTranslations('Reservations')
-  const { court, location, config, pricing, timeSlots: initialSlots, availabilitySummary: initialSummary } = courtData
+  const { court, location, config, timeSlots: initialSlots, availabilitySummary: initialSummary } = courtData
 
   const [availabilitySummary, setAvailabilitySummary] = useState<AvailabilitySummary>(initialSummary)
+
+  // Dynamic pricing state -- initialized from server-computed value (PRIC-05)
+  const [displayPriceCents, setDisplayPriceCents] = useState<number>(
+    courtData.displayPriceCents ?? courtData.sessionPriceCents ?? courtData.defaultPriceCents ?? 1000
+  )
 
   const level = getAvailabilityLevel(availabilitySummary)
 
@@ -77,13 +82,17 @@ export default function CourtCard({
     ? `${todayConfig.open_time} - ${todayConfig.close_time}`
     : ''
 
-  // Pricing display
-  const sessionPriceCents = pricing[0]?.price_cents ?? 1000
-  const sessionPrice = sessionPriceCents / 100
+  // Pricing display -- uses server-computed displayPriceCents (PRIC-05)
+  const sessionPrice = (displayPriceCents / 100).toFixed(2)
 
   // Handle availability change from TimeSlotGrid date switching
   const handleAvailabilityChange = useCallback((newSummary: AvailabilitySummary) => {
     setAvailabilitySummary(newSummary)
+  }, [])
+
+  // Handle price update from TimeSlotGrid date switching (server-computed)
+  const handlePriceChange = useCallback((newPriceCents: number) => {
+    setDisplayPriceCents(newPriceCents)
   }, [])
 
   return (
@@ -150,7 +159,7 @@ export default function CourtCard({
             <span>{t('operatingHours', { open: todayConfig?.open_time, close: todayConfig?.close_time })}</span>
           )}
           <span className="text-[#A3FF12]">
-            {isMember ? t('pricingFree') : t('pricingSession', { price: String(sessionPrice) })}
+            {isMember ? t('pricingFree') : t('pricingSession', { price: sessionPrice })}
           </span>
         </div>
 
@@ -163,6 +172,7 @@ export default function CourtCard({
           isMember={isMember}
           isVip={isVip}
           onAvailabilityChange={handleAvailabilityChange}
+          onPriceChange={handlePriceChange}
         />
       </div>
     </div>

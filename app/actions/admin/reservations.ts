@@ -209,7 +209,7 @@ export async function markCashPaidAction(
  */
 export async function searchUsersForReservationAction(
   query: string
-): Promise<{ id: string; first_name: string; last_name: string; email: string }[]> {
+): Promise<{ id: string; first_name: string; last_name: string; email: string; country?: string | null }[]> {
   await requireAdmin()
 
   if (!query || query.length < 2) return []
@@ -217,7 +217,7 @@ export async function searchUsersForReservationAction(
   const term = `%${query}%`
   const { data } = await supabaseAdmin
     .from('admin_users_view')
-    .select('id, first_name, last_name, email')
+    .select('id, first_name, last_name, email, country')
     .or(`first_name.ilike.${term},last_name.ilike.${term},email.ilike.${term}`)
     .limit(10)
 
@@ -226,5 +226,42 @@ export async function searchUsersForReservationAction(
     first_name: u.first_name ?? '',
     last_name: u.last_name ?? '',
     email: u.email ?? '',
+    country: u.country ?? null,
   }))
+}
+
+/**
+ * Get session pricing for a court + date for admin price preview.
+ */
+export async function getSessionPricePreviewAction(
+  courtId: string,
+  date: string
+): Promise<{ priceCents: number; surchargePercent: number }> {
+  await requireAdmin()
+
+  const dayOfWeek = new Date(date + 'T12:00:00').getDay()
+  const [sessionPricingResult, appConfigResult] = await Promise.all([
+    supabaseAdmin
+      .from('session_pricing')
+      .select('price_cents')
+      .eq('court_id', courtId)
+      .eq('day_of_week', dayOfWeek)
+      .maybeSingle(),
+    supabaseAdmin
+      .from('app_config')
+      .select('key, value')
+      .in('key', ['default_session_price_cents', 'tourist_surcharge_pct']),
+  ])
+
+  const appConfigMap: Record<string, number> = {}
+  if (appConfigResult.data) {
+    for (const c of appConfigResult.data) {
+      appConfigMap[c.key] = typeof c.value === 'number' ? c.value : Number(c.value) || 0
+    }
+  }
+
+  return {
+    priceCents: sessionPricingResult.data?.price_cents ?? (appConfigMap['default_session_price_cents'] || 1000),
+    surchargePercent: appConfigMap['tourist_surcharge_pct'] || 25,
+  }
 }

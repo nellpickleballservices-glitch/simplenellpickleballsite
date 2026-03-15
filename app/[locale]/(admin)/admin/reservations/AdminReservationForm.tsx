@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useActionState } from 'react'
+import { useState, useEffect, useActionState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   adminCreateReservationAction,
   searchUsersForReservationAction,
+  getSessionPricePreviewAction,
   type CourtWithLocation,
 } from '@/app/actions/admin'
+import { calculateSessionPrice, isTourist as isTouristFn } from '@/lib/utils/pricing'
 
 interface AdminReservationFormProps {
   courts: CourtWithLocation[]
@@ -20,15 +22,63 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
   const [bookingMode, setBookingMode] = useState<'full_court' | 'open_play'>('full_court')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<
-    { id: string; first_name: string; last_name: string; email: string }[]
+    { id: string; first_name: string; last_name: string; email: string; country?: string | null }[]
   >([])
   const [selectedUser, setSelectedUser] = useState<{
     id: string
     first_name: string
     last_name: string
     email: string
+    country?: string | null
   } | null>(null)
   const [searching, setSearching] = useState(false)
+
+  // Local/Tourist toggle for guest walk-ins
+  const [isTouristToggle, setIsTouristToggle] = useState(false)
+
+  // Court and date for price preview
+  const [selectedCourtId, setSelectedCourtId] = useState('')
+  const [selectedDate, setSelectedDate] = useState('')
+
+  // Price preview state
+  const [pricePreview, setPricePreview] = useState<{ priceCents: number; surchargePercent: number } | null>(null)
+  const [priceLoading, setPriceLoading] = useState(false)
+
+  // Effective tourist status
+  const effectiveIsTourist = mode === 'guest'
+    ? isTouristToggle
+    : isTouristFn(selectedUser?.country ?? null)
+
+  // Fetch price preview when court or date changes
+  useEffect(() => {
+    if (!selectedCourtId || !selectedDate) {
+      setPricePreview(null)
+      return
+    }
+
+    const timeout = setTimeout(async () => {
+      setPriceLoading(true)
+      try {
+        const result = await getSessionPricePreviewAction(selectedCourtId, selectedDate)
+        setPricePreview(result)
+      } catch {
+        setPricePreview(null)
+      } finally {
+        setPriceLoading(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timeout)
+  }, [selectedCourtId, selectedDate])
+
+  // Calculate displayed price
+  const displayPrice = pricePreview
+    ? calculateSessionPrice({
+        basePriceCents: pricePreview.priceCents,
+        surchargePercent: pricePreview.surchargePercent,
+        isTourist: effectiveIsTourist,
+      })
+    : null
 
   if (state?.success) {
     onSuccess()
@@ -114,6 +164,20 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           {searching && (
             <p className="text-xs text-gray-500 mt-1">{t('loading')}</p>
           )}
+          {/* Read-only Local/Tourist indicator for registered users */}
+          {selectedUser && (
+            <div className="mt-2">
+              {selectedUser.country === 'DO' ? (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-900/50 text-green-400">
+                  {t('local')}
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-900/50 text-amber-400">
+                  {t('tourist')}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       ) : (
         <div>
@@ -122,8 +186,32 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             name="guestName"
             className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
+          {/* Local/Tourist toggle for guest walk-ins */}
+          <div className="flex gap-4 mt-2">
+            <label className="flex items-center gap-2 text-sm text-offwhite cursor-pointer">
+              <input
+                type="radio"
+                checked={!isTouristToggle}
+                onChange={() => setIsTouristToggle(false)}
+                className="accent-lime"
+              />
+              {t('local')}
+            </label>
+            <label className="flex items-center gap-2 text-sm text-offwhite cursor-pointer">
+              <input
+                type="radio"
+                checked={isTouristToggle}
+                onChange={() => setIsTouristToggle(true)}
+                className="accent-lime"
+              />
+              {t('tourist')}
+            </label>
+          </div>
         </div>
       )}
+
+      {/* Hidden isTourist field */}
+      <input type="hidden" name="isTourist" value={effectiveIsTourist ? 'true' : 'false'} />
 
       {/* Court selection */}
       <div>
@@ -131,6 +219,8 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
         <select
           name="courtId"
           required
+          value={selectedCourtId}
+          onChange={(e) => setSelectedCourtId(e.target.value)}
           className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
         >
           <option value="">{t('allCourts')}</option>
@@ -152,6 +242,8 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
             name="date"
             type="date"
             required
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
             className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
           />
         </div>
@@ -174,6 +266,19 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           />
         </div>
       </div>
+
+      {/* Live price preview */}
+      {selectedCourtId && selectedDate && (
+        <div className="bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2">
+          {priceLoading ? (
+            <p className="text-sm text-gray-400">{t('loading')}</p>
+          ) : displayPrice ? (
+            <p className="text-sm text-offwhite font-medium">
+              {t('pricePreview', { price: `$${(displayPrice.totalCents / 100).toFixed(2)}` })}
+            </p>
+          ) : null}
+        </div>
+      )}
 
       {/* Hidden fields to compose startsAt/endsAt from date + time */}
       <input type="hidden" name="startsAt" id="startsAt" />

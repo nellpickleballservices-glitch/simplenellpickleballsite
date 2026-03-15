@@ -15,6 +15,7 @@ interface TimeSlotGridProps {
   isMember: boolean
   isVip: boolean
   onAvailabilityChange: (summary: AvailabilitySummary) => void
+  onPriceChange?: (priceCents: number) => void
 }
 
 /** Add N days to a date string (YYYY-MM-DD) and return new date string. */
@@ -49,6 +50,7 @@ export default function TimeSlotGrid({
   isMember,
   isVip,
   onAvailabilityChange,
+  onPriceChange,
 }: TimeSlotGridProps) {
   const t = useTranslations('Reservations')
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(initialTimeSlots)
@@ -91,6 +93,9 @@ export default function TimeSlotGrid({
       const result = await getAvailabilityAction(courtId, date)
       setTimeSlots(result.timeSlots)
       onAvailabilityChange(result.availabilitySummary)
+      if (onPriceChange && result.displayPriceCents !== undefined) {
+        onPriceChange(result.displayPriceCents)
+      }
     })
   }
 

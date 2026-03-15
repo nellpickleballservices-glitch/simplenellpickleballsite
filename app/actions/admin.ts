@@ -6,7 +6,7 @@ export { getEventsAction, createEventAction, updateEventAction, deleteEventActio
 export { getCourtsAction, addCourtAction, setMaintenanceAction, clearMaintenanceAction } from './admin/courts'
 export type { CourtWithLocation } from './admin/courts'
 export { searchUsersAction, getUserDetailsAction, disableUserAction, enableUserAction, triggerPasswordResetAction, updateUserCountryAction } from './admin/users'
-export { getAllReservationsAction, adminCancelReservationAction, adminCreateReservationAction, markCashPaidAction, searchUsersForReservationAction } from './admin/reservations'
+export { getAllReservationsAction, adminCancelReservationAction, adminCreateReservationAction, markCashPaidAction, searchUsersForReservationAction, getSessionPricePreviewAction } from './admin/reservations'
 export type { AdminReservation } from './admin/reservations'
 export { getContentBlocksAction, updateContentBlockAction, reorderContentBlocksAction } from './admin/cms'
 export { getSessionPricingAction, upsertSessionPricingAction, getTouristSurchargeAction, updateTouristSurchargeAction } from './admin/pricing'

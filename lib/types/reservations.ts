@@ -116,6 +116,7 @@ export interface CourtWithConfig {
   sessionPriceCents?: number
   defaultPriceCents?: number
   touristSurchargePct?: number
+  displayPriceCents?: number
   timeSlots: TimeSlot[]
   availabilitySummary: AvailabilitySummary
 }

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { getCourtAvailability, getAppConfigs } from '@/lib/queries/reservations'
+import { calculateSessionPrice, isTourist } from '@/lib/utils/pricing'
 import CourtCard from './CourtCard'
 
 export default async function ReservationsPage({
@@ -34,12 +35,30 @@ export default async function ReservationsPage({
   const isMember = !!membership && membership.status === 'active'
   const isVip = isMember && membership.plan_type === 'vip'
 
+  // Get user country for pricing (server-side only, per PRIC-05)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('country')
+    .eq('id', user.id)
+    .single()
+  const userIsTourist = isTourist(profile?.country ?? null)
+
   // Determine today's date in Santo Domingo timezone
   const today = new Date()
     .toLocaleDateString('en-CA', { timeZone: 'America/Santo_Domingo' })
 
-  // Fetch court availability for today
-  const courts = await getCourtAvailability(today)
+  // Fetch court availability for today and compute display prices server-side
+  const courtsRaw = await getCourtAvailability(today)
+
+  // Compute displayPriceCents for each court (PRIC-05: server-side only)
+  const courts = courtsRaw.map((courtData) => {
+    const basePriceCents = courtData.sessionPriceCents ?? courtData.defaultPriceCents ?? 1000
+    const surchargePercent = courtData.touristSurchargePct ?? 0
+    const displayPriceCents = isMember
+      ? 0
+      : calculateSessionPrice({ basePriceCents, surchargePercent, isTourist: userIsTourist }).totalCents
+    return { ...courtData, displayPriceCents }
+  })
 
   // Fetch app config for advance booking windows
   const appConfigs = await getAppConfigs()
