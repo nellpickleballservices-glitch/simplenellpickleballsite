@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
-status: executing
+status: completed
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-03-15T06:00:00Z"
+last_updated: "2026-03-15T07:18:08.824Z"
 last_activity: 2026-03-15 — Completed Plan 05-04 (Admin walk-in tourist toggle and reservation list badges)
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 6
+  completed_plans: 6
   percent: 100
 ---
 
