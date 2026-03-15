@@ -195,7 +195,9 @@ export async function getCourtAvailability(
     reservationsQueryBuilder = reservationsQueryBuilder.eq('court_id', courtId)
   }
 
-  const [courtsResult, configResult, pricingResult, reservationsResult, appConfigResult] =
+  const dayOfWeek = new Date(date + 'T12:00:00').getDay() // noon to avoid TZ rollover
+
+  const [courtsResult, configResult, pricingResult, reservationsResult, appConfigResult, sessionPricingResult, defaultPriceResult, surchargeResult] =
     await Promise.all([
       courtsQuery,
       supabase
@@ -209,16 +211,37 @@ export async function getCourtAvailability(
         .select('*')
         .eq('key', 'pending_payment_hold_hours')
         .single(),
+      supabase
+        .from('session_pricing')
+        .select('court_id, day_of_week, price_cents')
+        .eq('day_of_week', dayOfWeek),
+      supabase
+        .from('app_config')
+        .select('value')
+        .eq('key', 'default_session_price_cents')
+        .maybeSingle(),
+      supabase
+        .from('app_config')
+        .select('value')
+        .eq('key', 'tourist_surcharge_pct')
+        .maybeSingle(),
     ])
 
   const courts = courtsResult.data ?? []
   const configs = configResult.data ?? []
   const pricing = pricingResult.data ?? []
+  const sessionPricingRows = sessionPricingResult.data ?? []
   const reservations = (reservationsResult.data ?? []) as Reservation[]
   const holdHours =
     typeof appConfigResult.data?.value === 'number'
       ? appConfigResult.data.value
       : Number(appConfigResult.data?.value) || 2
+  const defaultPriceCents = typeof defaultPriceResult.data?.value === 'number'
+    ? defaultPriceResult.data.value
+    : Number(defaultPriceResult.data?.value) || 1000
+  const touristSurchargePct = typeof surchargeResult.data?.value === 'number'
+    ? surchargeResult.data.value
+    : Number(surchargeResult.data?.value) || 25
 
   return courts.map((court) => {
     const courtConfigs = configs.filter(
@@ -230,6 +253,12 @@ export async function getCourtAvailability(
     const courtReservations = reservations.filter(
       (r) => r.court_id === court.id
     )
+
+    // Find session pricing for this court on the queried day-of-week
+    const sessionPricingRow = sessionPricingRows.find(
+      (sp) => sp.court_id === court.id
+    )
+    const sessionPriceCents = sessionPricingRow?.price_cents ?? undefined
 
     const config = courtConfigs[0] // one config per day_type per court
     const timeSlots = config
@@ -254,6 +283,9 @@ export async function getCourtAvailability(
       location,
       config: courtConfigs,
       pricing: courtPricing,
+      sessionPriceCents,
+      defaultPriceCents,
+      touristSurchargePct,
       timeSlots,
       availabilitySummary,
     }

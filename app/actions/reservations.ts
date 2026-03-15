@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { sendConfirmationEmail } from '@/lib/resend/emails'
+import { calculateSessionPrice, isTourist } from '@/lib/utils/pricing'
 import type { BookingMode, PaymentStatus, ReservationStatus } from '@/lib/types/reservations'
 
 interface ReservationActionState {
@@ -37,7 +38,7 @@ export async function createReservationAction(
   // 2. Fetch user profile for name snapshot and locale
   const { data: profile } = await supabase
     .from('profiles')
-    .select('first_name, last_name, locale_pref')
+    .select('first_name, last_name, locale_pref, country')
     .eq('id', user.id)
     .single()
 
@@ -73,7 +74,7 @@ export async function createReservationAction(
   const { data: appConfigs } = await supabase
     .from('app_config')
     .select('key, value')
-    .in('key', ['member_advance_booking_hours', 'non_member_advance_booking_hours', 'vip_guest_limit', 'cancellation_window_hours'])
+    .in('key', ['member_advance_booking_hours', 'non_member_advance_booking_hours', 'vip_guest_limit', 'cancellation_window_hours', 'tourist_surcharge_pct', 'default_session_price_cents'])
 
   const configMap: Record<string, number> = {}
   if (appConfigs) {
@@ -129,17 +130,26 @@ export async function createReservationAction(
     reservationStatus = 'pending_payment'
   }
 
-  // 9. Determine price
-  let priceCents = 0
-  if (!isMember) {
-    const { data: pricing } = await supabase
-      .from('court_pricing')
-      .select('price_cents')
-      .eq('court_id', courtId)
-      .eq('mode', bookingMode)
-      .single()
+  // 9. Determine price using session_pricing + pricing engine
+  const dayOfWeek = new Date(date + 'T12:00:00').getDay() // noon to avoid TZ rollover
+  const { data: sessionPricing } = await supabase
+    .from('session_pricing')
+    .select('price_cents')
+    .eq('court_id', courtId)
+    .eq('day_of_week', dayOfWeek)
+    .maybeSingle()
 
-    priceCents = pricing?.price_cents ?? 1000 // default $10
+  const basePriceCents = sessionPricing?.price_cents ?? (configMap['default_session_price_cents'] ?? 1000)
+  const surchargePercent = configMap['tourist_surcharge_pct'] ?? 25
+  const userIsTourist = isTourist(profile?.country ?? null)
+
+  let priceCents = 0
+  if (isMember || bookingMode === 'vip_guest') {
+    // Members always free. VIP guest slots inherit member's $0 pricing.
+    priceCents = 0
+  } else {
+    const priceResult = calculateSessionPrice({ basePriceCents, surchargePercent, isTourist: userIsTourist })
+    priceCents = priceResult.totalCents
   }
 
   // 10. Pre-insert conflict check (application-level, complements DB constraint)
@@ -187,6 +197,7 @@ export async function createReservationAction(
       status: reservationStatus,
       guest_name: guestName,
       price_cents: priceCents,
+      is_tourist_price: userIsTourist,
     })
     .select('id')
     .single()

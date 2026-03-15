@@ -1,7 +1,7 @@
 // Reservation system type definitions
 // Matches schema from supabase/migrations/0003_reservations.sql
 
-export type BookingMode = 'full_court' | 'open_play'
+export type BookingMode = 'full_court' | 'open_play' | 'vip_guest'
 
 export type PaymentStatus = 'free' | 'pending_payment' | 'paid' | 'cash_pending'
 
@@ -35,6 +35,7 @@ export interface Reservation {
   stripe_payment_id: string | null
   guest_name: string | null
   price_cents: number
+  is_tourist_price: boolean
   created_at: string
 }
 
@@ -112,6 +113,9 @@ export interface CourtWithConfig {
   location: Location | null
   config: CourtConfig[]
   pricing: CourtPricing[]
+  sessionPriceCents?: number
+  defaultPriceCents?: number
+  touristSurchargePct?: number
   timeSlots: TimeSlot[]
   availabilitySummary: AvailabilitySummary
 }
