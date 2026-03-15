@@ -19,3 +19,17 @@ export interface CourtPricingGrid {
 
 export const DAY_NAMES_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const
 export const DAY_NAMES_ES = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'] as const
+
+export interface PriceCalculationInput {
+  basePriceCents: number
+  surchargePercent: number
+  isTourist: boolean
+}
+
+export interface PriceCalculationResult {
+  basePriceCents: number
+  surchargePercent: number
+  surchargeAmountCents: number
+  totalCents: number
+  isTourist: boolean
+}
