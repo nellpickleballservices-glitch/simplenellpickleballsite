@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-15T04:41:23Z"
-last_activity: 2026-03-15 — Completed Plan 05-02 (server action pricing integration)
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-15T04:47:45Z"
+last_activity: 2026-03-15 — Completed Plan 05-03 (CourtCard dynamic pricing display)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 5
-  percent: 80
+  completed_plans: 6
+  percent: 83
 ---
 
 # Project State
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 5 of 6 (Reservation Flow Integration)
-Plan: 2 of 4 complete
+Plan: 3 of 4 complete
 Status: In progress
-Last activity: 2026-03-15 — Completed Plan 05-02 (server action pricing integration)
+Last activity: 2026-03-15 — Completed Plan 05-03 (CourtCard dynamic pricing display)
 
-Progress: [████████░░] 80%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5 (v1.1)
-- Average duration: ~2.6min
-- Total execution time: ~13min
+- Total plans completed: 6 (v1.1)
+- Average duration: ~2.5min
+- Total execution time: ~15min
 
 **By Phase:**
 
@@ -45,7 +45,7 @@ Progress: [████████░░] 80%
 |-------|-------|-------|----------|
 | 03-signup-country-collection | 2/2 | ~6min | ~3min |
 | 04-admin-pricing-panel | 2/2 | ~4min | ~2min |
-| 05-reservation-flow-integration | 2/4 | ~5min | ~2.5min |
+| 05-reservation-flow-integration | 3/4 | ~7min | ~2.3min |
 
 ## Accumulated Context
 
@@ -75,6 +75,9 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [05-02] is_tourist_price set on ALL reservations including members for demographic tracking
 - [05-02] Walk-in tourist toggle defaults to local (false) when not provided
 - [05-02] Added vip_guest to BookingMode type for type-safe comparison
+- [05-03] All price calculation server-side only -- CourtCard never imports calculateSessionPrice (PRIC-05)
+- [05-03] displayPriceCents computed in getAvailabilityAction using user profile country + membership status
+- [05-03] onPriceChange callback propagates price updates from TimeSlotGrid date tab switches to CourtCard
 
 
 ### Key Research Findings (v1.1)
@@ -95,6 +98,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-15T04:41:23Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-15T04:47:45Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None

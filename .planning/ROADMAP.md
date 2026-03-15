@@ -112,4 +112,4 @@ Plans:
 | 2. Schema and Pricing Engine | v1.1 | Complete    | 2026-03-14 | - |
 | 3. Signup Country Collection | v1.1 | 2/2 | Complete | 2026-03-14 |
 | 4. Admin Pricing Panel | v1.1 | 1/2 | In progress | - |
-| 5. Reservation Flow Integration | v1.1 | 0/4 | Not started | - |
+| 5. Reservation Flow Integration | 3/4 | In Progress|  | - |
