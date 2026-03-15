@@ -27,6 +27,7 @@ export default function AdminReservationsPage() {
   const [dateTo, setDateTo] = useState('')
   const [courtId, setCourtId] = useState('')
   const [status, setStatus] = useState('')
+  const [isTouristFilter, setIsTouristFilter] = useState<string>('')
 
   // Confirm dialog
   const [cancelTarget, setCancelTarget] = useState<string | null>(null)
@@ -45,6 +46,7 @@ export default function AdminReservationsPage() {
           dateTo: dateTo || undefined,
           courtId: courtId || undefined,
           status: status || undefined,
+          isTourist: isTouristFilter === '' ? undefined : isTouristFilter === 'true',
           page,
         }),
         getCourtsAction(),
@@ -57,7 +59,7 @@ export default function AdminReservationsPage() {
     } finally {
       setLoading(false)
     }
-  }, [dateFrom, dateTo, courtId, status, page])
+  }, [dateFrom, dateTo, courtId, status, isTouristFilter, page])
 
   useEffect(() => {
     loadData()
@@ -171,7 +173,7 @@ export default function AdminReservationsPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-[#1E293B] rounded-lg p-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-[#1E293B] rounded-lg p-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
           <label className="block text-xs text-gray-400 mb-1">{t('startDate')}</label>
           <input
@@ -217,6 +219,18 @@ export default function AdminReservationsPage() {
             <option value="expired">{t('expired')}</option>
           </select>
         </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">{t('filterByClassification')}</label>
+          <select
+            value={isTouristFilter}
+            onChange={(e) => { setIsTouristFilter(e.target.value); setPage(1) }}
+            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+          >
+            <option value="">{t('allClassifications')}</option>
+            <option value="false">{t('local')}</option>
+            <option value="true">{t('tourist')}</option>
+          </select>
+        </div>
       </div>
 
       {/* Reservation table */}
@@ -235,6 +249,7 @@ export default function AdminReservationsPage() {
                 <th className="py-3 px-2">{t('time')}</th>
                 <th className="py-3 px-2">{t('status')}</th>
                 <th className="py-3 px-2">{t('paymentStatus')}</th>
+                <th className="py-3 px-2">{t('classification')}</th>
                 <th className="py-3 px-2">{t('actions')}</th>
               </tr>
             </thead>
@@ -254,6 +269,17 @@ export default function AdminReservationsPage() {
                     <td className="py-3 px-2">{start.time} - {end.time}</td>
                     <td className="py-3 px-2">{getStatusBadge(r.status)}</td>
                     <td className="py-3 px-2">{getPaymentBadge(r.payment_status)}</td>
+                    <td className="py-3 px-2">
+                      {r.is_tourist_price ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-900/50 text-amber-400">
+                          {t('tourist')}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-900/50 text-green-400">
+                          {t('local')}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-3 px-2">
                       <div className="flex gap-2">
                         {r.status !== 'cancelled' && r.status !== 'expired' && (

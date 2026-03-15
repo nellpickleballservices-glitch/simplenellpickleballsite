@@ -448,7 +448,13 @@
     "surchargeDescription": "Applied to all non-Dominican users",
     "priceSaved": "Price saved",
     "surchargeSaved": "Surcharge saved",
-    "invalidPrice": "Invalid price"
+    "invalidPrice": "Invalid price",
+    "local": "Local",
+    "tourist": "Tourist",
+    "classification": "Type",
+    "filterByClassification": "Local/Tourist",
+    "allClassifications": "All",
+    "pricePreview": "Price: {price}"
   },
   "Settings": {
     "pageTitle": "Settings",

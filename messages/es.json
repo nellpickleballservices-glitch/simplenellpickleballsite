@@ -448,7 +448,13 @@
     "surchargeDescription": "Se aplica a todos los usuarios no dominicanos",
     "priceSaved": "Precio guardado",
     "surchargeSaved": "Recargo guardado",
-    "invalidPrice": "Precio invalido"
+    "invalidPrice": "Precio invalido",
+    "local": "Local",
+    "tourist": "Turista",
+    "classification": "Tipo",
+    "filterByClassification": "Local/Turista",
+    "allClassifications": "Todos",
+    "pricePreview": "Precio: {price}"
   },
   "Settings": {
     "pageTitle": "Configuracion",
