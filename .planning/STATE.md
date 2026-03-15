@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
 status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-15T04:37:01.038Z"
-last_activity: 2026-03-15 — Completed Plan 05-01 (pricing pure functions TDD)
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-15T04:41:23Z"
+last_activity: 2026-03-15 — Completed Plan 05-02 (server action pricing integration)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
-  percent: 70
+  completed_plans: 5
+  percent: 80
 ---
 
 # Project State
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 ## Current Position
 
 Phase: 5 of 6 (Reservation Flow Integration)
-Plan: 1 of 4 complete
+Plan: 2 of 4 complete
 Status: In progress
-Last activity: 2026-03-15 — Completed Plan 05-01 (pricing pure functions TDD)
+Last activity: 2026-03-15 — Completed Plan 05-02 (server action pricing integration)
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4 (v1.1)
-- Average duration: ~2.5min
-- Total execution time: ~10min
+- Total plans completed: 5 (v1.1)
+- Average duration: ~2.6min
+- Total execution time: ~13min
 
 **By Phase:**
 
@@ -45,7 +45,7 @@ Progress: [███████░░░] 70%
 |-------|-------|-------|----------|
 | 03-signup-country-collection | 2/2 | ~6min | ~3min |
 | 04-admin-pricing-panel | 2/2 | ~4min | ~2min |
-| 05-reservation-flow-integration | 1/4 | ~2min | ~2min |
+| 05-reservation-flow-integration | 2/4 | ~5min | ~2.5min |
 
 ## Accumulated Context
 
@@ -71,6 +71,10 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [04-02] Monday-first day ordering in pricing grid for business convention
 - [05-01] isTourist treats null and empty string as tourist (conservative default)
 - [05-01] Math.round for fractional cent rounding on surcharge calculation
+- [05-02] VIP guest bookings explicitly get priceCents=0 with dedicated check (guards against refactors)
+- [05-02] is_tourist_price set on ALL reservations including members for demographic tracking
+- [05-02] Walk-in tourist toggle defaults to local (false) when not provided
+- [05-02] Added vip_guest to BookingMode type for type-safe comparison
 
 
 ### Key Research Findings (v1.1)
@@ -91,6 +95,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-15T04:37:00.537Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-15T04:41:23Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

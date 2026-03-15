@@ -25,8 +25,8 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 
 - [x] **RESV-01**: User sees correct calculated price before confirming a reservation
 - [x] **RESV-02**: Reservation stores the calculated price at booking time (snapshot)
-- [ ] **RESV-03**: Walk-in reservations created by admin include local/tourist designation
-- [ ] **RESV-04**: Walk-in reservations use correct pricing instead of hardcoded $0
+- [x] **RESV-03**: Walk-in reservations created by admin include local/tourist designation
+- [x] **RESV-04**: Walk-in reservations use correct pricing instead of hardcoded $0
 
 ### Admin
 
@@ -71,8 +71,8 @@ Requirements for local vs tourist differential pricing. Each maps to roadmap pha
 | PRIC-05 | Phase 2 | Pending |
 | RESV-01 | Phase 5 | Complete |
 | RESV-02 | Phase 5 | Complete |
-| RESV-03 | Phase 5 | Pending |
-| RESV-04 | Phase 5 | Pending |
+| RESV-03 | Phase 5 | Complete |
+| RESV-04 | Phase 5 | Complete |
 | ADMN-01 | Phase 4 | Complete |
 | ADMN-02 | Phase 4 | Complete |
 | ADMN-03 | Phase 5 | Pending |
