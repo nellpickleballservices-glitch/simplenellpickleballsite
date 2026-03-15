@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Local vs Tourist Pricing
-status: completed
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-15T03:41:06.906Z"
-last_activity: 2026-03-14 — Completed Plan 04-02 auto tasks (pricing UI)
+status: executing
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-15T04:37:01.038Z"
+last_activity: 2026-03-15 — Completed Plan 05-01 (pricing pure functions TDD)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_plans: 6
+  completed_plans: 3
+  percent: 70
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-14)
 
 **Core value:** Members can sign up, pay via Stripe, and immediately reserve pickleball courts
-**Current focus:** Phase 4 - Admin Pricing Panel (v1.1)
+**Current focus:** Phase 5 - Reservation Flow Integration (v1.1)
 
 ## Current Position
 
-Phase: 4 of 6 (Admin Pricing Panel)
-Plan: 2 of 2 complete (human-verify approved)
-Status: Phase 4 complete
-Last activity: 2026-03-14 — Completed Plan 04-02 auto tasks (pricing UI)
+Phase: 5 of 6 (Reservation Flow Integration)
+Plan: 1 of 4 complete
+Status: In progress
+Last activity: 2026-03-15 — Completed Plan 05-01 (pricing pure functions TDD)
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100%
 |-------|-------|-------|----------|
 | 03-signup-country-collection | 2/2 | ~6min | ~3min |
 | 04-admin-pricing-panel | 2/2 | ~4min | ~2min |
+| 05-reservation-flow-integration | 1/4 | ~2min | ~2min |
 
 ## Accumulated Context
 
@@ -68,6 +69,9 @@ All v1.0 decisions logged in PROJECT.md Key Decisions table with outcomes.
 - [03-02] Country validation uses pure functions (extractCountry, validateCountryCode) for testability
 - [04-01] Extracted pricing validation helpers to lib/utils/pricingValidation.ts to avoid Supabase client import in unit tests
 - [04-02] Monday-first day ordering in pricing grid for business convention
+- [05-01] isTourist treats null and empty string as tourist (conservative default)
+- [05-01] Math.round for fractional cent rounding on surcharge calculation
+
 
 ### Key Research Findings (v1.1)
 
@@ -87,6 +91,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-15T03:41:06.897Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-reservation-flow-integration/05-CONTEXT.md
+Last session: 2026-03-15T04:37:00.537Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
