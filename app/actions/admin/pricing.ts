@@ -95,10 +95,10 @@ export async function getTouristSurchargeAction(): Promise<number> {
     .from('app_config')
     .select('value')
     .eq('key', 'tourist_surcharge_pct')
-    .single()
+    .maybeSingle()
 
   if (error) throw new Error(error.message)
-  return Number(data.value)
+  return data ? Number(data.value) : 25
 }
 
 /**
@@ -115,7 +115,7 @@ export async function updateTouristSurchargeAction(
 
   const { error } = await supabaseAdmin
     .from('app_config')
-    .update({ value: pct as unknown as Record<string, unknown> })
+    .update({ value: pct })
     .eq('key', 'tourist_surcharge_pct')
 
   if (error) return { success: false, error: error.message }

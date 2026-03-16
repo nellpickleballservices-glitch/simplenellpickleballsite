@@ -27,32 +27,76 @@ function timeToMinutes(time: string): number {
   return h * 60 + (m || 0)
 }
 
+/** Pre-parsed mode boundaries for a court config. */
+interface ParsedModeBounds {
+  practiceStart: number | null
+  practiceEnd: number | null
+  fullCourtStart: number | null
+  fullCourtEnd: number | null
+  openPlayStart: number | null
+  openPlayEnd: number | null
+}
+
+function parseModeBounds(config: CourtConfig): ParsedModeBounds {
+  return {
+    practiceStart: config.practice_start ? timeToMinutes(config.practice_start) : null,
+    practiceEnd: config.practice_end ? timeToMinutes(config.practice_end) : null,
+    fullCourtStart: config.full_court_start ? timeToMinutes(config.full_court_start) : null,
+    fullCourtEnd: config.full_court_end ? timeToMinutes(config.full_court_end) : null,
+    openPlayStart: config.open_play_start ? timeToMinutes(config.open_play_start) : null,
+    openPlayEnd: config.open_play_end ? timeToMinutes(config.open_play_end) : null,
+  }
+}
+
 /**
- * Determine the booking mode for a given hour based on court config.
+ * Determine the booking mode for a given minute offset based on pre-parsed bounds.
  */
-function getModeForHour(config: CourtConfig, hour: number): BookingMode {
-  const hourMinutes = hour * 60
+function getModeForMinute(bounds: ParsedModeBounds, minute: number): BookingMode {
+  if (
+    bounds.practiceStart !== null &&
+    bounds.practiceEnd !== null &&
+    minute >= bounds.practiceStart &&
+    minute < bounds.practiceEnd
+  ) {
+    return 'practice'
+  }
 
   if (
-    config.full_court_start &&
-    config.full_court_end &&
-    hourMinutes >= timeToMinutes(config.full_court_start) &&
-    hourMinutes < timeToMinutes(config.full_court_end)
+    bounds.fullCourtStart !== null &&
+    bounds.fullCourtEnd !== null &&
+    minute >= bounds.fullCourtStart &&
+    minute < bounds.fullCourtEnd
   ) {
     return 'full_court'
   }
 
   if (
-    config.open_play_start &&
-    config.open_play_end &&
-    hourMinutes >= timeToMinutes(config.open_play_start) &&
-    hourMinutes < timeToMinutes(config.open_play_end)
+    bounds.openPlayStart !== null &&
+    bounds.openPlayEnd !== null &&
+    minute >= bounds.openPlayStart &&
+    minute < bounds.openPlayEnd
   ) {
     return 'open_play'
   }
 
-  // Default: if hour is within operating hours but no explicit mode, use open_play
+  // Default: if minute is within operating hours but no explicit mode, use open_play
   return 'open_play'
+}
+
+/**
+ * Get session duration in minutes for a given booking mode.
+ */
+function getDurationForMode(config: CourtConfig, mode: BookingMode): number {
+  switch (mode) {
+    case 'full_court':
+      return config.full_court_duration_minutes ?? 60
+    case 'open_play':
+      return config.open_play_duration_minutes ?? 60
+    case 'practice':
+      return config.practice_duration_minutes ?? 30
+    default:
+      return 60
+  }
 }
 
 /**
@@ -67,8 +111,17 @@ function isHoldExpired(reservation: Reservation, holdHours: number): boolean {
 }
 
 /**
+ * Format minutes from midnight into a time string like "07:30:00".
+ */
+function minutesToTimeStr(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`
+}
+
+/**
  * Generate time slots from court config for a given date,
- * checking each 1-hour slot against existing reservations.
+ * using per-mode session durations and checking against existing reservations.
  */
 export function generateTimeSlots(
   config: CourtConfig,
@@ -76,45 +129,57 @@ export function generateTimeSlots(
   reservations: Reservation[],
   holdHours: number
 ): TimeSlot[] {
-  const openHour = timeToMinutes(config.open_time) / 60
-  const closeHour = timeToMinutes(config.close_time) / 60
+  const openMinutes = timeToMinutes(config.open_time)
+  const closeMinutes = timeToMinutes(config.close_time)
   const slots: TimeSlot[] = []
+  const bounds = parseModeBounds(config)
 
   // Filter out cancelled, expired, and expired-hold reservations
-  const activeReservations = reservations.filter(
-    (r) =>
-      r.status !== 'cancelled' &&
-      r.status !== 'expired' &&
-      !isHoldExpired(r, holdHours)
-  )
+  // Pre-parse timestamps to avoid repeated Date construction in the hot loop
+  const activeReservations = reservations
+    .filter(
+      (r) =>
+        r.status !== 'cancelled' &&
+        r.status !== 'expired' &&
+        !isHoldExpired(r, holdHours)
+    )
+    .map((r) => ({
+      ...r,
+      _startMs: new Date(r.starts_at).getTime(),
+      _endMs: new Date(r.ends_at).getTime(),
+    }))
 
-  for (let hour = openHour; hour < closeHour; hour++) {
-    const startTime = `${date}T${String(hour).padStart(2, '0')}:00:00`
-    const endTime = `${date}T${String(hour + 1).padStart(2, '0')}:00:00`
-    const mode = getModeForHour(config, hour)
+  let currentMinute = openMinutes
+  while (currentMinute < closeMinutes) {
+    const mode = getModeForMinute(bounds, currentMinute)
+    const duration = getDurationForMode(config, mode)
+
+    // Don't create a slot that extends past closing time
+    const slotEnd = Math.min(currentMinute + duration, closeMinutes)
+
+    const startTime = `${date}T${minutesToTimeStr(currentMinute)}`
+    const endTime = `${date}T${minutesToTimeStr(slotEnd)}`
 
     // Find reservations overlapping this slot
+    const sStartMs = new Date(startTime).getTime()
+    const sEndMs = new Date(endTime).getTime()
     const slotReservations = activeReservations.filter((r) => {
-      const rStart = new Date(r.starts_at)
-      const rEnd = new Date(r.ends_at)
-      const sStart = new Date(startTime)
-      const sEnd = new Date(endTime)
-      return rStart < sEnd && rEnd > sStart
+      return r._startMs < sEndMs && r._endMs > sStartMs
     })
 
     let spots: SpotInfo[]
 
-    if (mode === 'full_court') {
-      // Full court: check if any full_court reservation exists for this slot
+    if (mode === 'full_court' || mode === 'practice') {
+      // Full court / practice: single booking per slot
       const isBooked = slotReservations.some(
-        (r) => r.booking_mode === 'full_court'
+        (r) => r.booking_mode === mode
       )
       spots = [
         {
           spotNumber: 1,
           isAvailable: !isBooked,
           reservedBy: isBooked
-            ? slotReservations.find((r) => r.booking_mode === 'full_court')
+            ? slotReservations.find((r) => r.booking_mode === mode)
                 ?.reservation_user_first_name
             : undefined,
         },
@@ -135,6 +200,7 @@ export function generateTimeSlots(
     }
 
     slots.push({ startTime, endTime, mode, spots })
+    currentMinute += duration
   }
 
   return slots
@@ -150,7 +216,7 @@ function computeAvailabilitySummary(
   let available = 0
 
   for (const slot of timeSlots) {
-    if (slot.mode === 'full_court') {
+    if (slot.mode === 'full_court' || slot.mode === 'practice') {
       total += 1
       if (slot.spots[0]?.isAvailable) available += 1
     } else {
@@ -168,7 +234,8 @@ function computeAvailabilitySummary(
  */
 export async function getCourtAvailability(
   date: string,
-  courtId?: string
+  courtId?: string,
+  locationId?: string
 ): Promise<CourtWithConfig[]> {
   const supabase = await createClient()
   const dayType = getDayType(date)
@@ -181,6 +248,10 @@ export async function getCourtAvailability(
 
   if (courtId) {
     courtsQuery = courtsQuery.eq('id', courtId)
+  }
+
+  if (locationId) {
+    courtsQuery = courtsQuery.eq('location_id', locationId)
   }
 
   // Build reservations query — scope to specific court when courtId provided
@@ -197,7 +268,7 @@ export async function getCourtAvailability(
 
   const dayOfWeek = new Date(date + 'T12:00:00').getDay() // noon to avoid TZ rollover
 
-  const [courtsResult, configResult, pricingResult, reservationsResult, appConfigResult, sessionPricingResult, defaultPriceResult, surchargeResult] =
+  const [courtsResult, configResult, pricingResult, reservationsResult, appConfigBatchResult, sessionPricingResult] =
     await Promise.all([
       courtsQuery,
       supabase
@@ -208,23 +279,12 @@ export async function getCourtAvailability(
       reservationsQueryBuilder,
       supabase
         .from('app_config')
-        .select('*')
-        .eq('key', 'pending_payment_hold_hours')
-        .single(),
+        .select('key, value')
+        .in('key', ['pending_payment_hold_hours', 'default_session_price_cents', 'tourist_surcharge_pct']),
       supabase
         .from('session_pricing')
         .select('court_id, day_of_week, price_cents')
         .eq('day_of_week', dayOfWeek),
-      supabase
-        .from('app_config')
-        .select('value')
-        .eq('key', 'default_session_price_cents')
-        .maybeSingle(),
-      supabase
-        .from('app_config')
-        .select('value')
-        .eq('key', 'tourist_surcharge_pct')
-        .maybeSingle(),
     ])
 
   const courts = courtsResult.data ?? []
@@ -232,16 +292,15 @@ export async function getCourtAvailability(
   const pricing = pricingResult.data ?? []
   const sessionPricingRows = sessionPricingResult.data ?? []
   const reservations = (reservationsResult.data ?? []) as Reservation[]
-  const holdHours =
-    typeof appConfigResult.data?.value === 'number'
-      ? appConfigResult.data.value
-      : Number(appConfigResult.data?.value) || 2
-  const defaultPriceCents = typeof defaultPriceResult.data?.value === 'number'
-    ? defaultPriceResult.data.value
-    : Number(defaultPriceResult.data?.value) || 1000
-  const touristSurchargePct = typeof surchargeResult.data?.value === 'number'
-    ? surchargeResult.data.value
-    : Number(surchargeResult.data?.value) || 25
+
+  // Parse app_config batch result
+  const appConfigMap: Record<string, number> = {}
+  for (const row of appConfigBatchResult.data ?? []) {
+    appConfigMap[row.key] = typeof row.value === 'number' ? row.value : Number(row.value) || 0
+  }
+  const holdHours = appConfigMap['pending_payment_hold_hours'] || 2
+  const defaultPriceCents = appConfigMap['default_session_price_cents'] || 1000
+  const touristSurchargePct = appConfigMap['tourist_surcharge_pct'] || 25
 
   return courts.map((court) => {
     const courtConfigs = configs.filter(

@@ -34,42 +34,29 @@ export async function addCourtAction(
 ): Promise<{ success?: boolean; error?: string }> {
   await requireAdmin()
 
-  const locationName = formData.get('locationName') as string
+  const locationId = formData.get('locationId') as string
   const courtName = formData.get('courtName') as string
-  const address = formData.get('address') as string
-  const lat = formData.get('lat') as string
-  const lng = formData.get('lng') as string
 
-  if (!locationName || !courtName) {
-    return { error: 'Location name and court name are required' }
+  if (!locationId || !courtName) {
+    return { error: 'Location and court name are required' }
   }
 
-  // Find or create location
-  const { data: locationData, error: locationError } = await supabaseAdmin
+  // Get location coordinates to copy to court
+  const { data: location } = await supabaseAdmin
     .from('locations')
-    .upsert(
-      {
-        name: locationName,
-        address: address || null,
-        lat: lat ? parseFloat(lat) : null,
-        lng: lng ? parseFloat(lng) : null,
-      },
-      { onConflict: 'name' }
-    )
-    .select('id')
+    .select('lat, lng')
+    .eq('id', locationId)
     .single()
-
-  if (locationError) return { error: locationError.message }
 
   // Insert court
   const { data: courtData, error: courtError } = await supabaseAdmin
     .from('courts')
     .insert({
-      location_id: locationData.id,
+      location_id: locationId,
       name: courtName,
       status: 'open',
-      lat: lat ? parseFloat(lat) : null,
-      lng: lng ? parseFloat(lng) : null,
+      lat: location?.lat ?? null,
+      lng: location?.lng ?? null,
     })
     .select('id')
     .single()
@@ -77,7 +64,7 @@ export async function addCourtAction(
   if (courtError) return { error: courtError.message }
 
   // Create default court_config (weekday + weekend)
-  await supabaseAdmin.from('court_config').insert([
+  const { error: configError } = await supabaseAdmin.from('court_config').insert([
     {
       court_id: courtData.id,
       day_type: 'weekday',
@@ -87,6 +74,11 @@ export async function addCourtAction(
       full_court_end: '17:00',
       open_play_start: '17:00',
       open_play_end: '22:00',
+      practice_start: null,
+      practice_end: null,
+      full_court_duration_minutes: 60,
+      open_play_duration_minutes: 60,
+      practice_duration_minutes: 30,
     },
     {
       court_id: courtData.id,
@@ -97,15 +89,90 @@ export async function addCourtAction(
       full_court_end: '15:00',
       open_play_start: '15:00',
       open_play_end: '22:00',
+      practice_start: null,
+      practice_end: null,
+      full_court_duration_minutes: 60,
+      open_play_duration_minutes: 60,
+      practice_duration_minutes: 30,
     },
   ])
 
+  if (configError) return { error: `Failed to create court schedule: ${configError.message}` }
+
   // Create default court_pricing (full_court + open_play)
-  await supabaseAdmin.from('court_pricing').insert([
+  const { error: pricingError } = await supabaseAdmin.from('court_pricing').insert([
     { court_id: courtData.id, mode: 'full_court', price_cents: 1000 },
     { court_id: courtData.id, mode: 'open_play', price_cents: 1000 },
   ])
 
+  if (pricingError) return { error: `Failed to create court pricing: ${pricingError.message}` }
+
+  return { success: true }
+}
+
+export interface CourtConfigRow {
+  id: string
+  court_id: string
+  day_type: 'weekday' | 'weekend'
+  open_time: string
+  close_time: string
+  full_court_start: string | null
+  full_court_end: string | null
+  open_play_start: string | null
+  open_play_end: string | null
+  practice_start: string | null
+  practice_end: string | null
+  full_court_duration_minutes: number
+  open_play_duration_minutes: number
+  practice_duration_minutes: number
+}
+
+export async function getCourtConfigAction(
+  courtId: string
+): Promise<CourtConfigRow[]> {
+  await requireAdmin()
+
+  const { data, error } = await supabaseAdmin
+    .from('court_config')
+    .select('*')
+    .eq('court_id', courtId)
+    .order('day_type')
+
+  if (error) throw new Error(error.message)
+  return (data ?? []) as CourtConfigRow[]
+}
+
+export async function updateCourtConfigAction(
+  courtId: string,
+  dayType: 'weekday' | 'weekend',
+  config: {
+    open_time: string
+    close_time: string
+    full_court_start: string | null
+    full_court_end: string | null
+    open_play_start: string | null
+    open_play_end: string | null
+    practice_start: string | null
+    practice_end: string | null
+    full_court_duration_minutes: number
+    open_play_duration_minutes: number
+    practice_duration_minutes: number
+  }
+): Promise<{ success?: boolean; error?: string }> {
+  await requireAdmin()
+
+  const { error } = await supabaseAdmin
+    .from('court_config')
+    .upsert(
+      {
+        court_id: courtId,
+        day_type: dayType,
+        ...config,
+      },
+      { onConflict: 'court_id,day_type' }
+    )
+
+  if (error) return { error: error.message }
   return { success: true }
 }
 

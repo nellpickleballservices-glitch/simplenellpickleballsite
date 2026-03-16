@@ -21,7 +21,8 @@ CREATE POLICY "Users can update own profile"
   );
 
 -- 4. Update admin_users_view to include country
-CREATE OR REPLACE VIEW admin_users_view AS
+DROP VIEW IF EXISTS admin_users_view;
+CREATE VIEW admin_users_view AS
 SELECT
   p.id,
   p.first_name,

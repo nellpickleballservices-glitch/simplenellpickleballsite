@@ -85,3 +85,16 @@
 .ProseMirror a {
   color: var(--color-turquoise);
 }
+
+/* Make native date/time input icons visible on dark backgrounds */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

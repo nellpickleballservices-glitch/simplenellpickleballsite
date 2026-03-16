@@ -26,8 +26,8 @@ export default function AdminReservationsPage() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [courtId, setCourtId] = useState('')
-  const [status, setStatus] = useState('')
   const [isTouristFilter, setIsTouristFilter] = useState<string>('')
+  const [showHistory, setShowHistory] = useState(false)
 
   // Confirm dialog
   const [cancelTarget, setCancelTarget] = useState<string | null>(null)
@@ -37,29 +37,30 @@ export default function AdminReservationsPage() {
   const perPage = 20
   const totalPages = Math.ceil(total / perPage)
 
+  // Fetch courts once on mount (static reference data for filter dropdown)
+  useEffect(() => {
+    getCourtsAction().then(setCourts).catch(() => {})
+  }, [])
+
   const loadData = useCallback(async () => {
     setLoading(true)
     try {
-      const [reservationData, courtData] = await Promise.all([
-        getAllReservationsAction({
-          dateFrom: dateFrom || undefined,
-          dateTo: dateTo || undefined,
-          courtId: courtId || undefined,
-          status: status || undefined,
-          isTourist: isTouristFilter === '' ? undefined : isTouristFilter === 'true',
-          page,
-        }),
-        getCourtsAction(),
-      ])
+      const reservationData = await getAllReservationsAction({
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+        courtId: courtId || undefined,
+        isTourist: isTouristFilter === '' ? undefined : isTouristFilter === 'true',
+        showHistory,
+        page,
+      })
       setReservations(reservationData.reservations)
       setTotal(reservationData.total)
-      setCourts(courtData)
-    } catch {
-      // Error loading data
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Failed to load data')
     } finally {
       setLoading(false)
     }
-  }, [dateFrom, dateTo, courtId, status, isTouristFilter, page])
+  }, [dateFrom, dateTo, courtId, isTouristFilter, showHistory, page])
 
   useEffect(() => {
     loadData()
@@ -73,7 +74,7 @@ export default function AdminReservationsPage() {
       setCancelTarget(null)
       loadData()
     } catch {
-      setMessage('Error cancelling reservation')
+      setMessage(t('errorCancellingReservation'))
     } finally {
       setActionLoading(false)
       setTimeout(() => setMessage(''), 3000)
@@ -87,7 +88,7 @@ export default function AdminReservationsPage() {
       setMessage(t('cashMarkedPaid'))
       loadData()
     } catch {
-      setMessage('Error marking payment')
+      setMessage(t('errorMarkingPayment'))
     } finally {
       setActionLoading(false)
       setTimeout(() => setMessage(''), 3000)
@@ -173,63 +174,101 @@ export default function AdminReservationsPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-[#1E293B] rounded-lg p-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">{t('startDate')}</label>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
-            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
-          />
+      <div className="bg-[#1E293B] rounded-lg p-4 mt-4 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{t('startDate')}</label>
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
+                className="flex-1 bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{t('endDate')}</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
+              className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{t('filterByCourt')}</label>
+            <select
+              value={courtId}
+              onChange={(e) => { setCourtId(e.target.value); setPage(1) }}
+              className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            >
+              <option value="">{t('allCourts')}</option>
+              {courts.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{t('filterByClassification')}</label>
+            <select
+              value={isTouristFilter}
+              onChange={(e) => { setIsTouristFilter(e.target.value); setPage(1) }}
+              className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            >
+              <option value="">{t('allClassifications')}</option>
+              <option value="false">{t('local')}</option>
+              <option value="true">{t('tourist')}</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">{t('endDate')}</label>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
-            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">{t('filterByCourt')}</label>
-          <select
-            value={courtId}
-            onChange={(e) => { setCourtId(e.target.value); setPage(1) }}
-            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+
+        {/* Quick filters & toggles */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={() => {
+              const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santo_Domingo' })
+              setDateFrom(today)
+              setDateTo(today)
+              setPage(1)
+            }}
+            className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
+              dateFrom && dateFrom === dateTo
+                ? 'bg-lime text-midnight'
+                : 'bg-[#334155] text-gray-300 hover:bg-[#243352]'
+            }`}
           >
-            <option value="">{t('allCourts')}</option>
-            {courts.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">{t('filterByStatus')}</label>
-          <select
-            value={status}
-            onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
+            {t('today')}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setDateFrom(''); setDateTo(''); setPage(1) }}
+            className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#334155] text-gray-300 hover:bg-[#243352] transition-colors"
           >
-            <option value="">{t('allStatuses')}</option>
-            <option value="confirmed">{t('confirmed')}</option>
-            <option value="pending_payment">{t('pendingPayment')}</option>
-            <option value="cancelled">{t('cancelled')}</option>
-            <option value="expired">{t('expired')}</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">{t('filterByClassification')}</label>
-          <select
-            value={isTouristFilter}
-            onChange={(e) => { setIsTouristFilter(e.target.value); setPage(1) }}
-            className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
-          >
-            <option value="">{t('allClassifications')}</option>
-            <option value="false">{t('local')}</option>
-            <option value="true">{t('tourist')}</option>
-          </select>
+            {t('clearDates')}
+          </button>
+
+          <span className="w-px h-5 bg-gray-700 mx-1" />
+
+          <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showHistory}
+              onClick={() => { setShowHistory(!showHistory); setPage(1) }}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                showHistory ? 'bg-lime' : 'bg-[#334155]'
+              }`}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
+                  showHistory ? 'translate-x-4' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+            {t('showHistory')}
+          </label>
         </div>
       </div>
 
@@ -261,13 +300,25 @@ export default function AdminReservationsPage() {
                   ? `${r.guest_name} (${t('guest')})`
                   : `${r.reservation_user_first_name} ${r.reservation_user_last_name}`
 
+                const now = new Date()
+                const isInProgress = r.status === 'confirmed'
+                  && new Date(r.starts_at) <= now
+                  && new Date(r.ends_at) > now
+
                 return (
-                  <tr key={r.id} className="border-b border-gray-800 text-offwhite">
+                  <tr key={r.id} className={`border-b border-gray-800 text-offwhite ${isInProgress ? 'bg-lime/5' : ''}`}>
                     <td className="py-3 px-2">{userName}</td>
                     <td className="py-3 px-2">{r.courts?.name ?? '—'}</td>
                     <td className="py-3 px-2">{start.date}</td>
                     <td className="py-3 px-2">{start.time} - {end.time}</td>
-                    <td className="py-3 px-2">{getStatusBadge(r.status)}</td>
+                    <td className="py-3 px-2">
+                      {isInProgress ? (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium bg-lime/20 text-lime">
+                          <span className="h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
+                          {t('inProgress')}
+                        </span>
+                      ) : getStatusBadge(r.status)}
+                    </td>
                     <td className="py-3 px-2">{getPaymentBadge(r.payment_status)}</td>
                     <td className="py-3 px-2">
                       {r.is_tourist_price ? (

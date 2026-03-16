@@ -105,7 +105,7 @@ export async function middleware(request: NextRequest) {
 
       if (!membership) {
         const url = request.nextUrl.clone()
-        url.pathname = '/pricing'
+        url.pathname = '/'
         return NextResponse.redirect(url)
       }
 
@@ -118,7 +118,7 @@ export async function middleware(request: NextRequest) {
     } else {
       // cached.active is false — redirect to pricing
       const url = request.nextUrl.clone()
-      url.pathname = '/pricing'
+      url.pathname = '/'
       return NextResponse.redirect(url)
     }
   }

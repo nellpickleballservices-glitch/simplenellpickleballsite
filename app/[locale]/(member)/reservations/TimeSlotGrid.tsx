@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import type { TimeSlot, AvailabilitySummary } from '@/lib/types/reservations'
+import { formatTime } from '@/lib/utils/formatTime'
 import { getAvailabilityAction } from './actions'
 import CourtDiagram from './CourtDiagram'
 import ReservationForm from './ReservationForm'
@@ -23,17 +24,6 @@ function addDays(dateStr: string, days: number): string {
   const d = new Date(dateStr + 'T00:00:00')
   d.setDate(d.getDate() + days)
   return d.toISOString().split('T')[0]
-}
-
-/** Format a datetime string for display in Santo Domingo timezone. */
-function formatTime(isoString: string): string {
-  const date = new Date(isoString)
-  return new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Santo_Domingo',
-  }).format(date)
 }
 
 interface DateTab {

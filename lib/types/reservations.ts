@@ -1,7 +1,7 @@
 // Reservation system type definitions
 // Matches schema from supabase/migrations/0003_reservations.sql
 
-export type BookingMode = 'full_court' | 'open_play' | 'vip_guest'
+export type BookingMode = 'full_court' | 'open_play' | 'vip_guest' | 'practice'
 
 export type PaymentStatus = 'free' | 'pending_payment' | 'paid' | 'cash_pending'
 
@@ -49,6 +49,11 @@ export interface CourtConfig {
   full_court_end: string | null
   open_play_start: string | null
   open_play_end: string | null
+  practice_start: string | null
+  practice_end: string | null
+  full_court_duration_minutes: number
+  open_play_duration_minutes: number
+  practice_duration_minutes: number
 }
 
 export interface CourtPricing {
@@ -64,7 +69,8 @@ export type AppConfigKey =
   | 'cancellation_window_hours'
   | 'vip_guest_limit'
   | 'pending_payment_hold_hours'
-  | 'session_price_default'
+  | 'default_session_price_cents'
+  | 'tourist_surcharge_pct'
 
 export interface AppConfig {
   key: AppConfigKey
@@ -100,6 +106,8 @@ export interface Location {
   address: string | null
   lat: number | null
   lng: number | null
+  hero_image_url: string | null
+  description: string | null
   created_at: string
 }
 

@@ -7,6 +7,7 @@ interface Value {
   icon: ReactNode
   title: string
   description: string
+  image?: string
 }
 
 interface ValueTimelineProps {
@@ -75,6 +76,13 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
                           <p className="text-offwhite/70 text-sm leading-relaxed">
                             {value.description}
                           </p>
+                          {value.image && (
+                            <img
+                              src={value.image}
+                              alt={value.title}
+                              className="mt-4 w-full h-32 object-cover rounded-xl"
+                            />
+                          )}
                         </div>
                       </div>
                       <div />
@@ -97,6 +105,13 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
                           <p className="text-offwhite/70 text-sm leading-relaxed">
                             {value.description}
                           </p>
+                          {value.image && (
+                            <img
+                              src={value.image}
+                              alt={value.title}
+                              className="mt-4 w-full h-32 object-cover rounded-xl"
+                            />
+                          )}
                         </div>
                       </div>
                     </>
@@ -119,6 +134,13 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
                     <p className="text-offwhite/70 text-sm leading-relaxed">
                       {value.description}
                     </p>
+                    {value.image && (
+                      <img
+                        src={value.image}
+                        alt={value.title}
+                        className="mt-4 w-full h-28 object-cover rounded-xl"
+                      />
+                    )}
                   </div>
                 </div>
               </div>

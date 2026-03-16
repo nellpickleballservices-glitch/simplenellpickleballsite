@@ -117,10 +117,20 @@ export default async function AboutPage() {
           'Jugamos limpio, nos comunicamos con honestidad y mantenemos el espiritu del juego.',
         ]
 
+  const valueImages = [
+    '/images/love&passion.png',
+    '/images/accessibility.png',
+    '/images/dicipline.png',
+    '/images/respect.png',
+    '/images/social-commitment.png',
+    '/images/integrity.png',
+  ]
+
   const values = valueTitles.map((title, i) => ({
     icon: valueIcons[i],
     title,
     description: valueDescriptions[i],
+    image: valueImages[i],
   }))
 
   return (
@@ -203,7 +213,7 @@ export default async function AboutPage() {
                 ? 'Explore our membership plans and start playing today.'
                 : 'Explora nuestros planes de membresia y empieza a jugar hoy.'}
             </p>
-            <GlowButton href="/pricing" variant="lime">
+            <GlowButton href="/#membership-plans" variant="lime">
               {locale === 'en' ? 'View Plans' : 'Ver Planes'}
             </GlowButton>
           </div>

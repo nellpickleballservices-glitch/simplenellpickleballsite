@@ -21,6 +21,8 @@ describe('Admin barrel re-exports', () => {
     'deleteEventAction',
     'getCourtsAction',
     'addCourtAction',
+    'getCourtConfigAction',
+    'updateCourtConfigAction',
     'setMaintenanceAction',
     'clearMaintenanceAction',
     'searchUsersAction',
@@ -28,14 +30,24 @@ describe('Admin barrel re-exports', () => {
     'disableUserAction',
     'enableUserAction',
     'triggerPasswordResetAction',
+    'updateUserCountryAction',
     'getAllReservationsAction',
     'adminCancelReservationAction',
     'adminCreateReservationAction',
     'markCashPaidAction',
     'searchUsersForReservationAction',
+    'getSessionPricePreviewAction',
     'getContentBlocksAction',
     'updateContentBlockAction',
     'reorderContentBlocksAction',
+    'getSessionPricingAction',
+    'upsertSessionPricingAction',
+    'getTouristSurchargeAction',
+    'updateTouristSurchargeAction',
+    'getLocationsAction',
+    'addLocationAction',
+    'updateLocationAction',
+    'deleteLocationAction',
   ]
 
   it('barrel file re-exports all action functions', () => {
@@ -51,6 +63,14 @@ describe('Admin barrel re-exports', () => {
   it('barrel file re-exports AdminReservation type', () => {
     expect(barrelContent).toContain('AdminReservation')
   })
+
+  it('barrel file re-exports CourtConfigRow type', () => {
+    expect(barrelContent).toContain('CourtConfigRow')
+  })
+
+  it('barrel file re-exports LocationRow type', () => {
+    expect(barrelContent).toContain('LocationRow')
+  })
 })
 
 describe('Admin domain files', () => {
@@ -62,6 +82,8 @@ describe('Admin domain files', () => {
     'app/actions/admin/users.ts',
     'app/actions/admin/reservations.ts',
     'app/actions/admin/cms.ts',
+    'app/actions/admin/pricing.ts',
+    'app/actions/admin/locations.ts',
   ]
 
   for (const file of domainFiles) {

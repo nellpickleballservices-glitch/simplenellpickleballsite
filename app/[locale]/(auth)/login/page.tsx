@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import LoginForm from './LoginForm'
 
@@ -10,10 +11,8 @@ async function LoginPage() {
       <div className="w-full max-w-md">
         {/* NELL Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-lime font-bungee text-5xl tracking-widest">
-            {tBrand('name')}
-          </h1>
-          <p className="text-offwhite/60 text-sm mt-1">
+          <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px] mx-auto" />
+          <p className="text-offwhite/60 text-sm mt-3">
             {tBrand('tagline')}
           </p>
         </div>

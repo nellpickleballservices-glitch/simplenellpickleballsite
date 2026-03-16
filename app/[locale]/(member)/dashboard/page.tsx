@@ -87,7 +87,7 @@ export default async function DashboardPage() {
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">{t('noMembershipBanner')}</h1>
           <Link
-            href="/pricing"
+            href="/#membership-plans"
             className="inline-block mt-4 px-6 py-3 rounded-lg bg-[#BFFF00] text-[#0F172A] font-semibold hover:bg-[#a8e600] transition-colors"
           >
             {t('viewPlans')}

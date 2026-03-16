@@ -37,7 +37,7 @@ export function MaintenanceForm({
         setTimeout(() => onComplete(), 1500)
       }
     } catch {
-      setMessage('Error setting maintenance')
+      setMessage(t('errorSettingMaintenance'))
     } finally {
       setLoading(false)
     }
@@ -52,7 +52,7 @@ export function MaintenanceForm({
         setTimeout(() => onComplete(), 1500)
       }
     } catch {
-      setMessage('Error clearing maintenance')
+      setMessage(t('errorClearingMaintenance'))
     } finally {
       setLoading(false)
     }

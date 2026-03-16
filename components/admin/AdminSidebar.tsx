@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -8,6 +9,7 @@ import { useTranslations } from 'next-intl'
 const navItems = [
   { key: 'dashboard', href: '/admin', icon: '\u2302' },        // ⌂
   { key: 'users', href: '/admin/users', icon: '\u2603' },       // Use simple text
+  { key: 'locations', href: '/admin/locations', icon: '\u2691' }, // ⚑
   { key: 'courts', href: '/admin/courts', icon: '\u25A6' },     // ▦
   { key: 'reservations', href: '/admin/reservations', icon: '\u2637' }, // ☷
   { key: 'pricing', href: '/admin/pricing', icon: '$' },         // $
@@ -82,8 +84,8 @@ export function AdminSidebar({ locale }: { locale: string }) {
       >
         {/* Brand */}
         <div className="px-6 pt-6 pb-2">
-          <Link href={`/${locale}/admin`} className="font-bungee text-3xl text-lime tracking-widest">
-            NELL
+          <Link href={`/${locale}/admin`} className="inline-block">
+            <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px]" />
           </Link>
           <p className="text-offwhite/50 text-xs mt-1">Admin Panel</p>
         </div>

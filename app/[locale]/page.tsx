@@ -1,7 +1,6 @@
 import { getTranslations, getLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { getContentBlocks } from '@/lib/content'
-import Link from 'next/link'
 import WelcomeBanner from './WelcomeBanner'
 import { MotionProvider } from '@/components/motion/MotionProvider'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
@@ -11,6 +10,7 @@ import { GlowButton } from '@/components/effects/GlowButton'
 import { GlowCard } from '@/components/effects/GlowCard'
 import { AnimatedCtaAccents } from '@/components/effects/AnimatedAccents'
 import { HeroVideo } from '@/components/effects/HeroVideo'
+import { PricingCards } from './(marketing)/pricing/PricingCards'
 import type { Metadata } from 'next'
 
 interface HomePageProps {
@@ -52,12 +52,14 @@ async function HomePage({ searchParams }: HomePageProps) {
   // Fetch CMS content
   const content = await getContentBlocks('home_', locale)
 
-  let firstName = ''
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (showWelcome) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
+  let firstName = ''
+  let membership: { status: string; plan_type: string } | null = null
+
+  if (user) {
+    if (showWelcome) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('first_name')
@@ -65,6 +67,14 @@ async function HomePage({ searchParams }: HomePageProps) {
         .single()
       firstName = profile?.first_name ?? user.user_metadata?.first_name ?? user.email?.split('@')[0] ?? ''
     }
+
+    const { data } = await supabase
+      .from('memberships')
+      .select('status, plan_type')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle()
+    membership = data
   }
 
   return (
@@ -252,7 +262,7 @@ async function HomePage({ searchParams }: HomePageProps) {
 
         {/* -- MEMBERSHIP PLANS -- */}
         <ScrollReveal>
-          <section className="py-28 sm:py-32 px-6 sm:px-10 bg-charcoal/40">
+          <section id="membership-plans" className="scroll-mt-36 py-28 sm:py-32 px-6 sm:px-10 bg-charcoal/40">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-20">
                 <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
@@ -263,106 +273,11 @@ async function HomePage({ searchParams }: HomePageProps) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-stretch pt-6 overflow-visible">
-
-                {/* VIP Plan -- highlighted with glow */}
-                <GlowCard accentColor="var(--color-lime)" className="h-full">
-                  <article className="relative flex flex-col rounded-2xl border-2 border-lime bg-midnight p-8 shadow-xl shadow-lime/10 h-full">
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="inline-block bg-lime text-midnight text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full shadow-lg shadow-lime/30">
-                        {t('planVipBadge')}
-                      </span>
-                    </div>
-
-                    <div className="mt-4">
-                      <h3 className="font-bebas-neue text-3xl gradient-text-static tracking-wide mb-1 inline-block">
-                        {t('planVipName')}
-                      </h3>
-                      <p className="text-offwhite/60 text-sm mb-6">
-                        {t('planVipTagline')}
-                      </p>
-
-                      <div className="flex items-end gap-1 mb-8">
-                        <span className="font-bebas-neue text-6xl text-offwhite leading-none">
-                          {t('planVipPrice')}
-                        </span>
-                        <span className="text-offwhite/60 text-lg mb-2">
-                          {t('planVipPer')}
-                        </span>
-                      </div>
-
-                      <ul className="flex flex-col gap-3 mb-10">
-                        {[
-                          t('planVipFeature1'),
-                          t('planVipFeature2'),
-                          t('planVipFeature3'),
-                          t('planVipFeature4'),
-                        ].map((feature) => (
-                          <li key={feature} className="flex items-center gap-3 text-offwhite/80 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-lime shrink-0" aria-hidden="true">
-                              <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                            </svg>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="mt-auto">
-                      <GlowButton href="/signup" variant="lime" className="w-full text-center py-3.5 text-base">
-                        {t('planVipCta')}
-                      </GlowButton>
-                    </div>
-                  </article>
-                </GlowCard>
-
-                {/* Basic Plan */}
-                <GlowCard accentColor="var(--color-turquoise)" className="h-full">
-                  <article className="flex flex-col rounded-2xl border border-charcoal bg-charcoal p-8 h-full">
-                    <h3 className="font-bebas-neue text-3xl text-offwhite tracking-wide mb-1">
-                      {t('planBasicName')}
-                    </h3>
-                    <p className="text-offwhite/60 text-sm mb-6">
-                      {t('planBasicTagline')}
-                    </p>
-
-                    <div className="flex items-end gap-1 mb-8">
-                      <span className="font-bebas-neue text-6xl text-offwhite leading-none">
-                        {t('planBasicPrice')}
-                      </span>
-                      <span className="text-offwhite/60 text-lg mb-2">
-                        {t('planBasicPer')}
-                      </span>
-                    </div>
-
-                    <ul className="flex flex-col gap-3 mb-10">
-                      {[
-                        t('planBasicFeature1'),
-                        t('planBasicFeature2'),
-                        t('planBasicFeature3'),
-                        t('planBasicFeature4'),
-                      ].map((feature) => (
-                        <li key={feature} className="flex items-center gap-3 text-offwhite/70 text-sm">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-turquoise shrink-0" aria-hidden="true">
-                            <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                          </svg>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-auto">
-                      <Link
-                        href="/signup"
-                        className="block w-full text-center bg-midnight text-offwhite font-bold rounded-full py-3.5 text-base tracking-wide border border-offwhite/20 hover:border-turquoise/50 hover:text-turquoise hover:scale-[1.02] transition-all duration-200"
-                      >
-                        {t('planBasicCta')}
-                      </Link>
-                    </div>
-                  </article>
-                </GlowCard>
-
-              </div>
+              <PricingCards
+                user={user ? { id: user.id, email: user.email ?? '' } : null}
+                membership={membership}
+                showCancelledMessage={false}
+              />
             </div>
           </section>
         </ScrollReveal>

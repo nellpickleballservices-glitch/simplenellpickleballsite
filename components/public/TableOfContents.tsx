@@ -70,7 +70,7 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
       </nav>
 
       {/* Mobile: collapsible accordion */}
-      <div className="lg:hidden sticky top-16 z-20 mb-6">
+      <div className="lg:hidden sticky top-[140px] z-20 mb-6">
         <button
           onClick={() => setMobileOpen((v) => !v)}
           className="w-full flex items-center justify-between bg-charcoal/90 backdrop-blur-sm border border-charcoal rounded-xl px-4 py-3 text-offwhite"

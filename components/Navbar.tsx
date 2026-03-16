@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -22,14 +23,14 @@ export async function Navbar() {
       .select('first_name')
       .eq('id', user.id)
       .single()
-    firstName = profile?.first_name ?? null
+    firstName = profile?.first_name ?? user.user_metadata?.first_name ?? null
   }
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-6 py-3 flex items-center justify-between">
       {/* Brand */}
-      <Link href="/" className="font-bungee text-2xl text-lime tracking-widest">
-        NELL
+      <Link href="/" className="flex items-center">
+        <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px] scale-125 origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
       </Link>
 
       {/* Desktop nav */}
@@ -39,7 +40,7 @@ export async function Navbar() {
         <NavLink href="/learn-pickleball">{t('learn')}</NavLink>
         <NavLink href="/events">{t('events')}</NavLink>
         <NavLink href="/contact">{t('contact')}</NavLink>
-        <NavLink href="/pricing">{tBilling('pricingNav')}</NavLink>
+        <NavLink href="/#membership-plans">{tBilling('pricingNav')}</NavLink>
 
         {user ? (
           <>

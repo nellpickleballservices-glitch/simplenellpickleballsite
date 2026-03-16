@@ -86,7 +86,7 @@ export default async function LearnPickleballPage() {
 
       {/* Content with TOC */}
       <section className="pb-24 px-6">
-        <div className="max-w-5xl mx-auto flex gap-8">
+        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8">
           {/* Sticky TOC (desktop sidebar) */}
           <TableOfContents sections={tocSections} />
 
@@ -131,7 +131,7 @@ export default async function LearnPickleballPage() {
                     ? 'Ready to play? Join NELL Pickleball Club today.'
                     : 'Listo para jugar? Unete a NELL Pickleball Club hoy.'}
                 </p>
-                <GlowButton href="/pricing" variant="lime">
+                <GlowButton href="/#membership-plans" variant="lime">
                   {locale === 'en' ? 'View Plans' : 'Ver Planes'}
                 </GlowButton>
               </div>

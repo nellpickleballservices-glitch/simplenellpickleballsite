@@ -1,0 +1,19 @@
+{
+  "sessionName": "code-review",
+  "baseRef": "HEAD",
+  "launcherCommand": "claude --dangerously-skip-permissions -p \"$(cat {task_file})\"",
+  "workers": [
+    {
+      "name": "security",
+      "task": "You are a security reviewer. Review ALL changed files in the nell_pickleball_club project for security vulnerabilities. Focus on:\n- Server actions in app/actions/ (SQL injection, auth bypass, input validation)\n- Authentication flows in app/[locale]/(auth)/\n- Admin endpoints (privilege escalation, missing auth checks)\n- Any hardcoded secrets or credentials\n- OWASP Top 10 vulnerabilities\n\nRun: git diff HEAD to see all changes.\nWrite your findings to SECURITY-REVIEW.md in the repo root. Use severity levels: CRITICAL, HIGH, MEDIUM, LOW, INFO."
+    },
+    {
+      "name": "performance",
+      "task": "You are a performance reviewer. Review ALL changed files in the nell_pickleball_club project for performance issues. Focus on:\n- Database queries in lib/queries/ (N+1 queries, missing indexes, unoptimized joins)\n- Server actions doing unnecessary work or redundant fetches\n- React component re-renders, missing memoization in components/\n- Large bundle imports or unnecessary dependencies in package.json\n- Supabase query patterns and RLS policy performance\n\nRun: git diff HEAD to see all changes.\nWrite your findings to PERFORMANCE-REVIEW.md in the repo root. Use severity levels: CRITICAL, HIGH, MEDIUM, LOW, INFO."
+    },
+    {
+      "name": "quality",
+      "task": "You are a code quality and test coverage reviewer. Review ALL changed files in the nell_pickleball_club project for quality issues. Focus on:\n- Missing error handling in server actions (app/actions/)\n- Type safety issues in lib/types/\n- i18n completeness (compare messages/en.json vs messages/es.json)\n- Missing test coverage for new features (locations, courts, reservations)\n- Code duplication across admin pages\n- Accessibility issues in components\n\nRun: git diff HEAD to see all changes.\nWrite your findings to QUALITY-REVIEW.md in the repo root. Use severity levels: CRITICAL, HIGH, MEDIUM, LOW, INFO."
+    }
+  ]
+}

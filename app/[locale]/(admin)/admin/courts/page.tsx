@@ -5,21 +5,25 @@ import { useTranslations } from 'next-intl'
 import { getCourtsAction, type CourtWithLocation } from '@/app/actions/admin'
 import { CourtForm } from './CourtForm'
 import { MaintenanceForm } from './MaintenanceForm'
+import { CourtConfigForm } from './CourtConfigForm'
 
 export default function AdminCourtsPage() {
   const t = useTranslations('Admin')
   const [courts, setCourts] = useState<CourtWithLocation[]>([])
   const [showAddForm, setShowAddForm] = useState(false)
   const [maintenanceCourtId, setMaintenanceCourtId] = useState<string | null>(null)
+  const [configCourtId, setConfigCourtId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const loadCourts = useCallback(async () => {
     setLoading(true)
+    setError(null)
     try {
       const data = await getCourtsAction()
       setCourts(data)
-    } catch {
-      // Error loading courts
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load courts')
     } finally {
       setLoading(false)
     }
@@ -75,49 +79,64 @@ export default function AdminCourtsPage() {
         />
       )}
 
+      {error && (
+        <p className="text-red-400 mt-4">{error}</p>
+      )}
+
       {loading ? (
         <p className="text-gray-400">{t('loading')}</p>
-      ) : (
+      ) : !error && (
         <div className="space-y-4 mt-4">
           {courts.map((court) => (
-            <div key={court.id} className="bg-[#1E293B] rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-offwhite font-semibold">{court.name}</h3>
-                  <p className="text-sm text-gray-400">
-                    {court.locations?.name}{court.locations?.address ? ` — ${court.locations.address}` : ''}
-                  </p>
-                  {(court.lat || court.lng) && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      GPS: {court.lat}, {court.lng}
+            <div key={court.id} className="bg-[#1E293B] rounded-lg overflow-hidden">
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-offwhite font-semibold">{court.name}</h3>
+                    <p className="text-sm text-gray-400">
+                      {court.locations?.name}{court.locations?.address ? ` — ${court.locations.address}` : ''}
                     </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  {getStatusBadge(court.status)}
-                  <button
-                    onClick={() =>
-                      setMaintenanceCourtId(
-                        maintenanceCourtId === court.id ? null : court.id
-                      )
-                    }
-                    className="text-sm text-gray-400 hover:text-offwhite transition-colors"
-                  >
-                    {t('maintenanceMode')}
-                  </button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {getStatusBadge(court.status)}
+                    <button
+                      onClick={() =>
+                        setConfigCourtId(configCourtId === court.id ? null : court.id)
+                      }
+                      className="text-sm text-gray-400 hover:text-lime transition-colors"
+                    >
+                      {t('courtSettingsBtn')}
+                    </button>
+                    <button
+                      onClick={() =>
+                        setMaintenanceCourtId(
+                          maintenanceCourtId === court.id ? null : court.id
+                        )
+                      }
+                      className="text-sm text-gray-400 hover:text-offwhite transition-colors"
+                    >
+                      {t('maintenanceMode')}
+                    </button>
+                  </div>
                 </div>
               </div>
 
+              {configCourtId === court.id && (
+                <CourtConfigForm courtId={court.id} />
+              )}
+
               {maintenanceCourtId === court.id && (
-                <MaintenanceForm
-                  courtId={court.id}
-                  courtName={court.name}
-                  isInMaintenance={court.status === 'maintenance'}
-                  onComplete={() => {
-                    setMaintenanceCourtId(null)
-                    loadCourts()
-                  }}
-                />
+                <div className="p-4 border-t border-gray-700">
+                  <MaintenanceForm
+                    courtId={court.id}
+                    courtName={court.name}
+                    isInMaintenance={court.status === 'maintenance'}
+                    onComplete={() => {
+                      setMaintenanceCourtId(null)
+                      loadCourts()
+                    }}
+                  />
+                </div>
               )}
             </div>
           ))}

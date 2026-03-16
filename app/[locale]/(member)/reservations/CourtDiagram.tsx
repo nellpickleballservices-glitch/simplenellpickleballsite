@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import type { TimeSlot } from '@/lib/types/reservations'
+import { formatTime } from '@/lib/utils/formatTime'
 import ReservationForm from './ReservationForm'
 
 interface CourtDiagramProps {
@@ -13,17 +14,6 @@ interface CourtDiagramProps {
   isVip: boolean
   isMember: boolean
   onClose: () => void
-}
-
-/** Format a datetime string for display. */
-function formatTime(isoString: string): string {
-  const date = new Date(isoString)
-  return new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Santo_Domingo',
-  }).format(date)
 }
 
 export default function CourtDiagram({

@@ -112,7 +112,7 @@ export default async function EventsPage() {
                   ? 'Join to participate in exclusive member events.'
                   : 'Unete para participar en eventos exclusivos para miembros.'}
               </p>
-              <GlowButton href="/pricing" variant="sunset">
+              <GlowButton href="/#membership-plans" variant="sunset">
                 {locale === 'en' ? 'Join to Participate' : 'Unete para Participar'}
               </GlowButton>
             </div>

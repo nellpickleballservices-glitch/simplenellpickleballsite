@@ -102,7 +102,20 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
   }
 
   return (
-    <form action={formAction} className="bg-[#1E293B] rounded-lg p-6 space-y-4 mt-4">
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        const form = e.currentTarget
+        const date = (form.querySelector('[name="date"]') as HTMLInputElement).value
+        const timeStart = (form.querySelector('[name="timeStart"]') as HTMLInputElement).value
+        const timeEnd = (form.querySelector('[name="timeEnd"]') as HTMLInputElement).value
+        if (date && timeStart && timeEnd) {
+          ;(form.querySelector('#startsAt') as HTMLInputElement).value = `${date}T${timeStart}:00`
+          ;(form.querySelector('#endsAt') as HTMLInputElement).value = `${date}T${timeEnd}:00`
+        }
+      }}
+      className="bg-[#1E293B] rounded-lg p-6 space-y-4 mt-4"
+    >
       {/* Mode toggle */}
       <div className="flex gap-4">
         <label className="flex items-center gap-2 text-sm text-offwhite cursor-pointer">
@@ -133,7 +146,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           <label className="block text-sm text-gray-400 mb-1">{t('onBehalf')}</label>
           <input
             type="text"
-            value={selectedUser ? `${selectedUser.first_name} ${selectedUser.last_name} (${selectedUser.email})` : searchQuery}
+            value={selectedUser ? `${selectedUser.first_name ?? ''} ${selectedUser.last_name ?? ''} (${selectedUser.email})` : searchQuery ?? ''}
             onChange={(e) => {
               setSelectedUser(null)
               handleSearch(e.target.value)
@@ -167,13 +180,13 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           {/* Read-only Local/Tourist indicator for registered users */}
           {selectedUser && (
             <div className="mt-2">
-              {selectedUser.country === 'DO' ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-900/50 text-green-400">
-                  {t('local')}
-                </span>
-              ) : (
+              {isTouristFn(selectedUser.country ?? null) ? (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-900/50 text-amber-400">
                   {t('tourist')}
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-900/50 text-green-400">
+                  {t('local')}
                 </span>
               )}
             </div>
@@ -321,18 +334,6 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
       <button
         type="submit"
         disabled={isPending}
-        onClick={(e) => {
-          // Compose startsAt and endsAt before submit
-          const form = (e.target as HTMLButtonElement).closest('form')
-          if (!form) return
-          const date = (form.querySelector('[name="date"]') as HTMLInputElement).value
-          const timeStart = (form.querySelector('[name="timeStart"]') as HTMLInputElement).value
-          const timeEnd = (form.querySelector('[name="timeEnd"]') as HTMLInputElement).value
-          if (date && timeStart && timeEnd) {
-            ;(form.querySelector('#startsAt') as HTMLInputElement).value = `${date}T${timeStart}:00`
-            ;(form.querySelector('#endsAt') as HTMLInputElement).value = `${date}T${timeEnd}:00`
-          }
-        }}
         className="bg-lime hover:bg-lime/90 text-midnight font-semibold px-4 py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
       >
         {isPending ? t('saving') : t('createReservation')}

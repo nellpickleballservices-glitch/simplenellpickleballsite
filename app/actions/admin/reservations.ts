@@ -30,6 +30,7 @@ export async function getAllReservationsAction(filters: {
   courtId?: string
   status?: string
   isTourist?: boolean
+  showHistory?: boolean
   page?: number
 }): Promise<{ reservations: AdminReservation[]; total: number; page: number }> {
   await requireAdmin()
@@ -52,8 +53,10 @@ export async function getAllReservationsAction(filters: {
   if (filters.courtId) {
     query = query.eq('court_id', filters.courtId)
   }
-  if (filters.status) {
-    query = query.eq('status', filters.status)
+  if (!filters.showHistory) {
+    // By default, hide cancelled/expired reservations and sessions that have ended
+    query = query.not('status', 'in', '("cancelled","expired")')
+    query = query.gte('ends_at', new Date().toISOString())
   }
   if (filters.isTourist !== undefined) {
     query = query.eq('is_tourist_price', filters.isTourist)
@@ -103,6 +106,19 @@ export async function adminCreateReservationAction(
 
   if (!courtId || !startsAt || !endsAt) {
     return { error: 'Court, start time, and end time are required' }
+  }
+
+  const startDate = new Date(startsAt)
+  const endDate = new Date(endsAt)
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return { error: 'Invalid date format' }
+  }
+  if (endDate <= startDate) {
+    return { error: 'End time must be after start time' }
+  }
+
+  if (bookingMode && !['full_court', 'open_play'].includes(bookingMode)) {
+    return { error: 'Invalid booking mode' }
   }
 
   if (!userId && !guestName) {

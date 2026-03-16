@@ -75,7 +75,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
     { href: '/learn-pickleball', label: t('learn') },
     { href: '/events', label: t('events') },
     { href: '/contact', label: t('contact') },
-    { href: '/pricing', label: tBilling('pricingNav') },
+    { href: '/#membership-plans', label: tBilling('pricingNav') },
   ]
 
   return (
@@ -119,7 +119,20 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={close}
+                  onClick={(e) => {
+                    close()
+                    if (link.href.includes('#')) {
+                      const hash = link.href.split('#')[1]
+                      const el = document.getElementById(hash)
+                      if (el) {
+                        e.preventDefault()
+                        setTimeout(() => {
+                          el.scrollIntoView({ behavior: 'smooth' })
+                          window.history.replaceState(null, '', `#${hash}`)
+                        }, 200)
+                      }
+                    }
+                  }}
                   className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                 >
                   {link.label}
