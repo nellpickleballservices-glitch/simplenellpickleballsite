@@ -334,6 +334,7 @@ export async function getCourtAvailability(
         id: court.id,
         location_id: court.location_id,
         name: court.name,
+        address: court.address ?? null,
         status: court.status,
         lat: court.lat,
         lng: court.lng,

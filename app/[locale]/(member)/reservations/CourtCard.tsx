@@ -62,15 +62,10 @@ export default function CourtCard({
 
   const level = getAvailabilityLevel(availabilitySummary)
 
-  // Google Maps thumbnail
-  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  // Directions link (opens native maps / Google Maps)
   const lat = court.lat
   const lng = court.lng
   const hasCoords = lat !== null && lng !== null
-
-  const mapThumbnailUrl = hasCoords && mapsApiKey
-    ? `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=16&size=400x200&markers=color:green|${lat},${lng}&key=${mapsApiKey}`
-    : null
 
   const directionsUrl = hasCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
@@ -99,36 +94,18 @@ export default function CourtCard({
     <div
       className={`bg-[#1E293B] rounded-xl shadow-lg border-l-4 ${borderColors[level]} overflow-hidden`}
     >
-      {/* Google Maps Thumbnail */}
-      {mapThumbnailUrl ? (
-        <a
-          href={directionsUrl ?? '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block"
-        >
-          <img
-            src={mapThumbnailUrl}
-            alt={`${court.name} location`}
-            className="w-full h-40 object-cover hover:opacity-90 transition-opacity"
-          />
-        </a>
+      {/* Court header image */}
+      {location?.hero_image_url ? (
+        <img
+          src={location.hero_image_url}
+          alt={`${court.name} location`}
+          className="w-full h-40 object-cover"
+        />
       ) : (
         <div className="w-full h-40 bg-[#334155] flex items-center justify-center">
-          {directionsUrl ? (
-            <a
-              href={directionsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#38BDF8] hover:text-[#A3FF12] transition-colors text-sm"
-            >
-              {t('getDirections')}
-            </a>
-          ) : (
-            <span className="text-gray-500 font-bebas-neue text-2xl tracking-wider">
-              {court.name}
-            </span>
-          )}
+          <span className="text-gray-500 font-bebas-neue text-2xl tracking-wider">
+            {court.name}
+          </span>
         </div>
       )}
 
@@ -139,9 +116,9 @@ export default function CourtCard({
             <h2 className="text-xl font-bebas-neue text-white tracking-wide">
               {court.name}
             </h2>
-            {location?.address && (
+            {(court.address || location?.address) && (
               <p className="text-gray-400 text-xs mt-0.5">
-                {location.address}
+                {court.address ?? location?.address}
               </p>
             )}
           </div>
@@ -174,6 +151,21 @@ export default function CourtCard({
           onAvailabilityChange={handleAvailabilityChange}
           onPriceChange={handlePriceChange}
         />
+
+        {/* Directions link */}
+        {directionsUrl && (
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex items-center gap-1.5 text-[#38BDF8] hover:text-[#A3FF12] transition-colors text-sm font-semibold"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+              <path fillRule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.274 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clipRule="evenodd" />
+            </svg>
+            {t('howToGetThere')}
+          </a>
+        )}
       </div>
     </div>
   )

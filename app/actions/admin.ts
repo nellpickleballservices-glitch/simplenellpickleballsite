@@ -3,7 +3,7 @@
 export { requireAdmin } from './admin/auth'
 export { getAdminStatsAction } from './admin/stats'
 export { getEventsAction, createEventAction, updateEventAction, deleteEventAction } from './admin/events'
-export { getCourtsAction, addCourtAction, getCourtConfigAction, updateCourtConfigAction, setMaintenanceAction, clearMaintenanceAction } from './admin/courts'
+export { getCourtsAction, addCourtAction, getCourtConfigAction, updateCourtConfigAction, setMaintenanceAction, clearMaintenanceAction, updateCourtAddressAction } from './admin/courts'
 export type { CourtWithLocation, CourtConfigRow } from './admin/courts'
 export { searchUsersAction, getUserDetailsAction, disableUserAction, enableUserAction, triggerPasswordResetAction, updateUserCountryAction } from './admin/users'
 export { getAllReservationsAction, adminCancelReservationAction, adminCreateReservationAction, markCashPaidAction, searchUsersForReservationAction, getSessionPricePreviewAction } from './admin/reservations'

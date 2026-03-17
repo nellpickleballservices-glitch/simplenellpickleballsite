@@ -93,7 +93,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
 
   // Focus input on mount
   useEffect(() => {
-    inputRef.current?.focus()
+    inputRef.current?.focus({ preventScroll: true })
   }, [])
 
   // ---------------------------------------------------------------------------
@@ -230,7 +230,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
   // Render
   // ---------------------------------------------------------------------------
   const panelClasses = isMobile
-    ? 'fixed inset-0 z-50 flex flex-col bg-white'
+    ? 'fixed inset-0 z-50 flex flex-col bg-white pb-[env(safe-area-inset-bottom)]'
     : 'fixed right-6 bottom-24 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl'
 
   return (

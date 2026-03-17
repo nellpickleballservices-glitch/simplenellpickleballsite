@@ -78,12 +78,16 @@ export async function handleCheckoutCompleted(
   )
 
   if (error) {
+    console.error('[handleCheckoutCompleted] Upsert failed:', JSON.stringify({ code: error.code, message: error.message, details: error.details, hint: error.hint }))
+    console.error('[handleCheckoutCompleted] Attempted data:', JSON.stringify({ user_id: userId, plan_type: planType, stripe_subscription_id: subscriptionId, stripe_customer_id: customerId }))
     throw new Error(`Failed to upsert membership: ${error.message}`)
   }
 }
 
 /**
  * customer.subscription.updated — reflects plan change and status change.
+ * If the membership row doesn't exist yet (race with checkout.session.completed),
+ * silently skip — the checkout handler will create it.
  */
 export async function handleSubscriptionUpdated(
   subscription: Stripe.Subscription,
@@ -94,6 +98,19 @@ export async function handleSubscriptionUpdated(
   const planType = determinePlanType(priceId)
   const status = mapStripeStatus(subscription.status)
   const periodEnd = new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
+
+  // Check if membership row exists yet (may race with checkout.session.completed)
+  const { data: existing } = await supabase
+    .from('memberships')
+    .select('id')
+    .eq('stripe_customer_id', customerId)
+    .maybeSingle()
+
+  if (!existing) {
+    // Row not created yet — checkout handler will handle it
+    console.log(`[subscription.updated] No membership found for customer ${customerId}, skipping (checkout handler will create it)`)
+    return
+  }
 
   const { error } = await supabase
     .from('memberships')
@@ -132,6 +149,7 @@ export async function handleSubscriptionDeleted(
 
 /**
  * invoice.payment_succeeded — updates current_period_end and sets status active.
+ * On initial subscription, the row may not exist yet — skip gracefully.
  */
 export async function handleInvoicePaymentSucceeded(
   invoice: Stripe.Invoice,
@@ -139,6 +157,18 @@ export async function handleInvoicePaymentSucceeded(
 ): Promise<void> {
   const subscriptionId = getSubscriptionIdFromInvoice(invoice)
   if (!subscriptionId) return // one-time invoices don't apply
+
+  // Check if membership row exists yet (may race with checkout.session.completed)
+  const { data: existing } = await supabase
+    .from('memberships')
+    .select('id')
+    .eq('stripe_subscription_id', subscriptionId)
+    .maybeSingle()
+
+  if (!existing) {
+    console.log(`[invoice.payment_succeeded] No membership found for subscription ${subscriptionId}, skipping`)
+    return
+  }
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   const periodEnd = new Date(subscription.items.data[0].current_period_end * 1000).toISOString()

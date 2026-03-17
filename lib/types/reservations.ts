@@ -94,6 +94,7 @@ export interface Court {
   id: string
   location_id: string
   name: string
+  address: string | null
   status: CourtStatus
   lat: number | null
   lng: number | null

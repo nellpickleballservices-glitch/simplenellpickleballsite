@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     if (insertError.code === '23505') {
       return new Response('Duplicate event', { status: 200 })
     }
+    console.error(`[Stripe Webhook] DB insert error for ${event.type} (${event.id}):`, insertError)
     return new Response('DB error', { status: 500 })
   }
 
@@ -89,8 +90,9 @@ export async function POST(request: Request) {
         // Unhandled event type — acknowledge receipt
         break
     }
-  } catch {
-    // Handler error — return 500 so Stripe will retry
+  } catch (err) {
+    // Handler error — log details and return 500 so Stripe will retry
+    console.error(`[Stripe Webhook] Error handling ${event.type}:`, err)
     return new Response('Handler error', { status: 500 })
   }
 

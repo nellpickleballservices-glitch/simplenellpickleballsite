@@ -58,7 +58,12 @@ export async function createPortalSessionAction() {
     .single()
 
   if (error || !membership?.stripe_customer_id) {
-    throw new Error('No active membership found')
+    // Manual membership without Stripe — redirect back to dashboard
+    const headersList2 = await headers()
+    const referer2 = headersList2.get('referer') || ''
+    const loc = referer2.includes('/en/') || referer2.includes('/en?') ? 'en' : 'es'
+    const prefix = loc === 'es' ? '' : `/${loc}`
+    redirect(`${prefix}/dashboard`)
   }
 
   const headersList = await headers()

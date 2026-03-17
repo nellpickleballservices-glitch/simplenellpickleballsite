@@ -34,10 +34,25 @@ export default function CheckoutSuccessClient() {
         return
       }
 
-      // Set 30-second timeout
+      // Set 60-second timeout
       timeoutId = setTimeout(() => {
         setStatus('timeout')
-      }, 30_000)
+      }, 60_000)
+
+      // Poll every 3 seconds as fallback (Realtime may lag)
+      const pollId = setInterval(async () => {
+        const { data } = await supabase
+          .from('memberships')
+          .select('status')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .maybeSingle()
+        if (data) {
+          clearTimeout(timeoutId)
+          clearInterval(pollId)
+          setStatus('active')
+        }
+      }, 3_000)
 
       // Subscribe to Realtime for membership changes
       const channel = supabase
@@ -54,6 +69,7 @@ export default function CheckoutSuccessClient() {
             const newRecord = payload.new as { status?: string }
             if (newRecord?.status === 'active') {
               clearTimeout(timeoutId)
+              clearInterval(pollId)
               setStatus('active')
               supabase.removeChannel(channel)
             }
@@ -63,6 +79,7 @@ export default function CheckoutSuccessClient() {
 
       cleanupRef.current = () => {
         clearTimeout(timeoutId)
+        clearInterval(pollId)
         supabase.removeChannel(channel)
       }
     }

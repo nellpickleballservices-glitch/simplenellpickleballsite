@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { getCourtsAction, type CourtWithLocation } from '@/app/actions/admin'
+import { getCourtsAction, updateCourtAddressAction, type CourtWithLocation } from '@/app/actions/admin'
 import { CourtForm } from './CourtForm'
 import { MaintenanceForm } from './MaintenanceForm'
 import { CourtConfigForm } from './CourtConfigForm'
@@ -13,6 +13,9 @@ export default function AdminCourtsPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [maintenanceCourtId, setMaintenanceCourtId] = useState<string | null>(null)
   const [configCourtId, setConfigCourtId] = useState<string | null>(null)
+  const [editingAddressId, setEditingAddressId] = useState<string | null>(null)
+  const [addressDraft, setAddressDraft] = useState('')
+  const [addressSaving, setAddressSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -32,6 +35,21 @@ export default function AdminCourtsPage() {
   useEffect(() => {
     loadCourts()
   }, [loadCourts])
+
+  async function saveAddress(courtId: string) {
+    setAddressSaving(true)
+    try {
+      const result = await updateCourtAddressAction(courtId, addressDraft)
+      if (result.success) {
+        setEditingAddressId(null)
+        loadCourts()
+      }
+    } catch {
+      // ignore
+    } finally {
+      setAddressSaving(false)
+    }
+  }
 
   function getStatusBadge(status: string) {
     switch (status) {
@@ -91,11 +109,53 @@ export default function AdminCourtsPage() {
             <div key={court.id} className="bg-[#1E293B] rounded-lg overflow-hidden">
               <div className="p-4">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1 min-w-0 mr-4">
                     <h3 className="text-offwhite font-semibold">{court.name}</h3>
                     <p className="text-sm text-gray-400">
                       {court.locations?.name}{court.locations?.address ? ` — ${court.locations.address}` : ''}
                     </p>
+                    {/* Editable court address */}
+                    {editingAddressId === court.id ? (
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <input
+                          type="text"
+                          value={addressDraft}
+                          onChange={(e) => setAddressDraft(e.target.value)}
+                          placeholder={t('courtAddressPlaceholder')}
+                          className="flex-1 bg-[#0F172A] border border-gray-700 rounded px-2 py-1 text-offwhite text-sm focus:outline-none focus:border-lime"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') saveAddress(court.id)
+                            if (e.key === 'Escape') setEditingAddressId(null)
+                          }}
+                          autoFocus
+                        />
+                        <button
+                          onClick={() => saveAddress(court.id)}
+                          disabled={addressSaving}
+                          className="text-xs text-lime hover:text-lime/80 font-semibold transition-colors disabled:opacity-50"
+                        >
+                          {addressSaving ? t('saving') : t('save')}
+                        </button>
+                        <button
+                          onClick={() => setEditingAddressId(null)}
+                          className="text-xs text-gray-400 hover:text-offwhite transition-colors"
+                        >
+                          {t('cancel')}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setEditingAddressId(court.id)
+                          setAddressDraft(court.address ?? '')
+                        }}
+                        className="text-xs text-gray-500 hover:text-lime mt-1 transition-colors"
+                      >
+                        {court.address
+                          ? `📍 ${court.address}`
+                          : `+ ${t('courtAddress')}`}
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     {getStatusBadge(court.status)}

@@ -7,6 +7,7 @@ import { resend } from '@/lib/resend'
 export interface CourtWithLocation {
   id: string
   name: string
+  address: string | null
   status: string
   lat: number | null
   lng: number | null
@@ -41,10 +42,10 @@ export async function addCourtAction(
     return { error: 'Location and court name are required' }
   }
 
-  // Get location coordinates to copy to court
+  // Get location data to copy to court
   const { data: location } = await supabaseAdmin
     .from('locations')
-    .select('lat, lng')
+    .select('lat, lng, address')
     .eq('id', locationId)
     .single()
 
@@ -54,6 +55,7 @@ export async function addCourtAction(
     .insert({
       location_id: locationId,
       name: courtName,
+      address: location?.address ?? null,
       status: 'open',
       lat: location?.lat ?? null,
       lng: location?.lng ?? null,
@@ -249,5 +251,20 @@ export async function clearMaintenanceAction(
     .eq('id', courtId)
 
   if (error) throw new Error(error.message)
+  return { success: true }
+}
+
+export async function updateCourtAddressAction(
+  courtId: string,
+  address: string
+): Promise<{ success?: boolean; error?: string }> {
+  await requireAdmin()
+
+  const { error } = await supabaseAdmin
+    .from('courts')
+    .update({ address: address || null })
+    .eq('id', courtId)
+
+  if (error) return { error: error.message }
   return { success: true }
 }
