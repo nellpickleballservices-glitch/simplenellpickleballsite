@@ -40,7 +40,7 @@ export default async function LocationCourtsPage({
   // Fetch user's membership status
   const { data: membership } = await supabase
     .from('memberships')
-    .select('plan_type, status')
+    .select('plan_type, status, location_id')
     .eq('user_id', user.id)
     .in('status', ['active', 'past_due'])
     .order('created_at', { ascending: false })
@@ -49,6 +49,18 @@ export default async function LocationCourtsPage({
 
   const isMember = !!membership && membership.status === 'active'
   const isVip = isMember && membership.plan_type === 'vip'
+
+  // Basic members: enforce home location access
+  if (isMember && !isVip) {
+    if (!membership.location_id) {
+      // Hasn't chosen a home location yet
+      redirect('/reservations/select-location')
+    }
+    if (membership.location_id !== locationId) {
+      // Trying to access a location that isn't their home
+      redirect(`/reservations/${membership.location_id}`)
+    }
+  }
 
   // Get user country for pricing (server-side only, per PRIC-05)
   const { data: profile } = await supabase

@@ -16,6 +16,29 @@ export default async function ReservationsPage() {
     redirect('/login')
   }
 
+  // Check membership for location-based access control
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('plan_type, status, location_id')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .single()
+
+  const isMember = !!membership
+  const isVip = isMember && membership.plan_type === 'vip'
+
+  // Basic members: redirect to their home location or to location selection
+  if (isMember && !isVip) {
+    if (membership.location_id) {
+      // Already has a home location — go straight to their courts
+      redirect(`/reservations/${membership.location_id}`)
+    } else {
+      // Needs to choose a home location first
+      redirect('/reservations/select-location')
+    }
+  }
+
+  // VIP members and non-members see all locations
   const locations = await getLocationsWithCourtCounts()
 
   return (

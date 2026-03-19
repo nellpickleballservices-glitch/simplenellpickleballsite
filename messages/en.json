@@ -93,7 +93,7 @@
     "location": "Bávaro, Dominican Republic",
     "joinButton": "Join the Club",
     "welcome": "Hello, {name}! Welcome to NELL Pickleball Club.",
-    "heroHeadline": "Play. Connect. Dominate.",
+    "heroHeadline": "Playing With Purpose",
     "heroSubheadline": "The Dominican Republic's premier pickleball club — where serious players come to level up.",
     "heroLocationBadge": "Bávaro, Dominican Republic",
     "heroCta": "Join the Club",
@@ -237,6 +237,19 @@
       "or": "or",
       "cashReserved": "Reservation Held",
       "cashInstructions": "Your reservation is held. Please pay at the front desk before your session."
+    },
+    "selectHomeTitle": "Choose Your Home Location",
+    "selectHomeDescription": "As a Basic member, you can play at one location. Select your home location below — this is where you'll be able to reserve courts.",
+    "selectHomeConfirm": "Confirm Home Location",
+    "selectHomeSaving": "Saving...",
+    "selected": "Selected",
+    "selectHomeErrors": {
+      "not_authenticated": "You must be logged in.",
+      "missing_location": "Please select a location.",
+      "no_active_membership": "No active membership found.",
+      "not_basic_plan": "Only Basic members need to set a home location.",
+      "invalid_location": "Invalid location selected.",
+      "unexpected_error": "Something went wrong. Please try again."
     },
     "paidSuccess": "Payment successful! Your reservation is confirmed.",
     "paymentCancelled": "Payment was cancelled. You can still pay from your dashboard.",

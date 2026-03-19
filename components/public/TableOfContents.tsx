@@ -40,8 +40,12 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
+      // Close the menu first, then scroll after a short delay
+      // so the DOM layout settles and scrollIntoView targets correctly
       setMobileOpen(false)
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth' })
+      }, 250)
     }
   }, [])
 
