@@ -19,12 +19,23 @@ export function NavLink({ href, children, className = '' }: NavLinkProps) {
   const hrefPath = href.split('#')[0] || '/'
   const hrefHash = href.includes('#') ? href.split('#')[1] : null
 
-  // Track hash changes for anchor-based active state
   useEffect(() => {
-    const update = () => setHashPart(window.location.hash.replace('#', ''))
-    update()
-    window.addEventListener('hashchange', update)
-    return () => window.removeEventListener('hashchange', update)
+    const readHash = () => setHashPart(window.location.hash.replace('#', ''))
+
+    readHash()
+    window.addEventListener('hashchange', readHash)
+
+    // Re-read hash after any click — catches Next.js client navigation
+    // (e.g. clicking the logo) which doesn't fire hashchange/popstate
+    const onClickRecheck = () => {
+      requestAnimationFrame(readHash)
+    }
+    document.addEventListener('click', onClickRecheck)
+
+    return () => {
+      window.removeEventListener('hashchange', readHash)
+      document.removeEventListener('click', onClickRecheck)
+    }
   }, [])
 
   // For hash links: active only when on the right page AND the hash matches

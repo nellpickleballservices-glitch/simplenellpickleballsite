@@ -15,6 +15,7 @@ export interface Event {
   start_time: string | null
   end_time: string | null
   image_url: string | null
+  price_cents: number | null
   created_at: string
 }
 

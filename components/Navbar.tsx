@@ -6,6 +6,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { MobileNav } from '@/components/public/MobileNav'
 import { NavLink } from '@/components/public/NavLink'
 import { logoutAction } from '@/app/actions/auth'
+import { ScrollProgress } from '@/components/public/ScrollProgress'
 
 export async function Navbar() {
   const t = await getTranslations('Nav')
@@ -27,7 +28,7 @@ export async function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-6 py-3 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-6 py-3 flex flex-wrap items-center justify-between relative">
       {/* Brand */}
       <Link href="/" className="flex items-center">
         <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px] scale-125 origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
@@ -79,6 +80,9 @@ export async function Navbar() {
 
       {/* Mobile nav */}
       <MobileNav user={user} firstName={firstName} isAdmin={isAdmin} />
+
+      {/* Scroll progress bar — bottom edge of navbar */}
+      <ScrollProgress />
     </nav>
   )
 }

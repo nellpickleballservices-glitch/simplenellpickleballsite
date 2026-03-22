@@ -41,11 +41,35 @@ export default async function EventsPage() {
 
   const { data: events } = await supabase
     .from('events')
-    .select('id, title_es, title_en, description_es, description_en, event_date, event_type, start_time, end_time, image_url, created_at')
+    .select('id, title_es, title_en, description_es, description_en, event_date, event_type, start_time, end_time, image_url, price_cents, created_at')
     .gte('event_date', today)
     .order('event_date', { ascending: true })
 
   const upcomingEvents = (events ?? []) as Event[]
+
+  // Determine tourist surcharge for the current user
+  const { data: { user } } = await supabase.auth.getUser()
+  let touristSurchargePercent = 0
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('country')
+      .eq('id', user.id)
+      .single()
+
+    const isUserTourist = profile?.country !== 'DO'
+
+    if (isUserTourist) {
+      const { data: config } = await supabase
+        .from('app_config')
+        .select('value')
+        .eq('key', 'tourist_surcharge_pct')
+        .single()
+
+      touristSurchargePercent = config?.value ?? 25
+    }
+  }
 
   return (
     <main className="min-h-screen bg-midnight">
@@ -99,7 +123,7 @@ export default async function EventsPage() {
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               {upcomingEvents.map((event) => (
-                <EventCard key={event.id} event={event} locale={locale} />
+                <EventCard key={event.id} event={event} locale={locale} touristSurchargePercent={touristSurchargePercent} />
               ))}
             </StaggerChildren>
           )}

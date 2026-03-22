@@ -39,6 +39,9 @@ export async function createEventAction(formData: FormData): Promise<{ success: 
     throw new Error('Invalid event type')
   }
 
+  const priceRaw = formData.get('price_cents') as string | null
+  const price_cents = priceRaw && priceRaw.trim() !== '' ? parseInt(priceRaw, 10) : null
+
   const { error } = await supabaseAdmin.from('events').insert({
     title_es,
     title_en,
@@ -50,6 +53,7 @@ export async function createEventAction(formData: FormData): Promise<{ success: 
     end_time: (formData.get('end_time') as string) || null,
     image_url: (formData.get('image_url') as string) || null,
     location_id: (formData.get('location_id') as string) || null,
+    price_cents,
   })
 
   if (error) throw new Error(error.message)
@@ -73,6 +77,9 @@ export async function updateEventAction(
     throw new Error('Invalid event type')
   }
 
+  const priceRaw = formData.get('price_cents') as string | null
+  const price_cents = priceRaw && priceRaw.trim() !== '' ? parseInt(priceRaw, 10) : null
+
   const { error } = await supabaseAdmin
     .from('events')
     .update({
@@ -86,6 +93,7 @@ export async function updateEventAction(
       end_time: (formData.get('end_time') as string) || null,
       image_url: (formData.get('image_url') as string) || null,
       location_id: (formData.get('location_id') as string) || null,
+      price_cents,
     })
     .eq('id', eventId)
 

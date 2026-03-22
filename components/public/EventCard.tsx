@@ -6,6 +6,7 @@ import type { Event } from '@/lib/types/admin'
 interface EventCardProps {
   event: Event
   locale: string
+  touristSurchargePercent?: number
 }
 
 const typeBadgeStyles: Record<string, string> = {
@@ -44,7 +45,7 @@ function FallbackIcon({ eventType }: { eventType: string }) {
   )
 }
 
-export function EventCard({ event, locale }: EventCardProps) {
+export function EventCard({ event, locale, touristSurchargePercent = 0 }: EventCardProps) {
   const title = locale === 'en' ? event.title_en : event.title_es
   const description = locale === 'en' ? event.description_en : event.description_es
   const badge = typeBadgeStyles[event.event_type] ?? typeBadgeStyles.social
@@ -88,6 +89,18 @@ export function EventCard({ event, locale }: EventCardProps) {
           <span className={`absolute top-3 right-3 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${badge}`}>
             {label}
           </span>
+
+          {/* Price badge */}
+          {(() => {
+            const base = event.price_cents ?? 0
+            const surcharge = touristSurchargePercent > 0 ? Math.round(base * touristSurchargePercent / 100) : 0
+            const total = base + surcharge
+            return (
+              <span className="absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full bg-midnight/80 backdrop-blur-sm text-offwhite border border-offwhite/10">
+                {total > 0 ? `$${(total / 100).toFixed(2)}` : locale === 'en' ? 'Free' : 'Gratis'}
+              </span>
+            )
+          })()}
         </div>
 
         {/* Content */}

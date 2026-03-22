@@ -1,14 +1,13 @@
 import { getLocale, getTranslations } from 'next-intl/server'
-import { getContentBlocks } from '@/lib/content'
-import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { ValueTimeline } from '@/components/public/ValueTimeline'
 import { GlowButton } from '@/components/effects/GlowButton'
 import { FloatingParticles } from '@/components/effects/FloatingParticles'
 import { SubpageHeroAccents } from '@/components/effects/SubpageHeroAccents'
+import { SectionReveal } from './SectionReveal'
 import type { Metadata } from 'next'
 
-// Value icons as inline SVGs
+// Value icons
 function HeartIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
@@ -80,9 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const locale = await getLocale()
   const t = await getTranslations('Public')
-  const content = await getContentBlocks('about_', locale)
 
   const valueIcons = [
     <HeartIcon key="heart" />,
@@ -93,29 +90,7 @@ export default async function AboutPage() {
     <SparklesIcon key="sparkles" />,
   ]
 
-  const valueTitles =
-    locale === 'en'
-      ? ['Love & Passion', 'Accessibility', 'Discipline', 'Respect', 'Social Commitment', 'Integrity']
-      : ['Amor y Pasion', 'Accesibilidad', 'Disciplina', 'Respeto', 'Compromiso Social', 'Integridad']
-
-  const valueDescriptions =
-    locale === 'en'
-      ? [
-          'We play because we love the game. Passion drives everything we do.',
-          'Pickleball is for everyone. We break down barriers so anyone can play.',
-          'Consistent effort leads to consistent results. We push each other to improve.',
-          'On and off the court, we treat every player with respect and sportsmanship.',
-          'We give back to our community through events, outreach, and inclusion.',
-          'We play fair, communicate honestly, and uphold the spirit of the game.',
-        ]
-      : [
-          'Jugamos porque amamos el juego. La pasion impulsa todo lo que hacemos.',
-          'El pickleball es para todos. Eliminamos barreras para que cualquiera pueda jugar.',
-          'El esfuerzo constante lleva a resultados constantes. Nos empujamos a mejorar.',
-          'Dentro y fuera de la cancha, tratamos a cada jugador con respeto y deportivismo.',
-          'Retribuimos a nuestra comunidad a traves de eventos, alcance e inclusion.',
-          'Jugamos limpio, nos comunicamos con honestidad y mantenemos el espiritu del juego.',
-        ]
+  const valueKeys = ['Love', 'Access', 'Discipline', 'Respect', 'Community', 'Integrity'] as const
 
   const valueImages = [
     '/images/love&passion.png',
@@ -126,99 +101,159 @@ export default async function AboutPage() {
     '/images/integrity.png',
   ]
 
-  const values = valueTitles.map((title, i) => ({
+  const values = valueKeys.map((key, i) => ({
     icon: valueIcons[i],
-    title,
-    description: valueDescriptions[i],
+    title: t(`aboutValue${key}Title`),
+    description: t(`aboutValue${key}Desc`),
     image: valueImages[i],
   }))
 
   return (
-    <main className="min-h-screen bg-midnight">
-      {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center py-32 px-6 text-center overflow-hidden">
+    <main className="min-h-screen bg-midnight overflow-x-hidden">
+      {/* ═══════════════ HERO — full bleed ═══════════════ */}
+      <section className="relative flex flex-col items-center justify-center min-h-[70vh] px-6 text-center overflow-hidden">
+        {/* Bold diagonal slice background */}
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-charcoal via-midnight to-navy"
+          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 85%, 0 100%)' }}
+        />
+        {/* Accent stripe */}
+        <div className="absolute bottom-[12%] left-0 w-full h-px bg-gradient-to-r from-transparent via-lime/30 to-transparent" />
+
         <SubpageHeroAccents />
         <FloatingParticles count={12} />
 
         <HeroEntrance className="relative z-10 flex flex-col items-center">
-          <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
-            {locale === 'en' ? 'About Us' : 'Nosotros'}
+          <h1 className="font-bebas-neue text-[clamp(4rem,12vw,9rem)] leading-[0.85] tracking-widest gradient-text mb-6 inline-block">
+            {t('aboutHeroTitle')}
           </h1>
-          <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2rem)] gradient-text-static tracking-[0.2em] uppercase mb-4 inline-block">
-            NELL Pickleball Club
+          <p className="font-bebas-neue text-[clamp(1.4rem,4vw,2.4rem)] gradient-text-static tracking-[0.25em] uppercase mb-5 inline-block">
+            {t('aboutHeroClub')}
           </p>
-          <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
-            {locale === 'en'
-              ? "The Dominican Republic's premier pickleball destination in Bavaro."
-              : 'El destino de pickleball mas exclusivo de la Republica Dominicana en Bavaro.'}
+          <p className="text-offwhite/60 text-lg sm:text-xl max-w-2xl leading-relaxed">
+            {t('aboutHeroSubtitle')}
           </p>
+
+          {/* Scroll indicator */}
+          <div className="mt-12 animate-bounce">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-lime/60">
+              <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v16.19l6.22-6.22a.75.75 0 111.06 1.06l-7.5 7.5a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 111.06-1.06l6.22 6.22V3a.75.75 0 01.75-.75z" clipRule="evenodd" />
+            </svg>
+          </div>
         </HeroEntrance>
       </section>
 
-      {/* Vision */}
-      {content.about_vision && (
-        <section className="py-20 px-6">
-          <div className="max-w-3xl mx-auto">
-            <ScrollReveal>
-              <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-6 text-center inline-block w-full">
-                {locale === 'en' ? 'Our Vision' : 'Nuestra Vision'}
-              </h2>
-              <div
-                className="text-offwhite/70 text-base sm:text-lg leading-relaxed text-center prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: content.about_vision }}
-              />
-            </ScrollReveal>
+      {/* ═══════════════ VISION — full bleed, left-aligned ═══════════════ */}
+      <SectionReveal direction="left">
+        <section className="relative w-full py-28 sm:py-36 overflow-hidden">
+          {/* Full-width lime accent glow */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute top-1/2 -translate-y-1/2 -left-48 w-[500px] h-[500px] rounded-full bg-lime/[0.05] blur-[150px]" />
+          </div>
+
+          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12 lg:px-20">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-lime/10 border border-lime/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-lime">
+                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                    <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl tracking-widest text-white">
+                  {t('aboutVisionTitle')}
+                </h2>
+              </div>
+
+              <div className="w-20 h-1 rounded-full bg-gradient-to-r from-lime to-electric mb-8" />
+
+              <p className="text-offwhite/70 text-lg sm:text-xl lg:text-2xl leading-relaxed font-light">
+                {t('aboutVisionText')}
+              </p>
+            </div>
           </div>
         </section>
-      )}
+      </SectionReveal>
 
-      {/* Mission */}
-      {content.about_mission && (
-        <section className="py-20 px-6 bg-charcoal/30">
-          <div className="max-w-3xl mx-auto">
-            <ScrollReveal>
-              <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-6 text-center inline-block w-full">
-                {locale === 'en' ? 'Our Mission' : 'Nuestra Mision'}
-              </h2>
-              <div
-                className="text-offwhite/70 text-base sm:text-lg leading-relaxed text-center prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: content.about_mission }}
-              />
-            </ScrollReveal>
+      {/* ═══════════════ MISSION — full bleed, right-aligned ═══════════════ */}
+      <SectionReveal direction="right">
+        <section className="relative w-full py-28 sm:py-36 bg-charcoal/20 overflow-hidden">
+          {/* Full-width turquoise accent glow */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute top-1/2 -translate-y-1/2 -right-48 w-[500px] h-[500px] rounded-full bg-turquoise/[0.05] blur-[150px]" />
+          </div>
+          {/* Bold right border stripe */}
+          <div className="absolute right-0 top-[15%] bottom-[15%] w-1 bg-gradient-to-b from-turquoise/0 via-turquoise to-turquoise/0" />
+
+          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12 lg:px-20">
+            <div className="max-w-3xl ml-auto text-right">
+              <div className="flex items-center justify-end gap-4 mb-8">
+                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl tracking-widest text-white">
+                  {t('aboutMissionTitle')}
+                </h2>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-turquoise/10 border border-turquoise/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-turquoise">
+                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM8.547 4.505a8.25 8.25 0 1011.672 8.214l-.46-.46a2.252 2.252 0 01-.422-.586l-1.08-2.16a.414.414 0 00-.663-.107.827.827 0 01-.812.21l-1.273-.363a.89.89 0 00-.738.135l-.357.239a.89.89 0 01-1.093-.058l-.88-.733a.851.851 0 00-.894-.128l-1.665.665a.848.848 0 01-.762-.072l-.88-.587A.847.847 0 008.547 4.505z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="w-20 h-1 rounded-full bg-gradient-to-l from-turquoise to-turquoise/40 mb-8 ml-auto" />
+
+              <p className="text-offwhite/70 text-lg sm:text-xl lg:text-2xl leading-relaxed font-light">
+                {t('aboutMissionText')}
+              </p>
+            </div>
           </div>
         </section>
-      )}
+      </SectionReveal>
 
-      {/* Values */}
-      <section className="py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <ScrollReveal>
-            <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-16 text-center inline-block w-full">
-              {locale === 'en' ? 'Our Values' : 'Nuestros Valores'}
-            </h2>
-          </ScrollReveal>
-          <ValueTimeline values={values} />
-        </div>
-      </section>
+      {/* ═══════════════ VALUES — full bleed ═══════════════ */}
+      <SectionReveal direction="up">
+        <section className="relative w-full py-28 sm:py-36 overflow-hidden">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-sunset/[0.03] blur-[150px]" />
+          </div>
 
-      {/* CTA */}
-      <section className="py-20 px-6 bg-charcoal/30">
-        <ScrollReveal>
-          <div className="max-w-2xl mx-auto text-center flex flex-col items-center">
-            <h2 className="font-bebas-neue text-4xl sm:text-5xl gradient-text tracking-widest mb-6 inline-block">
-              {locale === 'en' ? 'Ready to Join?' : 'Listo para Unirte?'}
+          <div className="max-w-5xl mx-auto px-6">
+            <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-20 text-center inline-block w-full">
+              {t('aboutValuesTitle')}
             </h2>
-            <p className="text-offwhite/70 text-base sm:text-lg mb-8">
-              {locale === 'en'
-                ? 'Explore our membership plans and start playing today.'
-                : 'Explora nuestros planes de membresia y empieza a jugar hoy.'}
+            <ValueTimeline values={values} />
+          </div>
+        </section>
+      </SectionReveal>
+
+      {/* ═══════════════ CTA — full bleed with bold diagonal ═══════════════ */}
+      <SectionReveal direction="up">
+        <section className="relative w-full py-32 sm:py-40 overflow-hidden">
+          {/* Dramatic angled background */}
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal/60 to-midnight"
+            style={{ clipPath: 'polygon(0 12%, 100% 0, 100% 100%, 0 100%)' }}
+          />
+          {/* Top accent line following the diagonal */}
+          <div
+            className="absolute top-[11%] left-0 w-full h-px"
+            style={{
+              background: 'linear-gradient(90deg, transparent, rgba(163,255,18,0.4), transparent)',
+              transform: 'rotate(-2deg)',
+            }}
+          />
+
+          <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center px-6 pt-8">
+            <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-8 inline-block">
+              {t('aboutCtaTitle')}
+            </h2>
+            <p className="text-offwhite/60 text-lg sm:text-xl mb-10 max-w-xl">
+              {t('aboutCtaText')}
             </p>
             <GlowButton href="/#membership-plans" variant="lime">
-              {locale === 'en' ? 'View Plans' : 'Ver Planes'}
+              {t('aboutCtaButton')}
             </GlowButton>
           </div>
-        </ScrollReveal>
-      </section>
+        </section>
+      </SectionReveal>
     </main>
   )
 }

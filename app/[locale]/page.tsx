@@ -1,6 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { getContentBlocks } from '@/lib/content'
 import WelcomeBanner from './WelcomeBanner'
 import { MotionProvider } from '@/components/motion/MotionProvider'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
@@ -48,9 +47,6 @@ async function HomePage({ searchParams }: HomePageProps) {
   const locale = await getLocale()
   const params = await searchParams
   const showWelcome = params.welcome === '1'
-
-  // Fetch CMS content
-  const content = await getContentBlocks('home_', locale)
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -139,16 +135,6 @@ async function HomePage({ searchParams }: HomePageProps) {
                 </p>
               </ScrollReveal>
 
-              {/* CMS hero content */}
-              {content.home_hero && (
-                <ScrollReveal delay={0.65}>
-                  <div
-                    className="text-offwhite/80 text-base max-w-lg leading-relaxed mb-10 prose prose-invert drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]"
-                    dangerouslySetInnerHTML={{ __html: content.home_hero }}
-                  />
-                </ScrollReveal>
-              )}
-
               {/* CTA */}
               <ScrollReveal delay={0.75}>
                 <GlowButton href="/signup" variant="lime">
@@ -158,20 +144,6 @@ async function HomePage({ searchParams }: HomePageProps) {
             </div>
           </div>
         </section>
-
-        {/* -- CMS Overview Section -- */}
-        {content.home_overview && (
-          <ScrollReveal>
-            <section className="py-20 sm:py-24 px-6 sm:px-10 bg-charcoal/30">
-              <div className="max-w-3xl mx-auto text-center">
-                <div
-                  className="text-offwhite/70 text-base sm:text-lg leading-relaxed prose prose-invert max-w-none"
-                  dangerouslySetInnerHTML={{ __html: content.home_overview }}
-                />
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
 
         {/* -- FEATURES / WHY NELL -- */}
         <ScrollReveal>

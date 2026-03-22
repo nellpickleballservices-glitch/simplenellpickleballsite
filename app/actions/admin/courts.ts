@@ -254,6 +254,40 @@ export async function clearMaintenanceAction(
   return { success: true }
 }
 
+export async function deleteCourtAction(
+  courtId: string
+): Promise<{ success?: boolean; error?: string }> {
+  await requireAdmin()
+
+  // Check for future non-cancelled reservations on this court
+  const now = new Date().toISOString()
+  const { data: activeReservations } = await supabaseAdmin
+    .from('reservations')
+    .select('id')
+    .eq('court_id', courtId)
+    .gt('starts_at', now)
+    .not('status', 'in', '("cancelled","expired")')
+    .limit(1)
+
+  if (activeReservations && activeReservations.length > 0) {
+    return { error: 'cannot_delete_court_with_reservations' }
+  }
+
+  // Delete related rows first (court_config, court_pricing, session_pricing)
+  await supabaseAdmin.from('court_config').delete().eq('court_id', courtId)
+  await supabaseAdmin.from('court_pricing').delete().eq('court_id', courtId)
+  await supabaseAdmin.from('session_pricing').delete().eq('court_id', courtId)
+
+  // Delete the court
+  const { error } = await supabaseAdmin
+    .from('courts')
+    .delete()
+    .eq('id', courtId)
+
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
 export async function updateCourtAddressAction(
   courtId: string,
   address: string

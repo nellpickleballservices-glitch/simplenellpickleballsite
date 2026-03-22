@@ -1,5 +1,6 @@
 const PROTECTED_PREFIXES = ['/member/', '/admin/', '/dashboard']
 const AUTH_REDIRECT_ROUTES = ['/login', '/signup']
+const COMPLETE_PROFILE_PATH = '/signup/complete-profile'
 const RESERVATION_SEGMENTS = ['/reservations', '/checkout-session']
 
 export function isProtectedRoute(pathname: string): boolean {
@@ -15,7 +16,13 @@ export function isAuthRedirectRoute(pathname: string): boolean {
 }
 
 export function needsAuthCheck(pathname: string): boolean {
-  return isProtectedRoute(pathname) || isAuthRedirectRoute(pathname)
+  return isProtectedRoute(pathname) || isAuthRedirectRoute(pathname) || isCompleteProfileRoute(pathname)
+}
+
+export function isCompleteProfileRoute(pathname: string): boolean {
+  const localePattern = /^\/[a-z]{2}(?=\/|$)/
+  const stripped = pathname.replace(localePattern, '') || '/'
+  return stripped === COMPLETE_PROFILE_PATH
 }
 
 export function isReservationRoute(pathname: string): boolean {

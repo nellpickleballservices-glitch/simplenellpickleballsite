@@ -118,6 +118,37 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
         </div>
       </div>
 
+      {/* Price and Times */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">{t('eventPrice')}</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+            <input
+              name="price_display"
+              type="number"
+              step="0.01"
+              min="0"
+              defaultValue={event?.price_cents != null ? (event.price_cents / 100).toFixed(2) : ''}
+              placeholder={t('eventPricePlaceholder')}
+              className="w-full bg-[#0F172A] border border-gray-700 rounded-lg pl-7 pr-3 py-2 text-offwhite focus:border-lime focus:outline-none"
+              onChange={(e) => {
+                const hidden = e.target.form?.querySelector<HTMLInputElement>('input[name="price_cents"]')
+                if (hidden) {
+                  const val = parseFloat(e.target.value)
+                  hidden.value = isNaN(val) ? '' : Math.round(val * 100).toString()
+                }
+              }}
+            />
+            <input
+              type="hidden"
+              name="price_cents"
+              defaultValue={event?.price_cents != null ? event.price_cents.toString() : ''}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Times */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

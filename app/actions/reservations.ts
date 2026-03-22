@@ -58,6 +58,19 @@ export async function createReservationAction(
     return { error: 'pending_payment_block' }
   }
 
+  // 3b. Active reservation block — prevent booking while a session is in progress or upcoming
+  const { data: activeReservations } = await supabase
+    .from('reservations')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('status', 'confirmed')
+    .gt('ends_at', new Date().toISOString())
+    .limit(1)
+
+  if (activeReservations && activeReservations.length > 0) {
+    return { error: 'active_reservation_block' }
+  }
+
   // 4. Membership check
   const { data: membership } = await supabase
     .from('memberships')

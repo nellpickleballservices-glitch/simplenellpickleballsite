@@ -145,6 +145,7 @@ export default function AdminEventsPage() {
                     <th className="pb-3 pr-4">{t('eventTitle')}</th>
                     <th className="pb-3 pr-4">{t('eventType')}</th>
                     <th className="pb-3 pr-4">{t('eventDate')}</th>
+                    <th className="pb-3 pr-4">{t('eventPrice')}</th>
                     <th className="pb-3 pr-4">{t('location')}</th>
                     <th className="pb-3 text-right"></th>
                   </tr>
@@ -169,6 +170,12 @@ export default function AdminEventsPage() {
                       </td>
                       <td className="py-3 pr-4 text-gray-300">
                         {new Date(event.event_date).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 pr-4 text-gray-300">
+                        {event.price_cents != null
+                          ? `$${(event.price_cents / 100).toFixed(2)}`
+                          : <span className="text-lime text-xs">{t('free')}</span>
+                        }
                       </td>
                       <td className="py-3 pr-4 text-gray-400">
                         {(event as Event & { locations?: { name: string } | null }).locations?.name ?? '-'}

@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { getCourtsAction, updateCourtAddressAction, type CourtWithLocation } from '@/app/actions/admin'
+import { getCourtsAction, updateCourtAddressAction, deleteCourtAction, type CourtWithLocation } from '@/app/actions/admin'
 import { CourtForm } from './CourtForm'
 import { MaintenanceForm } from './MaintenanceForm'
 import { CourtConfigForm } from './CourtConfigForm'
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
 
 export default function AdminCourtsPage() {
   const t = useTranslations('Admin')
@@ -16,6 +17,9 @@ export default function AdminCourtsPage() {
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null)
   const [addressDraft, setAddressDraft] = useState('')
   const [addressSaving, setAddressSaving] = useState(false)
+  const [deleteCourtId, setDeleteCourtId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -48,6 +52,25 @@ export default function AdminCourtsPage() {
       // ignore
     } finally {
       setAddressSaving(false)
+    }
+  }
+
+  async function handleDeleteCourt() {
+    if (!deleteCourtId) return
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      const result = await deleteCourtAction(deleteCourtId)
+      if (result.error) {
+        setDeleteError(result.error)
+      } else {
+        setDeleteCourtId(null)
+        loadCourts()
+      }
+    } catch {
+      setDeleteError('Failed to delete court')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -177,6 +200,15 @@ export default function AdminCourtsPage() {
                     >
                       {t('maintenanceMode')}
                     </button>
+                    <button
+                      onClick={() => {
+                        setDeleteError(null)
+                        setDeleteCourtId(court.id)
+                      }}
+                      className="text-sm text-red-400/70 hover:text-red-400 transition-colors"
+                    >
+                      {t('delete')}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -202,6 +234,19 @@ export default function AdminCourtsPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteCourtId !== null}
+        onClose={() => { setDeleteCourtId(null); setDeleteError(null) }}
+        onConfirm={handleDeleteCourt}
+        title={t('confirmDeleteCourt')}
+        message={deleteError === 'cannot_delete_court_with_reservations'
+          ? t('cannotDeleteCourtWithReservations')
+          : t('confirmDeleteCourtMessage')}
+        confirmLabel={deleteError ? t('cancel') : t('confirm')}
+        destructive={!deleteError}
+        loading={deleting}
+      />
     </div>
   )
 }

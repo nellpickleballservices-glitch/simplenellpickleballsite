@@ -7,6 +7,7 @@ import {
   isProtectedRoute,
   isAuthRedirectRoute,
   isReservationRoute,
+  isCompleteProfileRoute,
 } from '@/lib/middleware/route-helpers'
 import {
   setMembershipCookie,
@@ -83,6 +84,22 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // INCOMPLETE PROFILE: OAuth users without a country must complete their profile.
+  // Skip this check if they're already on the complete-profile page.
+  if (user && !isCompleteProfileRoute(pathname)) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('country')
+      .eq('id', user.id)
+      .single()
+
+    if (profile && profile.country === null) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/signup/complete-profile'
+      return NextResponse.redirect(url)
+    }
+  }
+
   // LOCKED DECISION (CONTEXT.md): Reservation routes are open to ALL authenticated users.
   // Non-members pay per session. Skip membership gate for /reservations and /checkout-session.
 
@@ -134,6 +151,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|ogg)$).*)',
+    '/((?!api|auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|ogg)$).*)',
   ],
 }
