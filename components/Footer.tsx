@@ -42,7 +42,7 @@ export async function Footer() {
             <p className="font-bungee text-3xl text-lime tracking-widest">
               NELL
             </p>
-            <p className="text-offwhite/70 text-sm mt-1">Pickleball Club</p>
+            <p className="text-white text-sm mt-1">Pickleball Club</p>
             <a
               href="mailto:nellpickleball@gmail.com"
               className="text-turquoise text-sm mt-3 block hover:text-lime transition-colors"
@@ -75,7 +75,7 @@ export async function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-offwhite/70 hover:text-lime transition-colors"
+                    className="text-sm text-white hover:text-lime transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -124,7 +124,7 @@ export async function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-charcoal mt-10 pt-6 text-center">
-          <p className="text-xs text-offwhite/50">
+          <p className="text-xs text-white/80">
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
         </div>

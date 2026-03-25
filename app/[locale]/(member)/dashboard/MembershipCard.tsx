@@ -65,18 +65,18 @@ export default function MembershipCard({ membership, userName }: MembershipProps
       {/* Plan and status */}
       <div className="space-y-3 mb-6">
         <div className="flex justify-between items-center">
-          <span className="text-gray-400 text-sm">{t('planLabel')}</span>
+          <span className="text-white/90 text-sm">{t('planLabel')}</span>
           <span className="text-white font-medium">{planName}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-gray-400 text-sm">{t('statusLabel')}</span>
+          <span className="text-white/90 text-sm">{t('statusLabel')}</span>
           <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border ${badgeClass}`}>
             {statusLabels[membership.status] || membership.status}
           </span>
         </div>
         {membership.status !== 'cancelled' && (
           <div className="flex justify-between items-center">
-            <span className="text-gray-400 text-sm">{t('renewalLabel')}</span>
+            <span className="text-white/90 text-sm">{t('renewalLabel')}</span>
             <span className="text-white text-sm">{renewalDate}</span>
           </div>
         )}

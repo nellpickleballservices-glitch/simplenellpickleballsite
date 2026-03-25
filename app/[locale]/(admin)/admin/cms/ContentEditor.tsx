@@ -39,7 +39,7 @@ export function ContentEditor({ content, onChange }: ContentEditorProps) {
       className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
         isActive
           ? 'text-lime bg-lime/10'
-          : 'text-gray-400 hover:text-offwhite'
+          : 'text-white/90 hover:text-offwhite'
       }`}
     >
       {label}

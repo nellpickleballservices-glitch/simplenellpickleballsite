@@ -36,7 +36,7 @@ export function PricingCards({ user, membership, showCancelledMessage }: Pricing
       {/* Cancelled checkout banner */}
       {showCancelledMessage && (
         <div className="mb-8 border border-lime/40 bg-lime/5 rounded-xl px-6 py-4 text-center">
-          <p className="text-offwhite/90 text-sm">{t('checkoutCancelledMessage')}</p>
+          <p className="text-white text-sm">{t('checkoutCancelledMessage')}</p>
         </div>
       )}
 
@@ -68,12 +68,12 @@ export function PricingCards({ user, membership, showCancelledMessage }: Pricing
 
           <div className="flex items-baseline gap-1 mb-6">
             <span className="font-bebas-neue text-5xl text-lime">{t('vipPrice')}</span>
-            <span className="text-offwhite/50 text-sm">{t('vipPeriod')}</span>
+            <span className="text-white/80 text-sm">{t('vipPeriod')}</span>
           </div>
 
           <ul className="space-y-3 mb-8 flex-1">
             {(['vipFeature1', 'vipFeature2', 'vipFeature3', 'vipFeature4'] as const).map((key) => (
-              <li key={key} className="flex items-center gap-3 text-offwhite/80 text-sm">
+              <li key={key} className="flex items-center gap-3 text-white text-sm">
                 <span className="text-lime">&#10003;</span>
                 {t(key)}
               </li>
@@ -114,12 +114,12 @@ export function PricingCards({ user, membership, showCancelledMessage }: Pricing
 
           <div className="flex items-baseline gap-1 mb-6">
             <span className="font-bebas-neue text-5xl text-lime">{t('basicPrice')}</span>
-            <span className="text-offwhite/50 text-sm">{t('basicPeriod')}</span>
+            <span className="text-white/80 text-sm">{t('basicPeriod')}</span>
           </div>
 
           <ul className="space-y-3 mb-8 flex-1">
             {(['basicFeature1', 'basicFeature2', 'basicFeature3', 'basicFeature4'] as const).map((key) => (
-              <li key={key} className="flex items-center gap-3 text-offwhite/80 text-sm">
+              <li key={key} className="flex items-center gap-3 text-white text-sm">
                 <span className="text-lime">&#10003;</span>
                 {t(key)}
               </li>

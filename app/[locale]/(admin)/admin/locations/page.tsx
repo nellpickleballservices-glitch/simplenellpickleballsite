@@ -76,10 +76,10 @@ export default function AdminLocationsPage() {
       )}
 
       {loading ? (
-        <p className="text-gray-400">{t('loading')}</p>
+        <p className="text-white/90">{t('loading')}</p>
       ) : locations.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-400">{t('noLocationsYet')}</p>
+          <p className="text-white/90">{t('noLocationsYet')}</p>
         </div>
       ) : (
         <div className="space-y-4 mt-4">
@@ -104,7 +104,7 @@ export default function AdminLocationsPage() {
                   <div>
                     <h3 className="text-offwhite font-semibold">{loc.name}</h3>
                     {loc.address && (
-                      <p className="text-sm text-gray-400 mt-0.5">{loc.address}</p>
+                      <p className="text-sm text-white/90 mt-0.5">{loc.address}</p>
                     )}
                     {loc.description && (
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{loc.description}</p>
@@ -117,7 +117,7 @@ export default function AdminLocationsPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setEditingId(editingId === loc.id ? null : loc.id)}
-                      className="text-sm text-gray-400 hover:text-lime transition-colors"
+                      className="text-sm text-white/90 hover:text-lime transition-colors"
                     >
                       {t('edit')}
                     </button>
@@ -129,7 +129,7 @@ export default function AdminLocationsPage() {
                         }
                         setDeleteTarget({ id: loc.id, courtCount: loc.courtCount })
                       }}
-                      className="text-sm text-gray-400 hover:text-red-400 transition-colors"
+                      className="text-sm text-white/90 hover:text-red-400 transition-colors"
                     >
                       {t('delete')}
                     </button>
@@ -195,7 +195,7 @@ function EditLocationForm({
     <form action={handleSubmit} className="border-t border-gray-700 p-4 space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('locationName')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('locationName')}</label>
           <input
             name="name"
             defaultValue={location.name}
@@ -204,7 +204,7 @@ function EditLocationForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('address')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('address')}</label>
           <input
             name="address"
             defaultValue={location.address ?? ''}
@@ -217,7 +217,7 @@ function EditLocationForm({
       <input type="hidden" name="lng" value={location.lng ?? ''} />
 
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('heroImageUrl')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('heroImageUrl')}</label>
         <input
           name="heroImageUrl"
           type="url"
@@ -228,7 +228,7 @@ function EditLocationForm({
       </div>
 
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('locationDescription')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('locationDescription')}</label>
         <textarea
           name="description"
           defaultValue={location.description ?? ''}
@@ -250,7 +250,7 @@ function EditLocationForm({
         <button
           type="button"
           onClick={onComplete}
-          className="text-gray-400 hover:text-offwhite px-4 py-2 text-sm transition-colors"
+          className="text-white/90 hover:text-offwhite px-4 py-2 text-sm transition-colors"
         >
           {t('cancel')}
         </button>

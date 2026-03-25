@@ -33,7 +33,7 @@ const badgeBgColors: Record<AvailabilityLevel, string> = {
   available: 'bg-green-500/20 text-green-400',
   limited: 'bg-amber-500/20 text-amber-400',
   fully_booked: 'bg-red-500/20 text-red-400',
-  closed: 'bg-gray-500/20 text-gray-400',
+  closed: 'bg-gray-500/20 text-white/90',
 }
 
 const badgeKeys: Record<AvailabilityLevel, string> = {
@@ -117,7 +117,7 @@ export default function CourtCard({
               {court.name}
             </h2>
             {(court.address || location?.address) && (
-              <p className="text-gray-400 text-xs mt-0.5">
+              <p className="text-white/90 text-xs mt-0.5">
                 {court.address ?? location?.address}
               </p>
             )}
@@ -131,7 +131,7 @@ export default function CourtCard({
         </div>
 
         {/* Operating hours & pricing */}
-        <div className="flex items-center gap-3 text-xs text-gray-400 mb-4">
+        <div className="flex items-center gap-3 text-xs text-white/90 mb-4">
           {operatingHours && (
             <span>{t('operatingHours', { open: todayConfig?.open_time, close: todayConfig?.close_time })}</span>
           )}

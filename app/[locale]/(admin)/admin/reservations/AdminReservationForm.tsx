@@ -143,7 +143,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
       {/* User selection */}
       {mode === 'registered' ? (
         <div className="relative">
-          <label className="block text-sm text-gray-400 mb-1">{t('onBehalf')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('onBehalf')}</label>
           <input
             type="text"
             value={selectedUser ? `${selectedUser.first_name ?? ''} ${selectedUser.last_name ?? ''} (${selectedUser.email})` : searchQuery ?? ''}
@@ -194,7 +194,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
         </div>
       ) : (
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('guestName')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('guestName')}</label>
           <input
             name="guestName"
             className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
@@ -228,7 +228,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
 
       {/* Court selection */}
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('court')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('court')}</label>
         <select
           name="courtId"
           required
@@ -250,7 +250,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
       {/* Date and time */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('date')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('date')}</label>
           <input
             name="date"
             type="date"
@@ -261,7 +261,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('timeStart')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('timeStart')}</label>
           <input
             name="timeStart"
             type="time"
@@ -270,7 +270,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('timeEnd')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('timeEnd')}</label>
           <input
             name="timeEnd"
             type="time"
@@ -284,7 +284,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
       {selectedCourtId && selectedDate && (
         <div className="bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2">
           {priceLoading ? (
-            <p className="text-sm text-gray-400">{t('loading')}</p>
+            <p className="text-sm text-white/90">{t('loading')}</p>
           ) : displayPrice ? (
             <p className="text-sm text-offwhite font-medium">
               {t('pricePreview', { price: `$${(displayPrice.totalCents / 100).toFixed(2)}` })}
@@ -300,7 +300,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
       {/* Booking mode */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('bookingMode')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('bookingMode')}</label>
           <select
             name="bookingMode"
             value={bookingMode}
@@ -313,7 +313,7 @@ export function AdminReservationForm({ courts, onSuccess }: AdminReservationForm
         </div>
         {bookingMode === 'open_play' && (
           <div>
-            <label className="block text-sm text-gray-400 mb-1">{t('spotNumber')}</label>
+            <label className="block text-sm text-white/90 mb-1">{t('spotNumber')}</label>
             <select
               name="spotNumber"
               className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"

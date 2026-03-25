@@ -76,7 +76,7 @@ export default function SelectLocationForm({ locations }: SelectLocationFormProp
               </div>
 
               {location.address && (
-                <p className="text-gray-400 text-sm mb-1">{location.address}</p>
+                <p className="text-white/90 text-sm mb-1">{location.address}</p>
               )}
 
               <span className="text-xs text-gray-500">

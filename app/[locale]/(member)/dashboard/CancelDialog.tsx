@@ -43,22 +43,22 @@ export default function CancelDialog({
           <h3 className="text-white font-semibold text-lg mb-2">
             {t('cancelTitle')}
           </h3>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-white/90 text-sm mb-4">
             {t('cancelConfirmation')}
           </p>
 
           {/* Reservation details */}
           <div className="bg-[#0F172A] rounded-lg p-3 mb-4 space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">{t('court')}</span>
+              <span className="text-white/90">{t('court')}</span>
               <span className="text-white">{courtName}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">{t('date')}</span>
+              <span className="text-white/90">{t('date')}</span>
               <span className="text-white">{date}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">{t('time')}</span>
+              <span className="text-white/90">{t('time')}</span>
               <span className="text-white">{time}</span>
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function CancelDialog({
             <button
               type="button"
               onClick={onClose}
-              className="w-full bg-[#334155] text-gray-300 font-semibold py-2.5 rounded-lg hover:bg-[#243352] transition-colors"
+              className="w-full bg-[#334155] text-white font-semibold py-2.5 rounded-lg hover:bg-[#243352] transition-colors"
             >
               {t('cancelNo')}
             </button>

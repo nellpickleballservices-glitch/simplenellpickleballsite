@@ -36,7 +36,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       {/* Bilingual titles */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('eventTitleEs')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('eventTitleEs')}</label>
           <input
             name="title_es"
             type="text"
@@ -46,7 +46,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('eventTitleEn')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('eventTitleEn')}</label>
           <input
             name="title_en"
             type="text"
@@ -60,7 +60,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       {/* Bilingual descriptions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('descriptionEs')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('descriptionEs')}</label>
           <textarea
             name="description_es"
             rows={3}
@@ -69,7 +69,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('descriptionEn')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('descriptionEn')}</label>
           <textarea
             name="description_en"
             rows={3}
@@ -82,7 +82,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       {/* Event type and date */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('eventType')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('eventType')}</label>
           <select
             name="event_type"
             required
@@ -97,7 +97,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           </select>
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('eventDate')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('eventDate')}</label>
           <input
             name="event_date"
             type="date"
@@ -107,7 +107,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('imageUrl')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('imageUrl')}</label>
           <input
             name="image_url"
             type="text"
@@ -121,7 +121,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       {/* Price and Times */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('eventPrice')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('eventPrice')}</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
             <input
@@ -152,7 +152,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
       {/* Times */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('startTime')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('startTime')}</label>
           <input
             name="start_time"
             type="time"
@@ -161,7 +161,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('endTime')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('endTime')}</label>
           <input
             name="end_time"
             type="time"
@@ -177,7 +177,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
           type="button"
           onClick={onCancel}
           disabled={submitting}
-          className="px-4 py-2 text-sm text-offwhite/70 hover:text-offwhite transition-colors"
+          className="px-4 py-2 text-sm text-white hover:text-offwhite transition-colors"
         >
           {t('cancel')}
         </button>

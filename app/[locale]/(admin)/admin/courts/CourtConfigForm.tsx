@@ -134,7 +134,7 @@ export function CourtConfigForm({ courtId }: CourtConfigFormProps) {
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
               activeTab === 'schedule'
                 ? 'bg-lime text-midnight'
-                : 'text-gray-400 hover:text-offwhite'
+                : 'text-white/90 hover:text-offwhite'
             }`}
           >
             {t('scheduleTab')}
@@ -144,7 +144,7 @@ export function CourtConfigForm({ courtId }: CourtConfigFormProps) {
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
               activeTab === 'durations'
                 ? 'bg-lime text-midnight'
-                : 'text-gray-400 hover:text-offwhite'
+                : 'text-white/90 hover:text-offwhite'
             }`}
           >
             {t('durationsTab')}
@@ -162,7 +162,7 @@ export function CourtConfigForm({ courtId }: CourtConfigFormProps) {
         const c = configs[dayType]
         return (
           <div key={dayType} className="space-y-3">
-            <h5 className="text-gray-300 text-sm font-medium">
+            <h5 className="text-white text-sm font-medium">
               {dayType === 'weekday' ? t('weekday') : t('weekend')}
             </h5>
 
@@ -192,7 +192,7 @@ export function CourtConfigForm({ courtId }: CourtConfigFormProps) {
 
                 {/* Full Court Range */}
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">{t('fullCourtHours')}</p>
+                  <p className="text-xs text-white/90 mb-1">{t('fullCourtHours')}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">{t('from')}</label>
@@ -217,7 +217,7 @@ export function CourtConfigForm({ courtId }: CourtConfigFormProps) {
 
                 {/* Open Play Range */}
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">{t('openPlayHours')}</p>
+                  <p className="text-xs text-white/90 mb-1">{t('openPlayHours')}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">{t('from')}</label>
@@ -242,7 +242,7 @@ export function CourtConfigForm({ courtId }: CourtConfigFormProps) {
 
                 {/* Practice Session Range */}
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">{t('practiceSessionHours')}</p>
+                  <p className="text-xs text-white/90 mb-1">{t('practiceSessionHours')}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">{t('from')}</label>

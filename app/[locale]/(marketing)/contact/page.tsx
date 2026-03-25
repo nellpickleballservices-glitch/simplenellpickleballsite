@@ -61,7 +61,7 @@ export default async function ContactPage() {
           <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
             {t('pageTitle')}
           </h1>
-          <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
+          <p className="text-white text-base sm:text-lg max-w-xl leading-relaxed">
             {t('subtitle')}
           </p>
         </HeroEntrance>
@@ -83,7 +83,7 @@ export default async function ContactPage() {
                 <h2 className="font-bebas-neue text-3xl text-offwhite tracking-widest">
                   {t('whatsappCta')}
                 </h2>
-                <p className="text-offwhite/70 text-sm">
+                <p className="text-white text-sm">
                   {t('whatsappDescription')}
                 </p>
 
@@ -119,7 +119,7 @@ export default async function ContactPage() {
                   {t('phoneLabel')}
                 </h3>
                 {whatsappPhone && (
-                  <p className="text-offwhite/70 text-sm">+{whatsappPhone}</p>
+                  <p className="text-white text-sm">+{whatsappPhone}</p>
                 )}
               </div>
             </GlowCard>
@@ -200,7 +200,7 @@ export default async function ContactPage() {
             <h2 className="font-bebas-neue text-3xl gradient-text tracking-widest mb-4 inline-block">
               {t('hoursTitle')}
             </h2>
-            <p className="text-offwhite/70 text-base">
+            <p className="text-white text-base">
               {t('hoursDescription')}
             </p>
           </div>

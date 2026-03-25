@@ -17,7 +17,7 @@ export default function ResetPasswordForm() {
         <p className="text-lime font-semibold text-lg mb-2">
           {t('checkInbox')}
         </p>
-        <p className="text-offwhite/70 text-sm">
+        <p className="text-white text-sm">
           {state.message}
         </p>
         <a
@@ -32,7 +32,7 @@ export default function ResetPasswordForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
-      <p className="text-offwhite/70 text-sm text-center">
+      <p className="text-white text-sm text-center">
         {t('description')}
       </p>
 
@@ -62,7 +62,7 @@ export default function ResetPasswordForm() {
         {isPending ? t('sendingButton') : t('submitButton')}
       </button>
 
-      <a href="/login" className="text-offwhite/60 text-sm text-center hover:underline">
+      <a href="/login" className="text-white/90 text-sm text-center hover:underline">
         {t('backToLogin')}
       </a>
     </form>

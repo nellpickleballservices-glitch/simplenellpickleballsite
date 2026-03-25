@@ -126,7 +126,7 @@ export default function AdminEventsPage() {
                 className={`pb-2 text-sm font-medium transition-colors ${
                   filter === tab
                     ? 'text-lime border-b-2 border-lime'
-                    : 'text-gray-400 hover:text-offwhite'
+                    : 'text-white/90 hover:text-offwhite'
                 }`}
               >
                 {tab === 'upcoming' ? t('upcomingEventsTab') : t('pastEvents')}
@@ -136,11 +136,11 @@ export default function AdminEventsPage() {
 
           {/* Events table */}
           {events.length === 0 ? (
-            <p className="text-gray-400 text-center py-12">{t('noEvents')}</p>
+            <p className="text-white/90 text-center py-12">{t('noEvents')}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="text-gray-400 border-b border-gray-700">
+                <thead className="text-white/90 border-b border-gray-700">
                   <tr>
                     <th className="pb-3 pr-4">{t('eventTitle')}</th>
                     <th className="pb-3 pr-4">{t('eventType')}</th>
@@ -162,22 +162,22 @@ export default function AdminEventsPage() {
                       <td className="py-3 pr-4">
                         <span
                           className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                            TYPE_COLORS[event.event_type] ?? 'bg-gray-700 text-gray-300'
+                            TYPE_COLORS[event.event_type] ?? 'bg-gray-700 text-white'
                           }`}
                         >
                           {t(event.event_type)}
                         </span>
                       </td>
-                      <td className="py-3 pr-4 text-gray-300">
+                      <td className="py-3 pr-4 text-white">
                         {new Date(event.event_date).toLocaleDateString()}
                       </td>
-                      <td className="py-3 pr-4 text-gray-300">
+                      <td className="py-3 pr-4 text-white">
                         {event.price_cents != null
                           ? `$${(event.price_cents / 100).toFixed(2)}`
                           : <span className="text-lime text-xs">{t('free')}</span>
                         }
                       </td>
-                      <td className="py-3 pr-4 text-gray-400">
+                      <td className="py-3 pr-4 text-white/90">
                         {(event as Event & { locations?: { name: string } | null }).locations?.name ?? '-'}
                       </td>
                       <td className="py-3 text-right">

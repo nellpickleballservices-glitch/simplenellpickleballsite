@@ -39,7 +39,7 @@ export function SurchargeEditor({ initialValue }: SurchargeEditorProps) {
   return (
     <div className="bg-midnight/50 border border-gray-700 rounded-lg p-6 mb-8">
       <h2 className="text-lg font-semibold text-offwhite mb-2">{t('touristSurcharge')}</h2>
-      <p className="text-offwhite/50 text-sm mb-4">{t('surchargeDescription')}</p>
+      <p className="text-white/80 text-sm mb-4">{t('surchargeDescription')}</p>
 
       <div className="flex items-center gap-3">
         <input
@@ -51,7 +51,7 @@ export function SurchargeEditor({ initialValue }: SurchargeEditorProps) {
           onChange={(e) => setValue(Number(e.target.value))}
           className="w-24 bg-[#0F172A] border border-gray-600 rounded px-3 py-2 text-offwhite text-center focus:border-lime focus:outline-none"
         />
-        <span className="text-offwhite/70 text-lg">%</span>
+        <span className="text-white text-lg">%</span>
 
         <button
           onClick={handleSave}

@@ -12,7 +12,7 @@ async function UpdatePasswordPage() {
         {/* NELL Logo */}
         <div className="text-center mb-8">
           <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px] mx-auto" />
-          <p className="text-offwhite/60 text-sm mt-3">
+          <p className="text-white/90 text-sm mt-3">
             {tBrand('tagline')}
           </p>
         </div>

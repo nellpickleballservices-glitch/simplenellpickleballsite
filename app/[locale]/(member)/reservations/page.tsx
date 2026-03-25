@@ -47,7 +47,7 @@ export default async function ReservationsPage() {
         <h1 className="font-bebas-neue text-4xl text-white mb-2 tracking-wide">
           {t('pageTitle')}
         </h1>
-        <p className="text-gray-400 mb-6 max-w-2xl">
+        <p className="text-white/90 mb-6 max-w-2xl">
           {t('locationsIntro')}
         </p>
 
@@ -79,15 +79,13 @@ export default async function ReservationsPage() {
                   </span>
                 </div>
                 {/* Step text */}
-                <p className="text-sm text-gray-300 leading-relaxed pt-2">
+                <p className="text-sm text-white leading-relaxed pt-2">
                   {text}
                 </p>
               </div>
             ))}
           </div>
 
-          {/* Connecting line on large screens */}
-          <div className="hidden lg:block absolute top-[6.25rem] left-[4.5rem] right-[4.5rem] h-px bg-gradient-to-r from-lime/20 via-lime/10 to-lime/20 z-0" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -98,7 +96,7 @@ export default async function ReservationsPage() {
 
         {locations.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">{t('noLocations')}</p>
+            <p className="text-white/90 text-lg">{t('noLocations')}</p>
           </div>
         )}
       </div>

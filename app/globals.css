@@ -18,9 +18,9 @@
   --color-navy: #020617;
 
   /* Text Colors */
-  --color-offwhite: #F8FAFC;
-  --color-dim: #CBD5F5;
-  --color-muted: #94A3B8;
+  --color-offwhite: #FFFFFF;
+  --color-dim: #F1F5F9;
+  --color-muted: #CBD5E1;
 
   /* Accent */
   --color-turquoise: #38BDF8;
@@ -48,10 +48,10 @@
 .gradient-text {
   background: linear-gradient(
     135deg,
-    var(--color-lime) 0%,
-    var(--color-electric) 30%,
-    var(--color-turquoise) 60%,
-    var(--color-lime) 100%
+    #FFD600 0%,
+    var(--color-sunset) 40%,
+    #FFD600 70%,
+    var(--color-sunset) 100%
   );
   background-size: 200% 200%;
   -webkit-background-clip: text;
@@ -61,7 +61,7 @@
 }
 
 .gradient-text-static {
-  background: linear-gradient(135deg, var(--color-lime), var(--color-electric));
+  background: linear-gradient(135deg, #FFD600, var(--color-sunset));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -77,10 +77,10 @@
   color: var(--color-offwhite);
 }
 .ProseMirror p {
-  color: var(--color-dim);
+  color: #FFFFFF;
 }
 .ProseMirror li {
-  color: var(--color-dim);
+  color: #FFFFFF;
 }
 .ProseMirror a {
   color: var(--color-turquoise);

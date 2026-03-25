@@ -24,7 +24,7 @@ export default function ProfileForm({
   return (
     <form action={formAction} className="space-y-4">
       <div>
-        <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="firstName" className="block text-sm font-medium text-white mb-1">
           {t('firstName')}
         </label>
         <input
@@ -38,7 +38,7 @@ export default function ProfileForm({
       </div>
 
       <div>
-        <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="lastName" className="block text-sm font-medium text-white mb-1">
           {t('lastName')}
         </label>
         <input
@@ -52,7 +52,7 @@ export default function ProfileForm({
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="phone" className="block text-sm font-medium text-white mb-1">
           {t('phone')}
         </label>
         <input

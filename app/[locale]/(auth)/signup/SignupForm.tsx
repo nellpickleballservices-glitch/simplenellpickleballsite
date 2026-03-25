@@ -107,48 +107,47 @@ export default function SignupForm() {
 
       <div className="flex items-center gap-3">
         <hr className="flex-1 border-offwhite/20" />
-        <span className="text-offwhite/40 text-sm">{t('or')}</span>
+        <span className="text-white/70 text-sm">{t('or')}</span>
         <hr className="flex-1 border-offwhite/20" />
       </div>
 
-    <form action={handleSubmit} className="flex flex-col gap-5">
-      {/* Name row */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 flex flex-col gap-1">
-          <label htmlFor="firstName" className="text-offwhite text-sm font-medium">
-            {t('firstName')}
-          </label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            autoComplete="given-name"
-            required
-            onBlur={(e) => handleNameBlur('firstName', e.target.value, setFirstNameError)}
-            className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
-          />
-          {firstErr && <p className="text-red-400 text-sm mt-1">{firstErr}</p>}
-        </div>
+    <form action={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* First Name */}
+      <div className="flex flex-col gap-1 min-w-0">
+        <label htmlFor="firstName" className="text-offwhite text-sm font-medium">
+          {t('firstName')}
+        </label>
+        <input
+          id="firstName"
+          name="firstName"
+          type="text"
+          autoComplete="given-name"
+          required
+          onBlur={(e) => handleNameBlur('firstName', e.target.value, setFirstNameError)}
+          className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+        />
+        {firstErr && <p className="text-red-400 text-sm mt-1">{firstErr}</p>}
+      </div>
 
-        <div className="flex-1 flex flex-col gap-1">
-          <label htmlFor="lastName" className="text-offwhite text-sm font-medium">
-            {t('lastName')}
-          </label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            autoComplete="family-name"
-            required
-            onBlur={(e) => handleNameBlur('lastName', e.target.value, setLastNameError)}
-            className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
-          />
-          {lastErr && <p className="text-red-400 text-sm mt-1">{lastErr}</p>}
-        </div>
+      {/* Last Name */}
+      <div className="flex flex-col gap-1 min-w-0">
+        <label htmlFor="lastName" className="text-offwhite text-sm font-medium">
+          {t('lastName')}
+        </label>
+        <input
+          id="lastName"
+          name="lastName"
+          type="text"
+          autoComplete="family-name"
+          required
+          onBlur={(e) => handleNameBlur('lastName', e.target.value, setLastNameError)}
+          className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+        />
+        {lastErr && <p className="text-red-400 text-sm mt-1">{lastErr}</p>}
       </div>
 
       {/* Email */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 min-w-0">
         <label htmlFor="email" className="text-offwhite text-sm font-medium">
           {t('email')}
         </label>
@@ -158,12 +157,12 @@ export default function SignupForm() {
           type="email"
           autoComplete="email"
           required
-          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
 
       {/* Phone (optional) */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 min-w-0">
         <label htmlFor="phone" className="text-offwhite text-sm font-medium">
           {t('phone')}
         </label>
@@ -172,23 +171,25 @@ export default function SignupForm() {
           name="phone"
           type="tel"
           autoComplete="tel"
-          className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
+          className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
 
       {/* Country */}
-      <CountrySelect
-        name="country"
-        label={t('country')}
-        locale={locale as 'en' | 'es'}
-        defaultValue="DO"
-      />
-      {state.errors?.country && (
-        <p className="text-red-400 text-sm mt-1">{state.errors.country}</p>
-      )}
+      <div className="lg:col-span-2 min-w-0">
+        <CountrySelect
+          name="country"
+          label={t('country')}
+          locale={locale as 'en' | 'es'}
+          defaultValue="DO"
+        />
+        {state.errors?.country && (
+          <p className="text-red-400 text-sm mt-1">{state.errors.country}</p>
+        )}
+      </div>
 
       {/* Password */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 min-w-0">
         <label htmlFor="password" className="text-offwhite text-sm font-medium">
           {t('password')}
         </label>
@@ -206,7 +207,7 @@ export default function SignupForm() {
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-offwhite/50 hover:text-offwhite transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-offwhite transition-colors"
             tabIndex={-1}
           >
             <EyeIcon open={showPassword} />
@@ -218,7 +219,7 @@ export default function SignupForm() {
       </div>
 
       {/* Confirm password */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 min-w-0">
         <label htmlFor="confirmPassword" className="text-offwhite text-sm font-medium">
           {t('confirmPassword')}
         </label>
@@ -235,7 +236,7 @@ export default function SignupForm() {
           <button
             type="button"
             onClick={() => setShowConfirm((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-offwhite/50 hover:text-offwhite transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-offwhite transition-colors"
             tabIndex={-1}
           >
             <EyeIcon open={showConfirm} />
@@ -249,7 +250,7 @@ export default function SignupForm() {
       </div>
 
       {/* Plan selection — optional */}
-      <div className="flex flex-col gap-3">
+      <div className="lg:col-span-2 flex flex-col gap-3">
         <p className="text-offwhite text-sm font-medium">
           {t('planSelectionTitle')}
         </p>
@@ -267,8 +268,8 @@ export default function SignupForm() {
             <p className="text-offwhite font-bold text-lg">
               {t('planVipName')}
             </p>
-            <p className="text-lime font-bold text-2xl mt-1">$50<span className="text-sm font-normal text-offwhite/70">/mo</span></p>
-            <ul className="mt-2 space-y-1 text-offwhite/80 text-sm">
+            <p className="text-lime font-bold text-2xl mt-1">$50<span className="text-sm font-normal text-white">/mo</span></p>
+            <ul className="mt-2 space-y-1 text-white text-sm">
               <li>{t('planVipFeature1')}</li>
               <li>{t('planVipFeature2')}</li>
               <li>{t('planVipFeature3')}</li>
@@ -288,8 +289,8 @@ export default function SignupForm() {
             <p className="text-offwhite font-bold text-lg">
               {t('planBasicName')}
             </p>
-            <p className="text-lime font-bold text-2xl mt-1">$35<span className="text-sm font-normal text-offwhite/70">/mo</span></p>
-            <ul className="mt-2 space-y-1 text-offwhite/80 text-sm">
+            <p className="text-lime font-bold text-2xl mt-1">$35<span className="text-sm font-normal text-white">/mo</span></p>
+            <ul className="mt-2 space-y-1 text-white text-sm">
               <li>{t('planBasicFeature1')}</li>
               <li>{t('planBasicFeature2')}</li>
               <li>{t('planBasicFeature3')}</li>
@@ -302,19 +303,19 @@ export default function SignupForm() {
 
       {/* Global error message */}
       {state.message && (
-        <p className="text-red-400 text-sm text-center">{state.message}</p>
+        <p className="lg:col-span-2 text-red-400 text-sm text-center">{state.message}</p>
       )}
 
       {/* Submit */}
       <button
         type="submit"
         disabled={isPending}
-        className="bg-lime text-midnight font-bold rounded-full py-3 px-6 hover:scale-105 hover:bg-sunset transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="lg:col-span-2 bg-lime text-midnight font-bold rounded-full py-3 px-6 hover:scale-105 hover:bg-sunset transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isPending ? t('submittingButton') : t('submitButton')}
       </button>
 
-      <p className="text-offwhite/60 text-sm text-center">
+      <p className="lg:col-span-2 text-white/90 text-sm text-center">
         {t('alreadyHaveAccount')}{' '}
         <a href="/login" className="text-turquoise hover:underline">
           {t('loginLink')}

@@ -48,27 +48,32 @@ export default async function EventsPage() {
   const upcomingEvents = (events ?? []) as Event[]
 
   // Determine tourist surcharge for the current user
-  const { data: { user } } = await supabase.auth.getUser()
   let touristSurchargePercent = 0
 
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('country')
-      .eq('id', user.id)
-      .single()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
 
-    const isUserTourist = profile?.country !== 'DO'
-
-    if (isUserTourist) {
-      const { data: config } = await supabase
-        .from('app_config')
-        .select('value')
-        .eq('key', 'tourist_surcharge_pct')
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', user.id)
         .single()
 
-      touristSurchargePercent = config?.value ?? 25
+      const isUserTourist = profile?.country !== 'DO'
+
+      if (isUserTourist) {
+        const { data: config } = await supabase
+          .from('app_config')
+          .select('value')
+          .eq('key', 'tourist_surcharge_pct')
+          .single()
+
+        touristSurchargePercent = config?.value ?? 25
+      }
     }
+  } catch {
+    // Network error reaching Supabase — default to no surcharge
   }
 
   return (
@@ -82,7 +87,7 @@ export default async function EventsPage() {
           <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
             {locale === 'en' ? 'Events' : 'Eventos'}
           </h1>
-          <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
+          <p className="text-white text-base sm:text-lg max-w-xl leading-relaxed">
             {locale === 'en'
               ? 'Tournaments, training sessions, and social events at NELL Pickleball Club.'
               : 'Torneos, sesiones de entrenamiento y eventos sociales en NELL Pickleball Club.'}
@@ -97,14 +102,14 @@ export default async function EventsPage() {
             <ScrollReveal>
               <div className="text-center py-16">
                 <div className="w-16 h-16 mx-auto mb-6 bg-charcoal rounded-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-offwhite/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-white/80">
                     <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <h2 className="font-bebas-neue text-3xl text-offwhite tracking-widest mb-3">
                   {locale === 'en' ? 'No Upcoming Events' : 'No Hay Eventos Proximos'}
                 </h2>
-                <p className="text-offwhite/70 text-base mb-6">
+                <p className="text-white text-base mb-6">
                   {locale === 'en'
                     ? 'Check back soon or contact us to learn about upcoming events.'
                     : 'Vuelve pronto o contactanos para conocer los proximos eventos.'}
@@ -131,7 +136,7 @@ export default async function EventsPage() {
           {/* Bottom CTA */}
           <ScrollReveal delay={0.3}>
             <div className="mt-16 text-center flex flex-col items-center">
-              <p className="text-offwhite/70 text-base mb-6">
+              <p className="text-white text-base mb-6">
                 {locale === 'en'
                   ? 'Join to participate in exclusive member events.'
                   : 'Unete para participar en eventos exclusivos para miembros.'}

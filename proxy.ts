@@ -16,7 +16,7 @@ import {
 
 const intlMiddleware = createMiddleware(routing)
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // PUBLIC ROUTES: Only run i18n middleware, skip Supabase entirely.

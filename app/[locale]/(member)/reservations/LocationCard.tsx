@@ -45,17 +45,17 @@ export default function LocationCard({ location }: LocationCardProps) {
         </h2>
 
         {location.address && (
-          <p className="text-gray-400 text-sm mb-2">{location.address}</p>
+          <p className="text-white/90 text-sm mb-2">{location.address}</p>
         )}
 
         {location.description && (
-          <p className="text-gray-300 text-sm mb-3 line-clamp-2">
+          <p className="text-white text-sm mb-3 line-clamp-2">
             {location.description}
           </p>
         )}
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-white/90">
             {t('courtCount', { count: location.courtCount })}
           </span>
           <span className="text-lime text-sm font-semibold group-hover:translate-x-1 transition-transform">

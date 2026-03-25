@@ -95,7 +95,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
             className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
               active
                 ? 'border-l-4 border-lime text-lime bg-lime/5'
-                : 'border-l-4 border-transparent text-offwhite/70 hover:text-offwhite hover:bg-white/5'
+                : 'border-l-4 border-transparent text-white hover:text-offwhite hover:bg-white/5'
             }`}
           >
             <span className="w-5 h-5 shrink-0">{icons[item.key]}</span>
@@ -138,7 +138,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
           <Link href={`/${locale}/admin`} className="inline-block">
             <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px]" />
           </Link>
-          <p className="text-offwhite/50 text-xs mt-1">Admin Panel</p>
+          <p className="text-white/80 text-xs mt-1">Admin Panel</p>
         </div>
 
         {navContent}

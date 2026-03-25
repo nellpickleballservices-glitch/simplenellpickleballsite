@@ -15,7 +15,7 @@ export default function CompleteProfileForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
-      <p className="text-offwhite/70 text-sm text-center">
+      <p className="text-white text-sm text-center">
         {t('description')}
       </p>
 

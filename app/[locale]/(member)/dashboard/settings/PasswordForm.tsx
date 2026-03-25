@@ -20,7 +20,7 @@ export default function PasswordForm() {
   return (
     <form action={formAction} className="space-y-4">
       <div>
-        <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="currentPassword" className="block text-sm font-medium text-white mb-1">
           {t('currentPassword')}
         </label>
         <input
@@ -33,7 +33,7 @@ export default function PasswordForm() {
       </div>
 
       <div>
-        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="newPassword" className="block text-sm font-medium text-white mb-1">
           {t('newPassword')}
         </label>
         <input
@@ -47,7 +47,7 @@ export default function PasswordForm() {
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-1">
           {t('confirmNewPassword')}
         </label>
         <input

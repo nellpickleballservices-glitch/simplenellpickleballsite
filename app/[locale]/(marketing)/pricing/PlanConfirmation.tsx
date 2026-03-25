@@ -28,16 +28,16 @@ export function PlanConfirmation({ planType, onCancel }: PlanConfirmationProps) 
 
       <div className="space-y-4 mb-8">
         <div className="flex justify-between items-center border-b border-offwhite/10 pb-3">
-          <span className="text-offwhite/60 text-sm">{t('confirmPlan')}</span>
+          <span className="text-white/90 text-sm">{t('confirmPlan')}</span>
           <span className="text-offwhite font-semibold">{planName}</span>
         </div>
         <div className="flex justify-between items-center border-b border-offwhite/10 pb-3">
-          <span className="text-offwhite/60 text-sm">{t('confirmPrice')}</span>
+          <span className="text-white/90 text-sm">{t('confirmPrice')}</span>
           <span className="text-lime font-semibold">{planPrice}</span>
         </div>
       </div>
 
-      <p className="text-offwhite/50 text-xs mb-6">{t('confirmBilling')}</p>
+      <p className="text-white/80 text-xs mb-6">{t('confirmBilling')}</p>
 
       <div className="space-y-3">
         <form action={handleProceed}>
@@ -51,7 +51,7 @@ export function PlanConfirmation({ planType, onCancel }: PlanConfirmationProps) 
 
         <button
           onClick={onCancel}
-          className="w-full text-offwhite/60 hover:text-offwhite text-sm py-2 transition-colors"
+          className="w-full text-white/90 hover:text-offwhite text-sm py-2 transition-colors"
         >
           {t('confirmCancel')}
         </button>

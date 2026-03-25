@@ -150,7 +150,7 @@ export function CountrySelect({
                     <span>
                       {locale === 'es' ? c.nameEs : c.nameEn}
                     </span>
-                    <span className="ml-auto text-offwhite/40 text-xs">
+                    <span className="ml-auto text-white/70 text-xs">
                       {c.code}
                     </span>
                   </button>
@@ -158,7 +158,7 @@ export function CountrySelect({
               )
             })}
             {sorted.length === 0 && (
-              <li className="px-4 py-3 text-offwhite/50 text-sm text-center">
+              <li className="px-4 py-3 text-white/80 text-sm text-center">
                 {locale === 'es' ? 'Sin resultados' : 'No results'}
               </li>
             )}

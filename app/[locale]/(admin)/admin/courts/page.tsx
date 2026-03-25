@@ -125,7 +125,7 @@ export default function AdminCourtsPage() {
       )}
 
       {loading ? (
-        <p className="text-gray-400">{t('loading')}</p>
+        <p className="text-white/90">{t('loading')}</p>
       ) : !error && (
         <div className="space-y-4 mt-4">
           {courts.map((court) => (
@@ -134,7 +134,7 @@ export default function AdminCourtsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0 mr-4">
                     <h3 className="text-offwhite font-semibold">{court.name}</h3>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-white/90">
                       {court.locations?.name}{court.locations?.address ? ` — ${court.locations.address}` : ''}
                     </p>
                     {/* Editable court address */}
@@ -161,7 +161,7 @@ export default function AdminCourtsPage() {
                         </button>
                         <button
                           onClick={() => setEditingAddressId(null)}
-                          className="text-xs text-gray-400 hover:text-offwhite transition-colors"
+                          className="text-xs text-white/90 hover:text-offwhite transition-colors"
                         >
                           {t('cancel')}
                         </button>
@@ -186,7 +186,7 @@ export default function AdminCourtsPage() {
                       onClick={() =>
                         setConfigCourtId(configCourtId === court.id ? null : court.id)
                       }
-                      className="text-sm text-gray-400 hover:text-lime transition-colors"
+                      className="text-sm text-white/90 hover:text-lime transition-colors"
                     >
                       {t('courtSettingsBtn')}
                     </button>
@@ -196,7 +196,7 @@ export default function AdminCourtsPage() {
                           maintenanceCourtId === court.id ? null : court.id
                         )
                       }
-                      className="text-sm text-gray-400 hover:text-offwhite transition-colors"
+                      className="text-sm text-white/90 hover:text-offwhite transition-colors"
                     >
                       {t('maintenanceMode')}
                     </button>

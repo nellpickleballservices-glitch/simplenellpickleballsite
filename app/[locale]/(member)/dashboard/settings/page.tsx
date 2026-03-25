@@ -24,7 +24,7 @@ export default async function SettingsPage() {
     <main className="min-h-screen bg-[#0F172A] py-12 px-4 flex flex-col items-center">
       <div className="w-full max-w-lg">
         {/* Breadcrumb */}
-        <nav className="mb-6 text-sm text-gray-400">
+        <nav className="mb-6 text-sm text-white/90">
           <Link href="/dashboard" className="hover:text-[#BFFF00] transition-colors">
             {t('breadcrumbDashboard')}
           </Link>

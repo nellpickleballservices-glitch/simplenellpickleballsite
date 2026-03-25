@@ -58,7 +58,7 @@ export default function ReservationForm({
         <p className="text-green-400 font-semibold text-sm">
           {t('bookingConfirmed')}
         </p>
-        <p className="text-gray-400 text-xs mt-1">
+        <p className="text-white/90 text-xs mt-1">
           {t('bookingConfirmedSubtext')}
         </p>
       </div>
@@ -80,7 +80,7 @@ export default function ReservationForm({
       {/* VIP guest name input */}
       {isVip && (
         <div>
-          <label className="text-gray-400 text-xs block mb-1">
+          <label className="text-white/90 text-xs block mb-1">
             {t('addGuest')}
           </label>
           <input

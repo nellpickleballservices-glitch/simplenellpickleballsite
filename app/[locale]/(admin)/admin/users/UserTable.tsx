@@ -22,7 +22,7 @@ function StatusBadge({ user, t }: { user: UserWithDetails; t: ReturnType<typeof 
 
   if (!user.membership_status) {
     return (
-      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300">
+      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-white">
         {t('noMembership')}
       </span>
     )
@@ -40,7 +40,7 @@ function StatusBadge({ user, t }: { user: UserWithDetails; t: ReturnType<typeof 
     cancelled: t('membershipCancelled'),
   }
 
-  const style = statusStyles[user.membership_status] ?? 'bg-gray-700 text-gray-300'
+  const style = statusStyles[user.membership_status] ?? 'bg-gray-700 text-white'
   const label = statusLabels[user.membership_status] ?? user.membership_status
 
   return (
@@ -60,19 +60,19 @@ export function UserTable({ users, total, page, onPageChange, onSelectUser }: Us
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-700">
-              <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider py-3 px-4">
+              <th className="text-left text-xs font-medium text-white/90 uppercase tracking-wider py-3 px-4">
                 {t('userName')}
               </th>
-              <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider py-3 px-4">
+              <th className="text-left text-xs font-medium text-white/90 uppercase tracking-wider py-3 px-4">
                 {t('userEmail')}
               </th>
-              <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider py-3 px-4">
+              <th className="text-left text-xs font-medium text-white/90 uppercase tracking-wider py-3 px-4">
                 {t('userPlan')}
               </th>
-              <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider py-3 px-4">
+              <th className="text-left text-xs font-medium text-white/90 uppercase tracking-wider py-3 px-4">
                 {t('userStatus')}
               </th>
-              <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider py-3 px-4">
+              <th className="text-left text-xs font-medium text-white/90 uppercase tracking-wider py-3 px-4">
                 {t('joinedDate')}
               </th>
             </tr>
@@ -80,7 +80,7 @@ export function UserTable({ users, total, page, onPageChange, onSelectUser }: Us
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center text-gray-400 py-8">
+                <td colSpan={5} className="text-center text-white/90 py-8">
                   {t('noResults')}
                 </td>
               </tr>
@@ -94,16 +94,16 @@ export function UserTable({ users, total, page, onPageChange, onSelectUser }: Us
                   <td className="py-3 px-4 text-offwhite text-sm">
                     {user.first_name} {user.last_name}
                   </td>
-                  <td className="py-3 px-4 text-gray-300 text-sm">
+                  <td className="py-3 px-4 text-white text-sm">
                     {user.email}
                   </td>
-                  <td className="py-3 px-4 text-gray-300 text-sm capitalize">
+                  <td className="py-3 px-4 text-white text-sm capitalize">
                     {user.membership_plan ?? '-'}
                   </td>
                   <td className="py-3 px-4">
                     <StatusBadge user={user} t={t} />
                   </td>
-                  <td className="py-3 px-4 text-gray-400 text-sm">
+                  <td className="py-3 px-4 text-white/90 text-sm">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -119,17 +119,17 @@ export function UserTable({ users, total, page, onPageChange, onSelectUser }: Us
           <button
             onClick={() => onPageChange(page - 1)}
             disabled={page <= 1}
-            className="px-3 py-1.5 text-sm text-offwhite/70 hover:text-offwhite disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 text-sm text-white hover:text-offwhite disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             {t('previousPage')}
           </button>
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-white/90">
             {t('pageOf', { current: page, total: totalPages })}
           </span>
           <button
             onClick={() => onPageChange(page + 1)}
             disabled={page >= totalPages}
-            className="px-3 py-1.5 text-sm text-offwhite/70 hover:text-offwhite disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 text-sm text-white hover:text-offwhite disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             {t('nextPage')}
           </button>

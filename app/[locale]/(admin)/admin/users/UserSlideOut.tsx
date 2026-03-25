@@ -111,7 +111,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-offwhite transition-colors"
+          className="absolute top-4 right-4 text-white/90 hover:text-offwhite transition-colors"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -131,7 +131,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
             <>
               {/* Profile Section */}
               <div className="mb-6">
-                <h3 className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
+                <h3 className="text-xs uppercase tracking-wider text-white/90 font-medium mb-3">
                   {t('profile')}
                 </h3>
                 <div className="flex items-center gap-3 mb-4">
@@ -142,18 +142,18 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
                     <p className="text-offwhite font-semibold">
                       {details.first_name} {details.last_name}
                     </p>
-                    <p className="text-gray-400 text-sm">{details.email}</p>
+                    <p className="text-white/90 text-sm">{details.email}</p>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
                   {details.phone && (
                     <div className="flex justify-between">
-                      <span className="text-gray-400">{t('userPhone')}</span>
+                      <span className="text-white/90">{t('userPhone')}</span>
                       <span className="text-offwhite">{details.phone}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-start">
-                    <span className="text-gray-400">{t('userCountry')}</span>
+                    <span className="text-white/90">{t('userCountry')}</span>
                     {editingCountry ? (
                       <div className="w-48">
                         <CountrySelect
@@ -190,7 +190,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
                     )}
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">{t('joinedDate')}</span>
+                    <span className="text-white/90">{t('joinedDate')}</span>
                     <span className="text-offwhite">
                       {new Date(details.created_at).toLocaleDateString()}
                     </span>
@@ -207,17 +207,17 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
 
               {/* Membership Section */}
               <div className="mb-6 pt-4 border-t border-gray-700">
-                <h3 className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
+                <h3 className="text-xs uppercase tracking-wider text-white/90 font-medium mb-3">
                   {t('membership')}
                 </h3>
                 {details.membership ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">{t('userPlan')}</span>
+                      <span className="text-white/90">{t('userPlan')}</span>
                       <span className="text-offwhite capitalize">{details.membership.plan}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">{t('userStatus')}</span>
+                      <span className="text-white/90">{t('userStatus')}</span>
                       <span className={`text-sm ${
                         details.membership.status === 'active' ? 'text-green-400' :
                         details.membership.status === 'past_due' ? 'text-yellow-400' :
@@ -230,7 +230,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
                     </div>
                     {details.membership.current_period_end && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Period End</span>
+                        <span className="text-white/90">Period End</span>
                         <span className="text-offwhite">
                           {new Date(details.membership.current_period_end).toLocaleDateString()}
                         </span>
@@ -244,7 +244,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
 
               {/* Reservation History */}
               <div className="mb-6 pt-4 border-t border-gray-700">
-                <h3 className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
+                <h3 className="text-xs uppercase tracking-wider text-white/90 font-medium mb-3">
                   {t('reservationHistory')}
                 </h3>
                 {details.reservations.length === 0 ? (
@@ -260,7 +260,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
                           <p className="text-offwhite">
                             {new Date(res.starts_at).toLocaleDateString()}
                           </p>
-                          <p className="text-gray-400 text-xs">
+                          <p className="text-white/90 text-xs">
                             {new Date(res.starts_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             {' - '}
                             {new Date(res.ends_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -270,7 +270,7 @@ export function UserSlideOut({ userId, onClose }: UserSlideOutProps) {
                           res.status === 'confirmed' ? 'bg-green-900/50 text-green-300' :
                           res.status === 'cancelled' ? 'bg-red-900/50 text-red-300' :
                           res.status === 'pending_payment' ? 'bg-yellow-900/50 text-yellow-300' :
-                          'bg-gray-700 text-gray-300'
+                          'bg-gray-700 text-white'
                         }`}>
                           {res.status}
                         </span>

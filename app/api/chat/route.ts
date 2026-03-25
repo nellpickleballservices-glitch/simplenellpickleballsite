@@ -157,7 +157,7 @@ ${eventsText}`
       },
     })
   } catch (e) {
-    console.error('[chat] Gemini error:', e)
+    console.error('[chat] Groq API error:', e)
     return NextResponse.json(
       { error: 'api_error', message: 'Nelly is unavailable right now. Please try again later.' },
       { status: 500 },

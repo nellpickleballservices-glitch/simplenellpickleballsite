@@ -133,13 +133,13 @@ export function PricingGrid({ initialData, locale }: PricingGridProps) {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="text-left text-offwhite/70 text-sm font-medium px-3 py-2 border-b border-gray-700">
+              <th className="text-left text-white text-sm font-medium px-3 py-2 border-b border-gray-700">
                 {t('court')}
               </th>
               {DAY_ORDER.map((dayIdx) => (
                 <th
                   key={dayIdx}
-                  className="text-center text-offwhite/70 text-sm font-medium px-3 py-2 border-b border-gray-700"
+                  className="text-center text-white text-sm font-medium px-3 py-2 border-b border-gray-700"
                 >
                   {dayNames[dayIdx]}
                 </th>
@@ -185,7 +185,7 @@ export function PricingGrid({ initialData, locale }: PricingGridProps) {
                               : cell.error
                                 ? 'text-red-400 bg-red-400/10'
                                 : cell.saving
-                                  ? 'text-offwhite/50'
+                                  ? 'text-white/80'
                                   : 'text-offwhite hover:bg-white/10'
                           }`}
                         >

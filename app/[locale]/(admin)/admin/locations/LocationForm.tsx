@@ -21,7 +21,7 @@ export function LocationForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form action={formAction} className="bg-[#1E293B] rounded-lg p-6 space-y-4 mt-4">
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('locationName')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('locationName')}</label>
         <input
           name="name"
           required
@@ -30,7 +30,7 @@ export function LocationForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('address')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('address')}</label>
         <AddressAutocomplete
           placeholder={t('address')}
           className="w-full bg-[#0F172A] border border-gray-700 rounded-lg px-3 py-2 text-offwhite text-sm focus:outline-none focus:border-lime"
@@ -46,7 +46,7 @@ export function LocationForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('heroImageUrl')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('heroImageUrl')}</label>
         <input
           name="heroImageUrl"
           type="url"
@@ -56,7 +56,7 @@ export function LocationForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div>
-        <label className="block text-sm text-gray-400 mb-1">{t('locationDescription')}</label>
+        <label className="block text-sm text-white/90 mb-1">{t('locationDescription')}</label>
         <textarea
           name="description"
           rows={3}

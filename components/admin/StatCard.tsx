@@ -14,7 +14,7 @@ export function StatCard({ title, value, icon }: StatCardProps) {
           {icon}
         </span>
       )}
-      <p className="text-gray-400 text-sm">{title}</p>
+      <p className="text-white/90 text-sm">{title}</p>
       <p className="text-3xl font-bold text-offwhite mt-2">
         {value.toLocaleString()}
       </p>

@@ -49,12 +49,12 @@ export function ConfirmDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-lg font-semibold text-offwhite">{title}</h3>
-        <p className="text-gray-400 mt-2 text-sm">{message}</p>
+        <p className="text-white/90 mt-2 text-sm">{message}</p>
 
         <div className="flex justify-end gap-3 mt-6">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-offwhite/70 hover:text-offwhite transition-colors"
+            className="px-4 py-2 text-sm text-white hover:text-offwhite transition-colors"
             disabled={loading}
           >
             Cancel

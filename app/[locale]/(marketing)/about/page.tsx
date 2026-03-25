@@ -130,7 +130,7 @@ export default async function AboutPage() {
           <p className="font-bebas-neue text-[clamp(1.4rem,4vw,2.4rem)] gradient-text-static tracking-[0.25em] uppercase mb-5 inline-block">
             {t('aboutHeroClub')}
           </p>
-          <p className="text-offwhite/60 text-lg sm:text-xl max-w-2xl leading-relaxed">
+          <p className="text-white/90 text-lg sm:text-xl max-w-2xl leading-relaxed">
             {t('aboutHeroSubtitle')}
           </p>
 
@@ -167,7 +167,7 @@ export default async function AboutPage() {
 
               <div className="w-20 h-1 rounded-full bg-gradient-to-r from-lime to-electric mb-8" />
 
-              <p className="text-offwhite/70 text-lg sm:text-xl lg:text-2xl leading-relaxed font-light">
+              <p className="text-white text-lg sm:text-xl lg:text-2xl leading-relaxed font-light">
                 {t('aboutVisionText')}
               </p>
             </div>
@@ -200,7 +200,7 @@ export default async function AboutPage() {
 
               <div className="w-20 h-1 rounded-full bg-gradient-to-l from-turquoise to-turquoise/40 mb-8 ml-auto" />
 
-              <p className="text-offwhite/70 text-lg sm:text-xl lg:text-2xl leading-relaxed font-light">
+              <p className="text-white text-lg sm:text-xl lg:text-2xl leading-relaxed font-light">
                 {t('aboutMissionText')}
               </p>
             </div>
@@ -245,7 +245,7 @@ export default async function AboutPage() {
             <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-8 inline-block">
               {t('aboutCtaTitle')}
             </h2>
-            <p className="text-offwhite/60 text-lg sm:text-xl mb-10 max-w-xl">
+            <p className="text-white/90 text-lg sm:text-xl mb-10 max-w-xl">
               {t('aboutCtaText')}
             </p>
             <GlowButton href="/#membership-plans" variant="lime">

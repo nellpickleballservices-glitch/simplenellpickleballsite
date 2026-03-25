@@ -70,13 +70,13 @@ export default function CourtDiagram({
             <h3 className="text-white font-bebas-neue text-lg tracking-wide">
               {t('selectTimeSlot')}
             </h3>
-            <p className="text-gray-400 text-xs mt-0.5">
+            <p className="text-white/90 text-xs mt-0.5">
               {formatTime(currentSlot.startTime)} - {formatTime(currentSlot.endTime)}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors text-xl leading-none"
+            className="text-white/90 hover:text-white transition-colors text-xl leading-none"
             aria-label={t('closeModal')}
           >
             &times;
@@ -89,17 +89,17 @@ export default function CourtDiagram({
             <button
               onClick={handlePrevSlot}
               disabled={currentIndex <= 0}
-              className="text-gray-400 hover:text-white disabled:opacity-30 transition-colors text-sm"
+              className="text-white/90 hover:text-white disabled:opacity-30 transition-colors text-sm"
             >
               &larr; Prev
             </button>
-            <span className="text-gray-300 text-xs">
+            <span className="text-white text-xs">
               {currentIndex + 1} / {allSlots.length}
             </span>
             <button
               onClick={handleNextSlot}
               disabled={currentIndex >= allSlots.length - 1}
-              className="text-gray-400 hover:text-white disabled:opacity-30 transition-colors text-sm"
+              className="text-white/90 hover:text-white disabled:opacity-30 transition-colors text-sm"
             >
               Next &rarr;
             </button>

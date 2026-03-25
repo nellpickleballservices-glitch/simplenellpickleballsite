@@ -116,7 +116,7 @@ export default function AdminCmsPage() {
             className={`pb-2 text-sm font-medium transition-colors ${
               activeTab === key
                 ? 'text-lime border-b-2 border-lime'
-                : 'text-gray-400 hover:text-offwhite'
+                : 'text-white/90 hover:text-offwhite'
             }`}
           >
             {t(labelKey)}
@@ -126,7 +126,7 @@ export default function AdminCmsPage() {
 
       {/* Block list */}
       {currentBlocks.length === 0 ? (
-        <p className="text-gray-400 text-center py-12">No content blocks found for this page.</p>
+        <p className="text-white/90 text-center py-12">No content blocks found for this page.</p>
       ) : (
         <div className="space-y-4">
           {currentBlocks.map((block, index) => {
@@ -149,7 +149,7 @@ export default function AdminCmsPage() {
                     <button
                       onClick={() => handleReorder('up', index)}
                       disabled={index === 0}
-                      className="text-xs text-gray-400 hover:text-offwhite disabled:opacity-30 px-2 py-1"
+                      className="text-xs text-white/90 hover:text-offwhite disabled:opacity-30 px-2 py-1"
                       title={t('moveUp')}
                     >
                       {'\u2191'}
@@ -157,7 +157,7 @@ export default function AdminCmsPage() {
                     <button
                       onClick={() => handleReorder('down', index)}
                       disabled={index === currentBlocks.length - 1}
-                      className="text-xs text-gray-400 hover:text-offwhite disabled:opacity-30 px-2 py-1"
+                      className="text-xs text-white/90 hover:text-offwhite disabled:opacity-30 px-2 py-1"
                       title={t('moveDown')}
                     >
                       {'\u2193'}
@@ -183,7 +183,7 @@ export default function AdminCmsPage() {
                           className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                             langTab === lang
                               ? 'bg-lime/10 text-lime'
-                              : 'text-gray-400 hover:text-offwhite'
+                              : 'text-white/90 hover:text-offwhite'
                           }`}
                         >
                           {lang === 'es' ? t('spanishContent') : t('englishContent')}

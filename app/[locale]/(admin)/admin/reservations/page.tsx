@@ -100,7 +100,7 @@ export default function AdminReservationsPage() {
       confirmed: 'bg-green-900/50 text-green-400',
       pending_payment: 'bg-yellow-900/50 text-yellow-400',
       cancelled: 'bg-red-900/50 text-red-400',
-      expired: 'bg-gray-700/50 text-gray-400',
+      expired: 'bg-gray-700/50 text-white/90',
     }
     const labels: Record<string, string> = {
       confirmed: t('confirmed'),
@@ -109,7 +109,7 @@ export default function AdminReservationsPage() {
       expired: t('expired'),
     }
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[s] ?? 'bg-gray-700/50 text-gray-400'}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[s] ?? 'bg-gray-700/50 text-white/90'}`}>
         {labels[s] ?? s}
       </span>
     )
@@ -117,7 +117,7 @@ export default function AdminReservationsPage() {
 
   function getPaymentBadge(ps: string) {
     const styles: Record<string, string> = {
-      free: 'bg-gray-700/50 text-gray-400',
+      free: 'bg-gray-700/50 text-white/90',
       paid: 'bg-green-900/50 text-green-400',
       pending_payment: 'bg-yellow-900/50 text-yellow-400',
       cash_pending: 'bg-orange-900/50 text-orange-400',
@@ -129,7 +129,7 @@ export default function AdminReservationsPage() {
       cash_pending: t('cashPending'),
     }
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[ps] ?? 'bg-gray-700/50 text-gray-400'}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[ps] ?? 'bg-gray-700/50 text-white/90'}`}>
         {labels[ps] ?? ps}
       </span>
     )
@@ -177,7 +177,7 @@ export default function AdminReservationsPage() {
       <div className="bg-[#1E293B] rounded-lg p-4 mt-4 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-xs text-gray-400 mb-1">{t('startDate')}</label>
+            <label className="block text-xs text-white/90 mb-1">{t('startDate')}</label>
             <div className="flex gap-2">
               <input
                 type="date"
@@ -188,7 +188,7 @@ export default function AdminReservationsPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">{t('endDate')}</label>
+            <label className="block text-xs text-white/90 mb-1">{t('endDate')}</label>
             <input
               type="date"
               value={dateTo}
@@ -197,7 +197,7 @@ export default function AdminReservationsPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">{t('filterByCourt')}</label>
+            <label className="block text-xs text-white/90 mb-1">{t('filterByCourt')}</label>
             <select
               value={courtId}
               onChange={(e) => { setCourtId(e.target.value); setPage(1) }}
@@ -210,7 +210,7 @@ export default function AdminReservationsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">{t('filterByClassification')}</label>
+            <label className="block text-xs text-white/90 mb-1">{t('filterByClassification')}</label>
             <select
               value={isTouristFilter}
               onChange={(e) => { setIsTouristFilter(e.target.value); setPage(1) }}
@@ -236,7 +236,7 @@ export default function AdminReservationsPage() {
             className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
               dateFrom && dateFrom === dateTo
                 ? 'bg-lime text-midnight'
-                : 'bg-[#334155] text-gray-300 hover:bg-[#243352]'
+                : 'bg-[#334155] text-white hover:bg-[#243352]'
             }`}
           >
             {t('today')}
@@ -244,14 +244,14 @@ export default function AdminReservationsPage() {
           <button
             type="button"
             onClick={() => { setDateFrom(''); setDateTo(''); setPage(1) }}
-            className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#334155] text-gray-300 hover:bg-[#243352] transition-colors"
+            className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#334155] text-white hover:bg-[#243352] transition-colors"
           >
             {t('clearDates')}
           </button>
 
           <span className="w-px h-5 bg-gray-700 mx-1" />
 
-          <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs text-white/90 cursor-pointer select-none">
             <button
               type="button"
               role="switch"
@@ -274,14 +274,14 @@ export default function AdminReservationsPage() {
 
       {/* Reservation table */}
       {loading ? (
-        <p className="text-gray-400 mt-6">{t('loading')}</p>
+        <p className="text-white/90 mt-6">{t('loading')}</p>
       ) : reservations.length === 0 ? (
-        <p className="text-gray-400 mt-6">{t('noReservations')}</p>
+        <p className="text-white/90 mt-6">{t('noReservations')}</p>
       ) : (
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead>
-              <tr className="border-b border-gray-700 text-gray-400">
+              <tr className="border-b border-gray-700 text-white/90">
                 <th className="py-3 px-2">{t('user')}</th>
                 <th className="py-3 px-2">{t('court')}</th>
                 <th className="py-3 px-2">{t('date')}</th>
@@ -366,17 +366,17 @@ export default function AdminReservationsPage() {
           <button
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page <= 1}
-            className="text-sm text-gray-400 hover:text-offwhite disabled:opacity-50 transition-colors"
+            className="text-sm text-white/90 hover:text-offwhite disabled:opacity-50 transition-colors"
           >
             {t('previous')}
           </button>
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-white/90">
             {t('page', { current: page, total: totalPages })}
           </span>
           <button
             onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page >= totalPages}
-            className="text-sm text-gray-400 hover:text-offwhite disabled:opacity-50 transition-colors"
+            className="text-sm text-white/90 hover:text-offwhite disabled:opacity-50 transition-colors"
           >
             {t('next')}
           </button>

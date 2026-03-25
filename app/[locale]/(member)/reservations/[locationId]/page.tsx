@@ -101,7 +101,7 @@ export default async function LocationCourtsPage({
         {/* Back link */}
         <Link
           href="/reservations"
-          className="text-gray-400 hover:text-lime text-sm mb-4 inline-block transition-colors"
+          className="text-white/90 hover:text-lime text-sm mb-4 inline-block transition-colors"
         >
           ← {t('backToLocations')}
         </Link>
@@ -110,7 +110,7 @@ export default async function LocationCourtsPage({
         <h1 className="font-bebas-neue text-4xl text-white mb-2 tracking-wide">
           {location.name}
         </h1>
-        <p className="text-gray-400 mb-8 max-w-2xl">
+        <p className="text-white/90 mb-8 max-w-2xl">
           {t('locationCourtsIntro', { location: location.name })}
         </p>
 
@@ -141,7 +141,7 @@ export default async function LocationCourtsPage({
 
         {courts.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">{t('noCourts')}</p>
+            <p className="text-white/90 text-lg">{t('noCourts')}</p>
           </div>
         )}
       </div>

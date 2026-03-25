@@ -14,7 +14,7 @@ export default async function AdminStripePage() {
           <h2 className="text-lg font-semibold text-offwhite">Stripe Dashboard</h2>
         </div>
 
-        <p className="text-gray-400 text-sm mb-6">
+        <p className="text-white/90 text-sm mb-6">
           {t('stripeDescription')}
         </p>
 

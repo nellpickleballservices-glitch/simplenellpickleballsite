@@ -118,7 +118,7 @@ export default function CheckoutSuccessClient() {
           <h1 className="text-2xl font-bold text-white mb-2">
             {t('checkoutPending')}
           </h1>
-          <p className="text-gray-400">
+          <p className="text-white/90">
             {t('checkoutPendingSubtext')}
           </p>
           {/* Lime pulse accent */}
@@ -167,7 +167,7 @@ export default function CheckoutSuccessClient() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               disabled
-              className="px-6 py-3 rounded-lg bg-gray-700 text-gray-400 cursor-not-allowed relative"
+              className="px-6 py-3 rounded-lg bg-gray-700 text-white/90 cursor-not-allowed relative"
             >
               {t('reserveCourtCta')}
               <span className="absolute -top-2 -right-2 text-xs bg-[#BFFF00] text-[#0F172A] px-2 py-0.5 rounded-full font-semibold">
@@ -216,7 +216,7 @@ export default function CheckoutSuccessClient() {
         <h1 className="text-2xl font-bold text-white mb-2">
           {t('checkoutTimeout')}
         </h1>
-        <p className="text-gray-400 mb-6">
+        <p className="text-white/90 mb-6">
           {t('checkoutTimeoutSubtext')}
         </p>
         <button

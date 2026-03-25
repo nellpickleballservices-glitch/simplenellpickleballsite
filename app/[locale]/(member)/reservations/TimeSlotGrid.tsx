@@ -113,7 +113,7 @@ export default function TimeSlotGrid({
             className={`px-3 py-1.5 text-xs rounded-full whitespace-nowrap transition-colors ${
               selectedDate === tab.date
                 ? 'bg-[#A3FF12] text-[#0F172A] font-semibold'
-                : 'bg-[#334155] text-gray-300 hover:bg-[#243352]'
+                : 'bg-[#334155] text-white hover:bg-[#243352]'
             }`}
           >
             {tab.label}
@@ -126,7 +126,7 @@ export default function TimeSlotGrid({
         {isPending ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin h-5 w-5 border-2 border-[#A3FF12] border-t-transparent rounded-full" />
-            <span className="ml-2 text-gray-400 text-sm">{t('loadingSlots')}</span>
+            <span className="ml-2 text-white/90 text-sm">{t('loadingSlots')}</span>
           </div>
         ) : timeSlots.length === 0 ? (
           <p className="text-gray-500 text-sm text-center py-6">{t('noSlots')}</p>
@@ -206,7 +206,7 @@ export default function TimeSlotGrid({
                       />
                     ))}
                   </div>
-                  <span className="text-[10px] text-gray-400">
+                  <span className="text-[10px] text-white/90">
                     {t('spotsCount', {
                       available: String(availableSpots),
                       total: String(totalSpots),

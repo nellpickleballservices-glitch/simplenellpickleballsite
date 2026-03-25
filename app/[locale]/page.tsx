@@ -48,29 +48,35 @@ async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams
   const showWelcome = params.welcome === '1'
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
+  let user: Awaited<ReturnType<Awaited<ReturnType<typeof createClient>>['auth']['getUser']>>['data']['user'] = null
   let firstName = ''
   let membership: { status: string; plan_type: string } | null = null
 
-  if (user) {
-    if (showWelcome) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('first_name')
-        .eq('id', user.id)
-        .single()
-      firstName = profile?.first_name ?? user.user_metadata?.first_name ?? user.email?.split('@')[0] ?? ''
-    }
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.auth.getUser()
+    user = data.user
 
-    const { data } = await supabase
-      .from('memberships')
-      .select('status, plan_type')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .maybeSingle()
-    membership = data
+    if (user) {
+      if (showWelcome) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name')
+          .eq('id', user.id)
+          .single()
+        firstName = profile?.first_name ?? user.user_metadata?.first_name ?? user.email?.split('@')[0] ?? ''
+      }
+
+      const { data: membershipData } = await supabase
+        .from('memberships')
+        .select('status, plan_type')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .maybeSingle()
+      membership = membershipData
+    }
+  } catch {
+    // Network error reaching Supabase — render as logged-out
   }
 
   return (
@@ -118,7 +124,7 @@ async function HomePage({ searchParams }: HomePageProps) {
 
               {/* Club name */}
               <ScrollReveal delay={0.3}>
-                <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2.5rem)] leading-[1.2] text-lime tracking-[0.3em] uppercase mb-8 pr-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2.5rem)] leading-[1.2] text-sunset tracking-[0.3em] uppercase mb-8 pr-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
                   {t('title')}&nbsp;{t('subtitle')}
                 </p>
               </ScrollReveal>
@@ -130,7 +136,7 @@ async function HomePage({ searchParams }: HomePageProps) {
 
               {/* Sub-headline */}
               <ScrollReveal delay={0.55}>
-                <p className="text-offwhite/90 text-base sm:text-lg max-w-lg leading-relaxed mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
+                <p className="text-white text-base sm:text-lg max-w-lg leading-relaxed mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
                   {t('heroSubheadline')}
                 </p>
               </ScrollReveal>
@@ -153,7 +159,7 @@ async function HomePage({ searchParams }: HomePageProps) {
                 <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
                   {t('featuresHeading')}
                 </h2>
-                <p className="text-offwhite/70 text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
+                <p className="text-white text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
                   {t('featuresSubheading')}
                 </p>
               </div>
@@ -172,7 +178,7 @@ async function HomePage({ searchParams }: HomePageProps) {
                       <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
                         {t('feature1Title')}
                       </h3>
-                      <p className="text-offwhite/70 text-sm leading-relaxed">
+                      <p className="text-white text-sm leading-relaxed">
                         {t('feature1Desc')}
                       </p>
                     </div>
@@ -194,7 +200,7 @@ async function HomePage({ searchParams }: HomePageProps) {
                       <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
                         {t('feature2Title')}
                       </h3>
-                      <p className="text-offwhite/70 text-sm leading-relaxed">
+                      <p className="text-white text-sm leading-relaxed">
                         {t('feature2Desc')}
                       </p>
                     </div>
@@ -217,7 +223,7 @@ async function HomePage({ searchParams }: HomePageProps) {
                       <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
                         {t('feature3Title')}
                       </h3>
-                      <p className="text-offwhite/70 text-sm leading-relaxed">
+                      <p className="text-white text-sm leading-relaxed">
                         {t('feature3Desc')}
                       </p>
                     </div>
@@ -240,7 +246,7 @@ async function HomePage({ searchParams }: HomePageProps) {
                 <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
                   {t('plansHeading')}
                 </h2>
-                <p className="text-offwhite/70 text-base sm:text-lg leading-relaxed">
+                <p className="text-white text-base sm:text-lg leading-relaxed">
                   {t('plansSubheading')}
                 </p>
               </div>
@@ -262,9 +268,9 @@ async function HomePage({ searchParams }: HomePageProps) {
                 <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
                   {locale === 'en' ? 'Packages & Pricing' : 'Paquetes y Precios'}
                 </h2>
-                <p className="text-offwhite/70 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                <p className="text-white text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                   {locale === 'en'
-                    ? 'Towels and water included with all packages. Paddle rentals available: $5 USD for tourists, $250 MXN for locals.'
+                    ? 'Towels and water included with all packages. Paddle rentals available: $5 USD for tourists, $250 DOP for locals.'
                     : 'Toallas y agua incluidas con todos los paquetes. Raquetas en renta: $5 USD para turistas, $250 pesos para locales.'}
                 </p>
               </div>
@@ -284,25 +290,25 @@ async function HomePage({ searchParams }: HomePageProps) {
                         {locale === 'en' ? 'Tourists' : 'Turistas'}
                       </h3>
                     </div>
-                    <p className="text-offwhite/50 text-xs uppercase tracking-widest">
+                    <p className="text-white/80 text-xs uppercase tracking-widest">
                       {locale === 'en' ? '1.5 hours per lesson or game' : '1 hora y media por lecciones o juegos'}
                     </p>
                     <div className="space-y-4">
                       <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Private Lesson' : 'Lección Individual'}</span>
-                        <span className="font-bebas-neue text-2xl text-turquoise">$25 <span className="text-sm text-offwhite/50">USD</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Private Lesson' : 'Lección Individual'}</span>
+                        <span className="font-bebas-neue text-2xl text-turquoise">$25 <span className="text-sm text-white/80">USD</span></span>
                       </div>
                       <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
-                        <span className="font-bebas-neue text-2xl text-turquoise">$20 <span className="text-sm text-offwhite/50">USD</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
+                        <span className="font-bebas-neue text-2xl text-turquoise">$20 <span className="text-sm text-white/80">USD</span></span>
                       </div>
                       <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Academy (1 hour)' : 'Academia (1 hora)'}</span>
-                        <span className="font-bebas-neue text-2xl text-turquoise">$18 <span className="text-sm text-offwhite/50">USD/{locale === 'en' ? 'person' : 'persona'}</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Academy (1 hour)' : 'Academia (1 hora)'}</span>
+                        <span className="font-bebas-neue text-2xl text-turquoise">$18 <span className="text-sm text-white/80">USD/{locale === 'en' ? 'person' : 'persona'}</span></span>
                       </div>
                       <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$95 <span className="text-sm text-offwhite/50">USD/{locale === 'en' ? 'mo' : 'mes'}</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
+                        <span className="font-bebas-neue text-2xl text-lime">$95 <span className="text-sm text-white/80">USD/{locale === 'en' ? 'mo' : 'mes'}</span></span>
                       </div>
                     </div>
                   </div>
@@ -321,21 +327,21 @@ async function HomePage({ searchParams }: HomePageProps) {
                         {locale === 'en' ? 'Locals' : 'Locales'}
                       </h3>
                     </div>
-                    <p className="text-offwhite/50 text-xs uppercase tracking-widest">
+                    <p className="text-white/80 text-xs uppercase tracking-widest">
                       {locale === 'en' ? '1.5 hours per lesson or game' : '1 hora y media por lecciones o juegos'}
                     </p>
                     <div className="space-y-4">
                       <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Private Lesson (1 hour)' : 'Lección Privada (1 hora)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$750 <span className="text-sm text-offwhite/50">MXN</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Private Lesson (1 hour)' : 'Lección Privada (1 hora)'}</span>
+                        <span className="font-bebas-neue text-2xl text-lime">$750 <span className="text-sm text-white/80">DOP</span></span>
                       </div>
                       <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$600 <span className="text-sm text-offwhite/50">MXN</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
+                        <span className="font-bebas-neue text-2xl text-lime">$600 <span className="text-sm text-white/80">DOP</span></span>
                       </div>
                       <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$3,000 <span className="text-sm text-offwhite/50">MXN/{locale === 'en' ? 'mo' : 'mes'}</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
+                        <span className="font-bebas-neue text-2xl text-lime">$3,000 <span className="text-sm text-white/80">DOP/{locale === 'en' ? 'mo' : 'mes'}</span></span>
                       </div>
                     </div>
                   </div>
@@ -355,17 +361,17 @@ async function HomePage({ searchParams }: HomePageProps) {
                         {locale === 'en' ? 'Churches & Schools' : 'Iglesias y Centros Educativos'}
                       </h3>
                     </div>
-                    <p className="text-offwhite/50 text-xs uppercase tracking-widest">
+                    <p className="text-white/80 text-xs uppercase tracking-widest">
                       {locale === 'en' ? '1 hour per lesson or game' : '1 hora por lecciones o juegos'}
                     </p>
                     <div className="space-y-4">
                       <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
-                        <span className="font-bebas-neue text-2xl text-sunset">$500 <span className="text-sm text-offwhite/50">MXN</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
+                        <span className="font-bebas-neue text-2xl text-sunset">$500 <span className="text-sm text-white/80">DOP</span></span>
                       </div>
                       <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
-                        <span className="font-bebas-neue text-2xl text-sunset">$2,000 <span className="text-sm text-offwhite/50">MXN/{locale === 'en' ? 'mo' : 'mes'}</span></span>
+                        <span className="text-white text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
+                        <span className="font-bebas-neue text-2xl text-sunset">$2,000 <span className="text-sm text-white/80">DOP/{locale === 'en' ? 'mo' : 'mes'}</span></span>
                       </div>
                     </div>
                   </div>
@@ -379,7 +385,7 @@ async function HomePage({ searchParams }: HomePageProps) {
                   <h3 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-3">
                     {locale === 'en' ? 'Tournaments' : 'Torneos'}
                   </h3>
-                  <p className="text-offwhite/50 text-sm uppercase tracking-widest">
+                  <p className="text-white/80 text-sm uppercase tracking-widest">
                     {locale === 'en' ? 'Per person pricing' : 'Precio por persona'}
                   </p>
                 </div>
@@ -394,12 +400,12 @@ async function HomePage({ searchParams }: HomePageProps) {
                       </h4>
                       <div className="space-y-4">
                         <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                          <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
-                          <span className="font-bebas-neue text-2xl text-turquoise">$50 <span className="text-sm text-offwhite/50">USD</span></span>
+                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
+                          <span className="font-bebas-neue text-2xl text-turquoise">$50 <span className="text-sm text-white/80">USD</span></span>
                         </div>
                         <div className="flex justify-between items-baseline">
-                          <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
-                          <span className="font-bebas-neue text-2xl text-turquoise">$40 <span className="text-sm text-offwhite/50">USD</span></span>
+                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
+                          <span className="font-bebas-neue text-2xl text-turquoise">$40 <span className="text-sm text-white/80">USD</span></span>
                         </div>
                       </div>
                     </div>
@@ -413,12 +419,12 @@ async function HomePage({ searchParams }: HomePageProps) {
                       </h4>
                       <div className="space-y-4">
                         <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                          <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
-                          <span className="font-bebas-neue text-2xl text-lime">$1,500 <span className="text-sm text-offwhite/50">MXN</span></span>
+                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
+                          <span className="font-bebas-neue text-2xl text-lime">$1,500 <span className="text-sm text-white/80">DOP</span></span>
                         </div>
                         <div className="flex justify-between items-baseline">
-                          <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
-                          <span className="font-bebas-neue text-2xl text-lime">$1,200 <span className="text-sm text-offwhite/50">MXN</span></span>
+                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
+                          <span className="font-bebas-neue text-2xl text-lime">$1,200 <span className="text-sm text-white/80">DOP</span></span>
                         </div>
                       </div>
                     </div>
@@ -432,12 +438,12 @@ async function HomePage({ searchParams }: HomePageProps) {
                       </h4>
                       <div className="space-y-4">
                         <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                          <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
-                          <span className="font-bebas-neue text-2xl text-sunset">$1,300 <span className="text-sm text-offwhite/50">MXN</span></span>
+                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
+                          <span className="font-bebas-neue text-2xl text-sunset">$1,300 <span className="text-sm text-white/80">DOP</span></span>
                         </div>
                         <div className="flex justify-between items-baseline">
-                          <span className="text-offwhite/80 text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
-                          <span className="font-bebas-neue text-2xl text-sunset">$1,000 <span className="text-sm text-offwhite/50">MXN</span></span>
+                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
+                          <span className="font-bebas-neue text-2xl text-sunset">$1,000 <span className="text-sm text-white/80">DOP</span></span>
                         </div>
                       </div>
                     </div>
@@ -476,7 +482,7 @@ async function HomePage({ searchParams }: HomePageProps) {
               <h2 className="font-bebas-neue text-[clamp(2.5rem,8vw,5.5rem)] leading-tight gradient-text tracking-widest inline-block py-1">
                 {t('ctaHeadline')}
               </h2>
-              <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed">
+              <p className="text-white text-base sm:text-lg max-w-xl leading-relaxed">
                 {t('ctaSubheadline')}
               </p>
               <div className="mt-2">

@@ -52,7 +52,7 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
   return (
     <>
       {/* Desktop: sticky sidebar */}
-      <nav className="hidden lg:block sticky top-24 self-start w-56 shrink-0">
+      <nav className="hidden lg:block sticky top-36 self-start w-56 shrink-0">
         <div className="bg-charcoal/80 backdrop-blur-sm rounded-xl p-4 border border-charcoal">
           <ul className="flex flex-col gap-1">
             {sections.map((section) => (
@@ -62,7 +62,7 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
                   className={`w-full text-left text-sm py-2 px-3 rounded-lg transition-all duration-200 ${
                     activeId === section.id
                       ? 'text-lime border-l-2 border-lime bg-lime/5 font-semibold'
-                      : 'text-offwhite/70 hover:text-offwhite border-l-2 border-transparent'
+                      : 'text-white hover:text-offwhite border-l-2 border-transparent'
                   }`}
                 >
                   {section.label}
@@ -114,7 +114,7 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
                         className={`w-full text-left text-sm py-2 px-3 rounded-lg transition-all ${
                           activeId === section.id
                             ? 'text-lime font-semibold'
-                            : 'text-offwhite/70'
+                            : 'text-white'
                         }`}
                       >
                         {section.label}

@@ -106,7 +106,7 @@ export default async function DashboardPage() {
           </h1>
           <Link
             href="/dashboard/settings"
-            className="text-gray-400 hover:text-white transition-colors text-sm"
+            className="text-white/90 hover:text-white transition-colors text-sm"
           >
             {tDash('settings')}
           </Link>

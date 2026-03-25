@@ -88,7 +88,7 @@ function StatCard({
       <div className="font-bebas-neue text-3xl sm:text-4xl gradient-text-static inline-block mb-1">
         {value}
       </div>
-      <div className="text-offwhite/60 text-sm">{label}</div>
+      <div className="text-white/90 text-sm">{label}</div>
     </div>
   )
 }
@@ -108,7 +108,7 @@ function InfoCard({
     <div className="bg-charcoal/40 border border-charcoal rounded-xl p-5 hover:border-lime/30 transition-colors">
       <div className="text-2xl mb-3">{icon}</div>
       <h4 className="text-offwhite font-semibold text-base mb-2">{title}</h4>
-      <p className="text-offwhite/60 text-sm leading-relaxed">{description}</p>
+      <p className="text-white/90 text-sm leading-relaxed">{description}</p>
     </div>
   )
 }
@@ -141,7 +141,7 @@ export default async function LearnPickleballPage() {
           <h1 className="font-bebas-neue text-[clamp(3rem,10vw,7rem)] leading-none tracking-widest gradient-text mb-4 inline-block">
             {t.heroTitle}
           </h1>
-          <p className="text-offwhite/70 text-base sm:text-lg max-w-xl leading-relaxed mb-8">
+          <p className="text-white text-base sm:text-lg max-w-xl leading-relaxed mb-8">
             {t.heroSub}
           </p>
 
@@ -180,17 +180,17 @@ export default async function LearnPickleballPage() {
 
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   <div>
-                    <p className="text-offwhite/70 text-base leading-relaxed mb-4">
+                    <p className="text-white text-base leading-relaxed mb-4">
                       {isEn
                         ? 'Pickleball is a dynamic paddle sport that combines elements of tennis, badminton, and table tennis. Played on a court roughly one-third the size of a tennis court, it uses a perforated polymer ball and solid paddles made from composite materials.'
                         : 'El pickleball es un deporte dinámico de paleta que combina elementos del tenis, bádminton y tenis de mesa. Se juega en una cancha de aproximadamente un tercio del tamaño de una cancha de tenis, utilizando una pelota de polímero perforada y paletas sólidas de materiales compuestos.'}
                     </p>
-                    <p className="text-offwhite/70 text-base leading-relaxed mb-4">
+                    <p className="text-white text-base leading-relaxed mb-4">
                       {isEn
                         ? 'The sport is accessible to players of all ages and skill levels, making it perfect for families, seniors, and competitive athletes alike. Games are typically played to 11 points (win by 2) and can be enjoyed as singles or doubles.'
                         : 'El deporte es accesible para jugadores de todas las edades y niveles, lo que lo hace perfecto para familias, adultos mayores y atletas competitivos por igual. Los juegos generalmente se juegan a 11 puntos (ganar por 2) y se pueden disfrutar en individuales o dobles.'}
                     </p>
-                    <p className="text-offwhite/70 text-base leading-relaxed">
+                    <p className="text-white text-base leading-relaxed">
                       {isEn
                         ? 'What makes pickleball special is its low barrier to entry — most beginners can rally within minutes — while still offering deep strategic play for advanced competitors.'
                         : 'Lo que hace especial al pickleball es su baja barrera de entrada — la mayoría de los principiantes pueden pelotear en minutos — mientras ofrece un juego estratégico profundo para competidores avanzados.'}
@@ -247,17 +247,17 @@ export default async function LearnPickleballPage() {
                 />
 
                 <div className="mt-8 space-y-4">
-                  <p className="text-offwhite/70 text-base leading-relaxed">
+                  <p className="text-white text-base leading-relaxed">
                     {isEn
                       ? 'Pickleball was invented in the summer of 1965 on Bainbridge Island, Washington, by three fathers — Joel Pritchard, Bill Bell, and Barney McCallum — who were looking for a way to entertain their bored children during a weekend getaway.'
                       : 'El pickleball fue inventado en el verano de 1965 en la Isla Bainbridge, Washington, por tres padres — Joel Pritchard, Bill Bell y Barney McCallum — quienes buscaban una forma de entretener a sus hijos aburridos durante un fin de semana.'}
                   </p>
-                  <p className="text-offwhite/70 text-base leading-relaxed">
+                  <p className="text-white text-base leading-relaxed">
                     {isEn
                       ? 'They improvised with ping-pong paddles, a perforated plastic ball, and a badminton court with a lowered net. The game was such a hit that the families began crafting official rules, and the sport quickly spread through their community.'
                       : 'Improvisaron con paletas de ping-pong, una pelota de plástico perforada y una cancha de bádminton con una red más baja. El juego fue tan exitoso que las familias comenzaron a crear reglas oficiales, y el deporte se extendió rápidamente por su comunidad.'}
                   </p>
-                  <p className="text-offwhite/70 text-base leading-relaxed">
+                  <p className="text-white text-base leading-relaxed">
                     {isEn
                       ? 'As for the name? The most popular theory credits Joan Pritchard, Joel\'s wife, who thought the combination of sports reminded her of a "pickle boat" in crew — a boat crewed by leftover rowers from other boats.'
                       : 'En cuanto al nombre, la teoría más popular atribuye el crédito a Joan Pritchard, esposa de Joel, quien pensó que la combinación de deportes le recordaba a un "pickle boat" en remo — un bote tripulado por remeros sobrantes de otros botes.'}
@@ -287,7 +287,7 @@ export default async function LearnPickleballPage() {
                       <div className="font-bebas-neue text-2xl gradient-text-static inline-block mb-1">
                         {item.year}
                       </div>
-                      <p className="text-offwhite/60 text-sm">{item.text}</p>
+                      <p className="text-white/90 text-sm">{item.text}</p>
                     </div>
                   ))}
                 </div>
@@ -323,7 +323,7 @@ export default async function LearnPickleballPage() {
                             'El servidor debe mantener ambos pies detrás de la línea de base',
                           ]
                       ).map((rule) => (
-                        <li key={rule} className="flex items-start gap-2 text-offwhite/70 text-sm leading-relaxed">
+                        <li key={rule} className="flex items-start gap-2 text-white text-sm leading-relaxed">
                           <span className="text-lime mt-1 shrink-0">&#9656;</span>
                           {rule}
                         </li>
@@ -339,7 +339,7 @@ export default async function LearnPickleballPage() {
                       <span className="text-lime text-xl">2x</span>
                       {isEn ? 'Two-Bounce Rule' : 'Regla de Dos Botes'}
                     </h3>
-                    <p className="text-offwhite/70 text-sm leading-relaxed">
+                    <p className="text-white text-sm leading-relaxed">
                       {isEn
                         ? 'After the serve, the receiving side must let the ball bounce once before returning. Then the serving side must also let the return bounce once. After these two bounces, the ball can be volleyed or played off the bounce.'
                         : 'Después del servicio, el lado receptor debe dejar que la pelota bote una vez antes de devolverla. Luego, el lado que sirve también debe dejar que la devolución bote una vez. Después de estos dos botes, la pelota puede ser voleada o jugada después del bote.'}
@@ -350,7 +350,7 @@ export default async function LearnPickleballPage() {
                       <span className="text-turquoise text-xl">&#9888;</span>
                       {isEn ? 'The Kitchen (Non-Volley Zone)' : 'La Kitchen (Zona de No Volea)'}
                     </h3>
-                    <p className="text-offwhite/70 text-sm leading-relaxed">
+                    <p className="text-white text-sm leading-relaxed">
                       {isEn
                         ? 'The 7-foot zone on each side of the net is called the "kitchen." Players cannot volley (hit the ball out of the air) while standing in the kitchen. You can enter the kitchen to play a ball that has bounced.'
                         : 'La zona de 7 pies a cada lado de la red se llama la "kitchen." Los jugadores no pueden volear (golpear la pelota en el aire) mientras están parados en la kitchen. Puedes entrar a la kitchen para jugar una pelota que ha botado.'}
@@ -382,7 +382,7 @@ export default async function LearnPickleballPage() {
                           'Servir a la cancha incorrecta',
                         ]
                     ).map((fault) => (
-                      <div key={fault} className="flex items-center gap-2 text-offwhite/60 text-sm py-1">
+                      <div key={fault} className="flex items-center gap-2 text-white/90 text-sm py-1">
                         <span className="text-danger">&#10005;</span>
                         {fault}
                       </div>
@@ -397,7 +397,7 @@ export default async function LearnPickleballPage() {
               <ScrollReveal>
                 <SectionHeading label={t.sections[3].label} />
 
-                <p className="text-offwhite/70 text-base leading-relaxed mb-6">
+                <p className="text-white text-base leading-relaxed mb-6">
                   {isEn
                     ? 'Pickleball uses side-out scoring in recreational play (only the serving team can score) and rally scoring in some competitive formats. Here\'s how it works:'
                     : 'El pickleball usa puntuación por cambio de servicio en juego recreativo (solo el equipo que sirve puede anotar) y puntuación por rally en algunos formatos competitivos. Así es como funciona:'}
@@ -411,26 +411,26 @@ export default async function LearnPickleballPage() {
                   <div className="flex items-center justify-center gap-4 mb-4">
                     <div className="text-center">
                       <div className="font-bebas-neue text-5xl text-lime">4</div>
-                      <div className="text-offwhite/50 text-xs mt-1">
+                      <div className="text-white/80 text-xs mt-1">
                         {isEn ? 'Server Score' : 'Puntos del Servidor'}
                       </div>
                     </div>
                     <div className="font-bebas-neue text-3xl text-offwhite/30">—</div>
                     <div className="text-center">
                       <div className="font-bebas-neue text-5xl text-turquoise">2</div>
-                      <div className="text-offwhite/50 text-xs mt-1">
+                      <div className="text-white/80 text-xs mt-1">
                         {isEn ? 'Receiver Score' : 'Puntos del Receptor'}
                       </div>
                     </div>
                     <div className="font-bebas-neue text-3xl text-offwhite/30">—</div>
                     <div className="text-center">
                       <div className="font-bebas-neue text-5xl text-sunset">2</div>
-                      <div className="text-offwhite/50 text-xs mt-1">
+                      <div className="text-white/80 text-xs mt-1">
                         {isEn ? 'Server Number' : 'Número del Servidor'}
                       </div>
                     </div>
                   </div>
-                  <p className="text-offwhite/50 text-sm text-center max-w-md mx-auto">
+                  <p className="text-white/80 text-sm text-center max-w-md mx-auto">
                     {isEn
                       ? 'In doubles, the score is called as three numbers. The third number indicates which server (1st or 2nd) is serving.'
                       : 'En dobles, el marcador se anuncia con tres números. El tercer número indica cuál servidor (1ero o 2do) está sirviendo.'}
@@ -457,7 +457,7 @@ export default async function LearnPickleballPage() {
                             'Al inicio, solo un compañero sirve',
                           ]
                       ).map((item) => (
-                        <li key={item} className="flex items-start gap-2 text-offwhite/60 text-sm">
+                        <li key={item} className="flex items-start gap-2 text-white/90 text-sm">
                           <span className="text-lime mt-0.5 shrink-0">&#9656;</span>
                           {item}
                         </li>
@@ -483,7 +483,7 @@ export default async function LearnPickleballPage() {
                             'Usado en eventos de Major League Pickleball (MLP)',
                           ]
                       ).map((item) => (
-                        <li key={item} className="flex items-start gap-2 text-offwhite/60 text-sm">
+                        <li key={item} className="flex items-start gap-2 text-white/90 text-sm">
                           <span className="text-turquoise mt-0.5 shrink-0">&#9656;</span>
                           {item}
                         </li>
@@ -499,7 +499,7 @@ export default async function LearnPickleballPage() {
               <ScrollReveal>
                 <SectionHeading label={t.sections[4].label} />
 
-                <p className="text-offwhite/70 text-base leading-relaxed mb-8">
+                <p className="text-white text-base leading-relaxed mb-8">
                   {isEn
                     ? 'A standard pickleball court is 20 feet wide by 44 feet long — the same size for both singles and doubles play. The net stands 36 inches high at the sidelines and 34 inches at the center.'
                     : 'Una cancha estándar de pickleball mide 20 pies de ancho por 44 pies de largo — el mismo tamaño para individuales y dobles. La red mide 36 pulgadas de alto en los laterales y 34 pulgadas en el centro.'}
@@ -546,7 +546,7 @@ export default async function LearnPickleballPage() {
               <ScrollReveal>
                 <SectionHeading label={t.sections[5].label} />
 
-                <p className="text-offwhite/70 text-base leading-relaxed mb-8">
+                <p className="text-white text-base leading-relaxed mb-8">
                   {isEn
                     ? 'Getting started with pickleball requires minimal equipment. Here\'s what you need to know about each piece of gear:'
                     : 'Comenzar con el pickleball requiere un equipamiento mínimo. Esto es lo que necesitas saber sobre cada pieza del equipo:'}
@@ -564,23 +564,23 @@ export default async function LearnPickleballPage() {
                       <h3 className="text-offwhite font-semibold text-lg mb-2">
                         {isEn ? 'Paddles' : 'Paletas'}
                       </h3>
-                      <p className="text-offwhite/60 text-sm leading-relaxed mb-3">
+                      <p className="text-white/90 text-sm leading-relaxed mb-3">
                         {isEn
                           ? 'Paddles are solid (no strings) and made from composite materials like fiberglass, carbon fiber, or graphite. They range from $15 for beginner models to $250+ for premium competition paddles.'
                           : 'Las paletas son sólidas (sin cuerdas) y están hechas de materiales compuestos como fibra de vidrio, fibra de carbono o grafito. Van desde $15 para modelos de principiante hasta $250+ para paletas premium de competición.'}
                       </p>
                       <div className="space-y-1 text-sm">
-                        <div className="flex justify-between text-offwhite/50">
+                        <div className="flex justify-between text-white/80">
                           <span>{isEn ? 'Weight' : 'Peso'}</span>
-                          <span className="text-offwhite/70">6–14 oz</span>
+                          <span className="text-white">6–14 oz</span>
                         </div>
-                        <div className="flex justify-between text-offwhite/50">
+                        <div className="flex justify-between text-white/80">
                           <span>{isEn ? 'Length' : 'Largo'}</span>
-                          <span className="text-offwhite/70">{isEn ? 'Up to 17"' : 'Hasta 17"'}</span>
+                          <span className="text-white">{isEn ? 'Up to 17"' : 'Hasta 17"'}</span>
                         </div>
-                        <div className="flex justify-between text-offwhite/50">
+                        <div className="flex justify-between text-white/80">
                           <span>{isEn ? 'Width' : 'Ancho'}</span>
-                          <span className="text-offwhite/70">{isEn ? 'Up to 7.5"' : 'Hasta 7.5"'}</span>
+                          <span className="text-white">{isEn ? 'Up to 7.5"' : 'Hasta 7.5"'}</span>
                         </div>
                       </div>
                     </div>
@@ -596,25 +596,25 @@ export default async function LearnPickleballPage() {
                       <h3 className="text-offwhite font-semibold text-lg mb-2">
                         {isEn ? 'Balls' : 'Pelotas'}
                       </h3>
-                      <p className="text-offwhite/60 text-sm leading-relaxed mb-3">
+                      <p className="text-white/90 text-sm leading-relaxed mb-3">
                         {isEn
                           ? 'Pickleballs are lightweight, perforated polymer balls similar to wiffle balls. Indoor and outdoor balls differ in the number and size of holes, weight, and durability.'
                           : 'Las pelotas de pickleball son pelotas de polímero perforadas y livianas, similares a las pelotas wiffle. Las pelotas de interior y exterior difieren en el número y tamaño de los agujeros, peso y durabilidad.'}
                       </p>
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="bg-midnight/50 rounded-lg p-3">
-                          <div className="text-offwhite/70 font-medium mb-1">
+                          <div className="text-white font-medium mb-1">
                             {isEn ? 'Indoor' : 'Interior'}
                           </div>
-                          <div className="text-offwhite/50 text-xs">
+                          <div className="text-white/80 text-xs">
                             {isEn ? '26 larger holes, softer, slower play' : '26 agujeros grandes, más suave, juego lento'}
                           </div>
                         </div>
                         <div className="bg-midnight/50 rounded-lg p-3">
-                          <div className="text-offwhite/70 font-medium mb-1">
+                          <div className="text-white font-medium mb-1">
                             {isEn ? 'Outdoor' : 'Exterior'}
                           </div>
-                          <div className="text-offwhite/50 text-xs">
+                          <div className="text-white/80 text-xs">
                             {isEn ? '40 smaller holes, harder, faster play' : '40 agujeros pequeños, más dura, juego rápido'}
                           </div>
                         </div>
@@ -661,7 +661,7 @@ export default async function LearnPickleballPage() {
               <ScrollReveal>
                 <SectionHeading label={t.sections[6].label} />
 
-                <p className="text-offwhite/70 text-base leading-relaxed mb-8">
+                <p className="text-white text-base leading-relaxed mb-8">
                   {isEn
                     ? 'Mastering these fundamental shots will give you a solid foundation for competitive play:'
                     : 'Dominar estos golpes fundamentales te dará una base sólida para el juego competitivo:'}
@@ -765,7 +765,7 @@ export default async function LearnPickleballPage() {
                         </span>
                       </div>
                       <h4 className="text-offwhite font-semibold text-base mb-2">{shot.name}</h4>
-                      <p className="text-offwhite/60 text-sm leading-relaxed">{shot.desc}</p>
+                      <p className="text-white/90 text-sm leading-relaxed">{shot.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -787,7 +787,7 @@ export default async function LearnPickleballPage() {
 
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   <div className="space-y-4">
-                    <p className="text-offwhite/70 text-base leading-relaxed">
+                    <p className="text-white text-base leading-relaxed">
                       {isEn
                         ? 'Pickleball strategy revolves around one key principle: control the kitchen line. The team that controls the net has a significant advantage. Here are essential strategies for improving your game:'
                         : 'La estrategia del pickleball gira en torno a un principio clave: controlar la línea de la kitchen. El equipo que controla la red tiene una ventaja significativa. Aquí hay estrategias esenciales para mejorar tu juego:'}
@@ -865,7 +865,7 @@ export default async function LearnPickleballPage() {
                       </div>
                       <div>
                         <h4 className="text-offwhite font-semibold text-base mb-1">{tip.title}</h4>
-                        <p className="text-offwhite/60 text-sm leading-relaxed">{tip.text}</p>
+                        <p className="text-white/90 text-sm leading-relaxed">{tip.text}</p>
                       </div>
                     </div>
                   ))}
@@ -878,7 +878,7 @@ export default async function LearnPickleballPage() {
               <ScrollReveal>
                 <SectionHeading label={t.sections[8].label} />
 
-                <p className="text-offwhite/70 text-base leading-relaxed mb-8">
+                <p className="text-white text-base leading-relaxed mb-8">
                   {isEn
                     ? 'Pickleball has a strong culture of sportsmanship. Following these unwritten rules will make you a welcome player at any court:'
                     : 'El pickleball tiene una fuerte cultura de deportividad. Seguir estas reglas no escritas te hará un jugador bienvenido en cualquier cancha:'}
@@ -907,7 +907,7 @@ export default async function LearnPickleballPage() {
                       <span className="text-xl shrink-0">{item.icon}</span>
                       <div>
                         <h4 className="text-offwhite font-semibold text-sm mb-1">{item.title}</h4>
-                        <p className="text-offwhite/60 text-xs leading-relaxed">{item.text}</p>
+                        <p className="text-white/90 text-xs leading-relaxed">{item.text}</p>
                       </div>
                     </div>
                   ))}
@@ -980,7 +980,7 @@ export default async function LearnPickleballPage() {
                         <span className="text-lime shrink-0">Q.</span>
                         {faq.q}
                       </h4>
-                      <p className="text-offwhite/60 text-sm leading-relaxed pl-6">{faq.a}</p>
+                      <p className="text-white/90 text-sm leading-relaxed pl-6">{faq.a}</p>
                     </div>
                   ))}
                 </div>
@@ -993,7 +993,7 @@ export default async function LearnPickleballPage() {
                 <h2 className="font-bebas-neue text-3xl sm:text-4xl gradient-text inline-block mb-4">
                   {isEn ? 'Ready to Hit the Court?' : '¿Listo para la Cancha?'}
                 </h2>
-                <p className="text-offwhite/70 text-base mb-6 max-w-md mx-auto">
+                <p className="text-white text-base mb-6 max-w-md mx-auto">
                   {t.cta}
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

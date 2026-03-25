@@ -80,7 +80,7 @@ export function MaintenanceForm({
     <div className="bg-[#1E293B] rounded-lg p-4 mt-2 space-y-3">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('startDate')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('startDate')}</label>
           <input
             type="datetime-local"
             value={startDate}
@@ -89,7 +89,7 @@ export function MaintenanceForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('endDate')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('endDate')}</label>
           <input
             type="datetime-local"
             value={endDate}

@@ -58,7 +58,7 @@ export default function LoginForm() {
 
       <div className="flex items-center gap-3">
         <hr className="flex-1 border-offwhite/20" />
-        <span className="text-offwhite/40 text-sm">
+        <span className="text-white/70 text-sm">
           {t('or')}
         </span>
         <hr className="flex-1 border-offwhite/20" />
@@ -115,7 +115,7 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <p className="text-offwhite/60 text-sm text-center">
+      <p className="text-white/90 text-sm text-center">
         {t('noAccount')}{' '}
         <a href="/signup" className="text-turquoise hover:underline">
           {t('signupLink')}

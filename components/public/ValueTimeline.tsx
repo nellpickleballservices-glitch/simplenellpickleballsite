@@ -73,7 +73,7 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
                               {value.icon}
                             </div>
                           </div>
-                          <p className="text-offwhite/70 text-sm leading-relaxed">
+                          <p className="text-white text-sm leading-relaxed">
                             {value.description}
                           </p>
                           {value.image && (
@@ -102,7 +102,7 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
                               {value.title}
                             </h3>
                           </div>
-                          <p className="text-offwhite/70 text-sm leading-relaxed">
+                          <p className="text-white text-sm leading-relaxed">
                             {value.description}
                           </p>
                           {value.image && (
@@ -131,7 +131,7 @@ export function ValueTimeline({ values }: ValueTimelineProps) {
                         {value.title}
                       </h3>
                     </div>
-                    <p className="text-offwhite/70 text-sm leading-relaxed">
+                    <p className="text-white text-sm leading-relaxed">
                       {value.description}
                     </p>
                     {value.image && (

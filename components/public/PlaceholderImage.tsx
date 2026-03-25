@@ -20,7 +20,7 @@ export function PlaceholderImage({
       className={`${aspects[aspect]} w-full rounded-2xl bg-gradient-to-br from-charcoal to-slate/60 border border-charcoal flex flex-col items-center justify-center gap-2 overflow-hidden`}
     >
       <span className="text-4xl">{icon}</span>
-      <span className="text-offwhite/40 text-sm font-medium tracking-wide">
+      <span className="text-white/70 text-sm font-medium tracking-wide">
         {label}
       </span>
     </div>

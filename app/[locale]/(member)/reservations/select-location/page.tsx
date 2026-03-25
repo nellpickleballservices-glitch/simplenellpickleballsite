@@ -46,7 +46,7 @@ export default async function SelectLocationPage() {
         <h1 className="font-bebas-neue text-4xl text-white mb-2 tracking-wide">
           {t('selectHomeTitle')}
         </h1>
-        <p className="text-gray-400 mb-8 max-w-2xl">
+        <p className="text-white/90 mb-8 max-w-2xl">
           {t('selectHomeDescription')}
         </p>
 

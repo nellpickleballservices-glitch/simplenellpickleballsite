@@ -16,6 +16,8 @@ export function HeroVideo() {
         loop
         muted
         playsInline
+        disablePictureInPicture
+        controlsList="nodownload noplaybackrate"
         className="absolute inset-0 w-full h-full object-cover hidden md:block"
       >
         <source src="/videos/Hero-video2.mp4" type="video/mp4" />

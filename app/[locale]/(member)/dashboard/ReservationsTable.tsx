@@ -24,7 +24,7 @@ const statusColors: Record<string, string> = {
   confirmed: 'bg-green-500/20 text-green-400',
   pending_payment: 'bg-amber-500/20 text-amber-400',
   paid: 'bg-green-500/20 text-green-400',
-  cancelled: 'bg-gray-500/20 text-gray-400',
+  cancelled: 'bg-gray-500/20 text-white/90',
 }
 
 function formatDate(isoString: string): string {
@@ -56,7 +56,7 @@ export default function ReservationsTable({
   if (reservations.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-400 text-sm mb-3">{t('noReservations')}</p>
+        <p className="text-white/90 text-sm mb-3">{t('noReservations')}</p>
         <Link
           href="/reservations"
           className="text-[#A3FF12] text-sm font-semibold hover:underline"
@@ -93,7 +93,7 @@ export default function ReservationsTable({
                 {statusLabels[r.status] || r.status}
               </span>
             </div>
-            <div className="text-gray-400 text-xs">
+            <div className="text-white/90 text-xs">
               {formatDate(r.starts_at)} &middot; {formatTime(r.starts_at)} - {formatTime(r.ends_at)}
             </div>
             <div className="flex items-center justify-end gap-2">
@@ -131,7 +131,7 @@ export default function ReservationsTable({
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-gray-400 text-xs border-b border-gray-700">
+            <tr className="text-white/90 text-xs border-b border-gray-700">
               <th className="text-left py-2 font-medium">{t('headerDate')}</th>
               <th className="text-left py-2 font-medium">{t('headerTime')}</th>
               <th className="text-left py-2 font-medium">{t('headerCourt')}</th>

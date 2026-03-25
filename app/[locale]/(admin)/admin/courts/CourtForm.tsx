@@ -26,7 +26,7 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
     <form action={formAction} className="bg-[#1E293B] rounded-lg p-6 space-y-4 mt-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('selectLocation')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('selectLocation')}</label>
           {loadingLocations ? (
             <p className="text-gray-500 text-sm py-2">{t('loading')}</p>
           ) : locations.length === 0 ? (
@@ -47,7 +47,7 @@ export function CourtForm({ onSuccess }: { onSuccess: () => void }) {
           )}
         </div>
         <div>
-          <label className="block text-sm text-gray-400 mb-1">{t('courtName')}</label>
+          <label className="block text-sm text-white/90 mb-1">{t('courtName')}</label>
           <input
             name="courtName"
             required
