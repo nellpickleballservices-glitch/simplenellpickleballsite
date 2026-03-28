@@ -73,6 +73,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   const publicLinks = [
     { href: '/#packages', label: t('reservations') },
     { href: '/learn-pickleball', label: t('learn') },
+    { href: '/gallery', label: t('gallery') },
     { href: '/contact', label: t('contact') },
   ]
 
@@ -144,6 +145,15 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
                   className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
                 >
                   {firstName ?? t('dashboard')}
+                </Link>
+              )}
+              {isAdmin && (
+                <Link
+                  href="/n3ll-admin-x9k2"
+                  onClick={close}
+                  className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
+                >
+                  {tAdmin('adminNav')}
                 </Link>
               )}
             </nav>

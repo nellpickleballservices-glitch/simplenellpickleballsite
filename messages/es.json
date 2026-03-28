@@ -11,7 +11,8 @@
     "reservations": "Reservaciones",
     "learn": "Aprende Pickleball",
     "events": "Eventos",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "gallery": "Galería"
   },
   "Auth": {
     "signup": {
@@ -534,7 +535,34 @@
     "classification": "Tipo",
     "filterByClassification": "Local/Turista",
     "allClassifications": "Todos",
-    "pricePreview": "Precio: {price}"
+    "pricePreview": "Precio: {price}",
+    "gallery": "Galería",
+    "addGalleryItem": "Agregar Item",
+    "editGalleryItem": "Editar Item",
+    "deleteGalleryItem": "Eliminar",
+    "galleryMediaType": "Tipo de Medio",
+    "galleryImage": "Imagen",
+    "galleryVideo": "Video",
+    "galleryUrl": "URL del Medio",
+    "galleryThumbnailUrl": "URL de Miniatura (para videos)",
+    "galleryTitleEs": "Titulo (Espanol)",
+    "galleryTitleEn": "Titulo (Ingles)",
+    "galleryCaptionEs": "Descripcion (Espanol)",
+    "galleryCaptionEn": "Descripcion (Ingles)",
+    "galleryGridSize": "Tamano de Cuadricula",
+    "gallerySortOrder": "Orden",
+    "galleryVisible": "Visible",
+    "galleryItemCreated": "Item de galeria creado exitosamente",
+    "galleryItemUpdated": "Item de galeria actualizado exitosamente",
+    "galleryItemDeleted": "Item de galeria eliminado exitosamente",
+    "confirmDeleteGalleryItem": "Eliminar Item de Galeria",
+    "confirmDeleteGalleryItemMessage": "Estas seguro de que quieres eliminar este item de galeria? Esta accion no se puede deshacer.",
+    "noGalleryItems": "No se encontraron items de galeria",
+    "galleryUploadFile": "Subir desde dispositivo",
+    "galleryUploading": "Subiendo...",
+    "galleryUploadSuccess": "Subido! URL completada.",
+    "galleryUploadError": "Error al subir. Intenta de nuevo.",
+    "galleryOrPasteUrl": "o pega una URL"
   },
   "Settings": {
     "pageTitle": "Configuracion",
@@ -569,6 +597,7 @@
     "events": "Eventos",
     "contact": "Contacto",
     "pricing": "Precios",
+    "gallery": "Galería",
     "quickNav": "Enlaces Rapidos",
     "socialLabel": "Siguenos",
     "copyright": "\u00a9 {year} NELL Pickleball Club. Todos los derechos reservados."
@@ -604,18 +633,27 @@
     "aboutValueIntegrityDesc": "Jugamos limpio, nos comunicamos con honestidad y mantenemos el espíritu del juego.",
     "aboutCtaTitle": "¿Listo para Unirte?",
     "aboutCtaText": "Explora nuestros planes de membresía y empieza a jugar hoy.",
-    "aboutCtaButton": "Ver Planes"
+    "aboutCtaButton": "Ver Planes",
+    "galleryMetaTitle": "Galería | NELL Pickleball Club",
+    "galleryMetaDescription": "Fotos y videos de NELL Pickleball Club en Bavaro, Republica Dominicana."
+  },
+  "Gallery": {
+    "pageTitle": "Galería",
+    "subtitle": "Momentos de la cancha y mas alla.",
+    "noItems": "No hay fotos ni videos todavia. Vuelve pronto!",
+    "playVideo": "Reproducir Video",
+    "close": "Cerrar"
   },
   "Chatbot": {
-    "greeting": "Hola! Soy Nelly, tu asistente de NELL Pickleball Club. Como puedo ayudarte?",
+    "greeting": "Hola! Soy Nell, tu asistente de NELL Pickleball Club. Como puedo ayudarte?",
     "chipMembership": "Planes de membresia",
     "chipLocations": "Ubicaciones de canchas",
     "chipLearn": "Como jugar pickleball",
     "chipEvents": "Proximos eventos",
-    "inputPlaceholder": "Pregunta a Nelly...",
-    "tooltipText": "Tienes preguntas? Pregunta a Nelly!",
+    "inputPlaceholder": "Pregunta a Nell...",
+    "tooltipText": "Tienes preguntas? Pregunta a Nell!",
     "rateLimitMessage": "He respondido muchas preguntas! Visita nuestra pagina de Contacto o escribe por WhatsApp para mas ayuda.",
-    "unavailableMessage": "Nelly no esta disponible en este momento. Intenta mas tarde."
+    "unavailableMessage": "Nell no esta disponible en este momento. Intenta mas tarde."
   },
   "Contact": {
     "pageTitle": "Contactanos",

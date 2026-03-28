@@ -4,6 +4,9 @@ import type { NextConfig } from 'next'
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 
 const config: NextConfig = {
+  serverActions: {
+    bodySizeLimit: '10mb',
+  },
   images: {
     remotePatterns: [
       {
@@ -17,6 +20,14 @@ const config: NextConfig = {
       {
         protocol: 'https',
         hostname: '*.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
       },
     ],
   },

@@ -12,3 +12,4 @@ export { getContentBlocksAction, updateContentBlockAction, reorderContentBlocksA
 export { getSessionPricingAction, upsertSessionPricingAction, getTouristSurchargeAction, updateTouristSurchargeAction } from './admin/pricing'
 export { getLocationsAction, addLocationAction, updateLocationAction, deleteLocationAction } from './admin/locations'
 export type { LocationRow } from './admin/locations'
+export { getGalleryItemsAction, createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, uploadGalleryFileAction } from './admin/gallery'

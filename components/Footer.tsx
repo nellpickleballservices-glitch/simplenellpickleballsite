@@ -28,6 +28,7 @@ export async function Footer() {
     { href: '/', label: t('home') },
     { href: '/#packages', label: t('reservations') },
     { href: '/learn-pickleball', label: t('learn') },
+    { href: '/gallery', label: t('gallery') },
     { href: '/contact', label: t('contact') },
   ]
 

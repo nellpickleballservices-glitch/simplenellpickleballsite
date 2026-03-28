@@ -46,10 +46,14 @@ export async function Navbar() {
         {/* Public page links */}
         <NavLink href="/#packages">{t('reservations')}</NavLink>
         <NavLink href="/learn-pickleball">{t('learn')}</NavLink>
+        <NavLink href="/gallery">{t('gallery')}</NavLink>
         <NavLink href="/contact">{t('contact')}</NavLink>
         {user ? (
           <>
             <NavLink href="/dashboard">{firstName ?? t('dashboard')}</NavLink>
+            {isAdmin && (
+              <NavLink href="/n3ll-admin-x9k2">{tAdmin('adminNav')}</NavLink>
+            )}
             <form action={logoutAction}>
               <button
                 type="submit"

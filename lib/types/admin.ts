@@ -36,6 +36,24 @@ export interface AdminStats {
   upcomingEvents: number
 }
 
+export type GalleryMediaType = 'image' | 'video'
+export type GalleryGridSize = '1x1' | '1x2' | '2x1' | '2x2'
+
+export interface GalleryItem {
+  id: string
+  media_type: GalleryMediaType
+  url: string
+  thumbnail_url: string | null
+  title_es: string | null
+  title_en: string | null
+  caption_es: string | null
+  caption_en: string | null
+  grid_size: GalleryGridSize
+  sort_order: number
+  is_visible: boolean
+  created_at: string
+}
+
 export interface UserWithDetails {
   id: string
   email: string
