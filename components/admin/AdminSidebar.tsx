@@ -136,7 +136,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
         {/* Brand */}
         <div className="px-6 pt-6 pb-2">
           <Link href={`/${locale}/admin`} className="inline-block">
-            <Image src="/images/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px]" />
+            <Image src="/images/icons/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px]" />
           </Link>
           <p className="text-white/80 text-xs mt-1">Admin Panel</p>
         </div>

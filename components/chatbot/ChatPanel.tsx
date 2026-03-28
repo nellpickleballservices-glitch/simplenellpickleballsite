@@ -237,15 +237,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
     <div className={panelClasses}>
       {/* Header */}
       <div className="flex items-center gap-3 bg-[#0F172A] px-4 py-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#A3FF12]">
-          <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
-            <ellipse cx="16" cy="12" rx="9" ry="10" fill="#0F172A" />
-            <circle cx="13" cy="9" r="1.5" fill="#A3FF12" opacity="0.6" />
-            <circle cx="19" cy="9" r="1.5" fill="#A3FF12" opacity="0.6" />
-            <circle cx="16" cy="13" r="1.5" fill="#A3FF12" opacity="0.6" />
-            <rect x="14" y="21" width="4" height="8" rx="2" fill="#0F172A" />
-          </svg>
-        </div>
+        <img src="/images/icons/nellyBot1.png" alt="Nelly" className="h-8 w-8 rounded-full object-cover" />
         <span className="flex-1 text-sm font-semibold text-white">Nelly</span>
         <button
           onClick={onClose}
@@ -279,9 +271,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'assistant' && (
-              <div className="mr-2 mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#0F172A]">
-                <span className="text-[10px] font-bold text-[#A3FF12]">N</span>
-              </div>
+              <img src="/images/icons/nellyBot1.png" alt="Nelly" className="mr-2 mt-1 h-6 w-6 flex-shrink-0 rounded-full object-cover" />
             )}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${

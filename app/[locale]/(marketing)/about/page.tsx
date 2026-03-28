@@ -93,12 +93,12 @@ export default async function AboutPage() {
   const valueKeys = ['Love', 'Access', 'Discipline', 'Respect', 'Community', 'Integrity'] as const
 
   const valueImages = [
-    '/images/love&passion.png',
-    '/images/accessibility.png',
-    '/images/dicipline.png',
-    '/images/respect.png',
-    '/images/social-commitment.png',
-    '/images/integrity.png',
+    '/images/siteImages/love&passion.png',
+    '/images/siteImages/accessibility.png',
+    '/images/siteImages/dicipline.png',
+    '/images/siteImages/respect.png',
+    '/images/siteImages/social-commitment.png',
+    '/images/siteImages/integrity.png',
   ]
 
   const values = valueKeys.map((key, i) => ({

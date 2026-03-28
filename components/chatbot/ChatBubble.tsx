@@ -40,30 +40,15 @@ export function ChatBubble({ onClick, isOpen }: ChatBubbleProps) {
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       ) : (
-        /* Pickleball paddle icon */
-        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-          {/* Paddle head */}
-          <ellipse cx="16" cy="12" rx="9" ry="10" fill="#0F172A" />
-          {/* Paddle holes */}
-          <circle cx="13" cy="9" r="1.5" fill="#A3FF12" opacity="0.6" />
-          <circle cx="19" cy="9" r="1.5" fill="#A3FF12" opacity="0.6" />
-          <circle cx="16" cy="13" r="1.5" fill="#A3FF12" opacity="0.6" />
-          {/* Handle */}
-          <rect x="14" y="21" width="4" height="8" rx="2" fill="#0F172A" />
-          {/* Chat bubble indicator */}
-          <circle cx="24" cy="6" r="4" fill="#38BDF8" />
-          <text
-            x="24"
-            y="8"
-            textAnchor="middle"
-            fill="white"
-            fontSize="6"
-            fontWeight="bold"
-            fontFamily="sans-serif"
-          >
-            ?
-          </text>
-        </svg>
+        /* Nelly bot image as background — shifted down to show face + upper body */
+        <div
+          className="w-full h-full rounded-full"
+          style={{
+            backgroundImage: 'url(/images/icons/nellyBot1.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 20%',
+          }}
+        />
       )}
     </button>
   )

@@ -240,11 +240,14 @@ export default async function LearnPickleballPage() {
               <ScrollReveal>
                 <SectionHeading label={t.sections[1].label} />
 
-                <PlaceholderImage
-                  label={isEn ? 'Historic photo — Bainbridge Island, 1965' : 'Foto histórica — Isla Bainbridge, 1965'}
-                  aspect="wide"
-                  icon="📸"
-                />
+                <div className="relative w-full overflow-hidden rounded-2xl aspect-video">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/siteImages/pickleball_history.png"
+                    alt={isEn ? 'Historic photo — Bainbridge Island, 1965' : 'Foto histórica — Isla Bainbridge, 1965'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
                 <div className="mt-8 space-y-4">
                   <p className="text-white text-base leading-relaxed">
@@ -556,9 +559,11 @@ export default async function LearnPickleballPage() {
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   {/* Paddles */}
                   <div className="bg-charcoal/40 border border-charcoal rounded-xl overflow-hidden">
-                    <PlaceholderImage
-                      label={isEn ? 'Pickleball paddles' : 'Paletas de pickleball'}
-                      icon="🏓"
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/images/siteImages/pickleball_paddle.jpg"
+                      alt={isEn ? 'Pickleball paddles' : 'Paletas de pickleball'}
+                      className="w-full h-48 object-cover object-center"
                     />
                     <div className="p-5">
                       <h3 className="text-offwhite font-semibold text-lg mb-2">
@@ -588,9 +593,11 @@ export default async function LearnPickleballPage() {
 
                   {/* Balls */}
                   <div className="bg-charcoal/40 border border-charcoal rounded-xl overflow-hidden">
-                    <PlaceholderImage
-                      label={isEn ? 'Pickleballs — indoor & outdoor' : 'Pelotas — interior y exterior'}
-                      icon="⚾"
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/images/siteImages/pickleball_ball.jpg"
+                      alt={isEn ? 'Pickleballs — indoor & outdoor' : 'Pelotas — interior y exterior'}
+                      className="w-full h-48 object-cover object-[40%_center]"
                     />
                     <div className="p-5">
                       <h3 className="text-offwhite font-semibold text-lg mb-2">
