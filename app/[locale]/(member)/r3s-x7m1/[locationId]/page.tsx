@@ -54,11 +54,11 @@ export default async function LocationCourtsPage({
   if (isMember && !isVip) {
     if (!membership.location_id) {
       // Hasn't chosen a home location yet
-      redirect('/reservations/select-location')
+      redirect('/r3s-x7m1/select-location')
     }
     if (membership.location_id !== locationId) {
       // Trying to access a location that isn't their home
-      redirect(`/reservations/${membership.location_id}`)
+      redirect(`/r3s-x7m1/${membership.location_id}`)
     }
   }
 
@@ -100,7 +100,7 @@ export default async function LocationCourtsPage({
       <div className="max-w-7xl mx-auto">
         {/* Back link */}
         <Link
-          href="/reservations"
+          href="/r3s-x7m1"
           className="text-white/90 hover:text-lime text-sm mb-4 inline-block transition-colors"
         >
           ← {t('backToLocations')}

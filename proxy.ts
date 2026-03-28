@@ -76,7 +76,7 @@ export default async function proxy(request: NextRequest) {
   }
 
   // ADMIN ROUTES: Non-admin users redirected to /
-  if (user && pathname.includes('/admin')) {
+  if (user && pathname.includes('/n3ll-admin-x9k2')) {
     if (user.app_metadata?.role !== 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/'

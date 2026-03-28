@@ -22,7 +22,7 @@ export default function SelectLocationForm({ locations }: SelectLocationFormProp
       const result = await setHomeLocationAction(prev, formData)
       if (result.success) {
         const locationId = formData.get('locationId') as string
-        router.push(`/reservations/${locationId}`)
+        router.push(`/r3s-x7m1/${locationId}`)
       }
       return result
     },

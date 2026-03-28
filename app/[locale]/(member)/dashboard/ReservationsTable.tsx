@@ -58,7 +58,7 @@ export default function ReservationsTable({
       <div className="text-center py-8">
         <p className="text-white/90 text-sm mb-3">{t('noReservations')}</p>
         <Link
-          href="/reservations"
+          href="/r3s-x7m1"
           className="text-[#A3FF12] text-sm font-semibold hover:underline"
         >
           {t('bookNow')}
@@ -99,7 +99,7 @@ export default function ReservationsTable({
             <div className="flex items-center justify-end gap-2">
               {r.status === 'pending_payment' && (
                 <Link
-                  href={`/reservations?pay=${r.id}`}
+                  href={`/r3s-x7m1?pay=${r.id}`}
                   className="text-xs text-amber-400 font-semibold hover:underline"
                 >
                   {t('payNow')}
@@ -153,7 +153,7 @@ export default function ReservationsTable({
                 <td className="py-2.5 text-right">
                   {r.status === 'pending_payment' && (
                     <Link
-                      href={`/reservations?pay=${r.id}`}
+                      href={`/r3s-x7m1?pay=${r.id}`}
                       className="text-xs text-amber-400 font-semibold hover:underline mr-3"
                     >
                       {t('payNow')}

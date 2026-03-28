@@ -78,8 +78,8 @@ export async function createSessionPaymentAction(
     metadata: {
       reservation_id: reservationId,
     },
-    success_url: `${origin}${localePrefix}/reservations?paid=true`,
-    cancel_url: `${origin}${localePrefix}/reservations?payment_cancelled=true`,
+    success_url: `${origin}${localePrefix}/r3s-x7m1?paid=true`,
+    cancel_url: `${origin}${localePrefix}/r3s-x7m1?payment_cancelled=true`,
   })
 
   redirect(session.url!)

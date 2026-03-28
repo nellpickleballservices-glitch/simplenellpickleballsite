@@ -8,6 +8,7 @@
     "logout": "Logout",
     "dashboard": "Dashboard",
     "about": "About",
+    "reservations": "Reservations",
     "learn": "Learn Pickleball",
     "events": "Events",
     "contact": "Contact"
@@ -563,6 +564,7 @@
   "Footer": {
     "home": "Home",
     "about": "About",
+    "reservations": "Reservations",
     "learn": "Learn Pickleball",
     "events": "Events",
     "contact": "Contact",

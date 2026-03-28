@@ -30,12 +30,12 @@ export default async function SelectLocationPage() {
 
   // VIP members don't need to select a home location
   if (membership.plan_type === 'vip') {
-    redirect('/reservations')
+    redirect('/r3s-x7m1')
   }
 
   // If they already have a location set, redirect to their courts
   if (membership.location_id) {
-    redirect(`/reservations/${membership.location_id}`)
+    redirect(`/r3s-x7m1/${membership.location_id}`)
   }
 
   const locations = await getLocationsWithCourtCounts()

@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from 'next-intl/server'
+import { createClient } from '@/lib/supabase/server'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
 import { TableOfContents } from '@/components/public/TableOfContents'
@@ -129,6 +130,15 @@ export default async function LearnPickleballPage() {
   const locale = await getLocale()
   const t = locale === 'en' ? content.en : content.es
   const isEn = locale === 'en'
+
+  let isLoggedIn = false
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    isLoggedIn = !!user
+  } catch {
+    // render as logged-out
+  }
 
   return (
     <main className="min-h-screen bg-midnight">
@@ -994,25 +1004,27 @@ export default async function LearnPickleballPage() {
               </ScrollReveal>
             </div>
 
-            {/* ─── Bottom CTA ─── */}
-            <ScrollReveal>
-              <div className="bg-gradient-to-br from-charcoal to-midnight border border-charcoal rounded-2xl p-8 sm:p-12 text-center">
-                <h2 className="font-bebas-neue text-3xl sm:text-4xl gradient-text inline-block mb-4">
-                  {isEn ? 'Ready to Hit the Court?' : '¿Listo para la Cancha?'}
-                </h2>
-                <p className="text-white text-base mb-6 max-w-md mx-auto">
-                  {t.cta}
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <GlowButton href="/#membership-plans" variant="lime">
-                    {t.ctaButton}
-                  </GlowButton>
-                  <GlowButton href="/#locations" variant="lime">
-                    {isEn ? 'Find a Court' : 'Encuentra una Cancha'}
-                  </GlowButton>
+            {/* ─── Bottom CTA — only for non-logged-in users ─── */}
+            {!isLoggedIn && (
+              <ScrollReveal>
+                <div className="bg-gradient-to-br from-charcoal to-midnight border border-charcoal rounded-2xl p-8 sm:p-12 text-center">
+                  <h2 className="font-bebas-neue text-3xl sm:text-4xl gradient-text inline-block mb-4">
+                    {isEn ? 'Ready to Hit the Court?' : '¿Listo para la Cancha?'}
+                  </h2>
+                  <p className="text-white text-base mb-6 max-w-md mx-auto">
+                    {t.cta}
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <GlowButton href="/signup" variant="lime">
+                      {t.ctaButton}
+                    </GlowButton>
+                    <GlowButton href="/contact" variant="lime">
+                      {isEn ? 'Contact Us' : 'Contáctanos'}
+                    </GlowButton>
+                  </div>
                 </div>
-              </div>
-            </ScrollReveal>
+              </ScrollReveal>
+            )}
           </div>
         </div>
       </section>

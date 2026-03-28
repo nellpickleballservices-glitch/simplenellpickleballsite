@@ -44,19 +44,12 @@ export async function Navbar() {
       {/* Desktop nav */}
       <div className="hidden md:flex items-center gap-6">
         {/* Public page links */}
-        <NavLink href="/about">{t('about')}</NavLink>
+        <NavLink href="/#packages">{t('reservations')}</NavLink>
         <NavLink href="/learn-pickleball">{t('learn')}</NavLink>
-        <NavLink href="/events">{t('events')}</NavLink>
         <NavLink href="/contact">{t('contact')}</NavLink>
-        <NavLink href="/#membership-plans">{tBilling('pricingNav')}</NavLink>
-
         {user ? (
           <>
-            <NavLink href="/reservations">{tReservations('navLink')}</NavLink>
             <NavLink href="/dashboard">{firstName ?? t('dashboard')}</NavLink>
-            {isAdmin && (
-              <NavLink href="/admin">{tAdmin('adminNav')}</NavLink>
-            )}
             <form action={logoutAction}>
               <button
                 type="submit"

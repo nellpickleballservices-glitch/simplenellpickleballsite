@@ -71,11 +71,9 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   const close = () => setOpen(false)
 
   const publicLinks = [
-    { href: '/about', label: t('about') },
+    { href: '/#packages', label: t('reservations') },
     { href: '/learn-pickleball', label: t('learn') },
-    { href: '/events', label: t('events') },
     { href: '/contact', label: t('contact') },
-    { href: '/#membership-plans', label: tBilling('pricingNav') },
   ]
 
   return (
@@ -140,31 +138,13 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
               ))}
 
               {user && (
-                <>
-                  <Link
-                    href="/reservations"
-                    onClick={close}
-                    className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
-                  >
-                    {tReservations('navLink')}
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    onClick={close}
-                    className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
-                  >
-                    {firstName ?? t('dashboard')}
-                  </Link>
-                  {isAdmin && (
-                    <Link
-                      href="/admin"
-                      onClick={close}
-                      className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
-                    >
-                      {tAdmin('adminNav')}
-                    </Link>
-                  )}
-                </>
+                <Link
+                  href="/dashboard"
+                  onClick={close}
+                  className="font-bungee px-4 py-2.5 text-offwhite hover:text-lime hover:bg-slate/50 transition-colors text-sm"
+                >
+                  {firstName ?? t('dashboard')}
+                </Link>
               )}
             </nav>
 

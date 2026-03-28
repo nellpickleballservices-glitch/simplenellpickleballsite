@@ -58,15 +58,15 @@ const icons: Record<string, ReactNode> = {
 }
 
 const navItems = [
-  { key: 'dashboard', href: '/admin' },
-  { key: 'users', href: '/admin/users' },
-  { key: 'locations', href: '/admin/locations' },
-  { key: 'courts', href: '/admin/courts' },
-  { key: 'reservations', href: '/admin/reservations' },
-  { key: 'pricing', href: '/admin/pricing' },
-  { key: 'events', href: '/admin/events' },
-  { key: 'cms', href: '/admin/cms' },
-  { key: 'stripe', href: '/admin/stripe' },
+  { key: 'dashboard', href: '/n3ll-admin-x9k2' },
+  { key: 'users', href: '/n3ll-admin-x9k2/users' },
+  { key: 'locations', href: '/n3ll-admin-x9k2/locations' },
+  { key: 'courts', href: '/n3ll-admin-x9k2/courts' },
+  { key: 'reservations', href: '/n3ll-admin-x9k2/reservations' },
+  { key: 'pricing', href: '/n3ll-admin-x9k2/pricing' },
+  { key: 'events', href: '/n3ll-admin-x9k2/events' },
+  { key: 'cms', href: '/n3ll-admin-x9k2/cms' },
+  { key: 'stripe', href: '/n3ll-admin-x9k2/stripe' },
 ]
 
 export function AdminSidebar({ locale }: { locale: string }) {
@@ -77,8 +77,8 @@ export function AdminSidebar({ locale }: { locale: string }) {
   const isActive = (href: string) => {
     // Strip locale prefix for comparison
     const cleanPath = pathname.replace(`/${locale}`, '') || '/'
-    if (href === '/admin') {
-      return cleanPath === '/admin' || cleanPath === '/admin/'
+    if (href === '/n3ll-admin-x9k2') {
+      return cleanPath === '/n3ll-admin-x9k2' || cleanPath === '/n3ll-admin-x9k2/'
     }
     return cleanPath.startsWith(href)
   }
@@ -135,7 +135,7 @@ export function AdminSidebar({ locale }: { locale: string }) {
       >
         {/* Brand */}
         <div className="px-6 pt-6 pb-2">
-          <Link href={`/${locale}/admin`} className="inline-block">
+          <Link href={`/${locale}/n3ll-admin-x9k2`} className="inline-block">
             <Image src="/images/icons/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px]" />
           </Link>
           <p className="text-white/80 text-xs mt-1">Admin Panel</p>

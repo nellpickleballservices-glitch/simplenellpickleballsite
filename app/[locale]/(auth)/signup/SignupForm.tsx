@@ -33,7 +33,6 @@ export default function SignupForm() {
 
   const [firstNameError, setFirstNameError] = useState<string | null>(null)
   const [lastNameError, setLastNameError] = useState<string | null>(null)
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [passwordMismatch, setPasswordMismatch] = useState<string | null>(null)
@@ -247,58 +246,6 @@ export default function SignupForm() {
             {passwordMismatch ?? state.errors?.confirmPassword}
           </p>
         )}
-      </div>
-
-      {/* Plan selection — optional */}
-      <div className="lg:col-span-2 flex flex-col gap-3">
-        <p className="text-offwhite text-sm font-medium">
-          {t('planSelectionTitle')}
-        </p>
-        <div className="flex gap-4">
-          {/* VIP plan card */}
-          <button
-            type="button"
-            onClick={() => setSelectedPlan(selectedPlan === 'vip' ? null : 'vip')}
-            className={`flex-1 rounded-2xl border p-4 text-left transition-all ${
-              selectedPlan === 'vip'
-                ? 'border-lime bg-lime/10'
-                : 'border-[#38BDF8] bg-[#0F172A]'
-            }`}
-          >
-            <p className="text-offwhite font-bold text-lg">
-              {t('planVipName')}
-            </p>
-            <p className="text-lime font-bold text-2xl mt-1">$50<span className="text-sm font-normal text-white">/mo</span></p>
-            <ul className="mt-2 space-y-1 text-white text-sm">
-              <li>{t('planVipFeature1')}</li>
-              <li>{t('planVipFeature2')}</li>
-              <li>{t('planVipFeature3')}</li>
-            </ul>
-          </button>
-
-          {/* Basic plan card */}
-          <button
-            type="button"
-            onClick={() => setSelectedPlan(selectedPlan === 'basic' ? null : 'basic')}
-            className={`flex-1 rounded-2xl border p-4 text-left transition-all ${
-              selectedPlan === 'basic'
-                ? 'border-lime bg-lime/10'
-                : 'border-[#38BDF8] bg-[#0F172A]'
-            }`}
-          >
-            <p className="text-offwhite font-bold text-lg">
-              {t('planBasicName')}
-            </p>
-            <p className="text-lime font-bold text-2xl mt-1">$35<span className="text-sm font-normal text-white">/mo</span></p>
-            <ul className="mt-2 space-y-1 text-white text-sm">
-              <li>{t('planBasicFeature1')}</li>
-              <li>{t('planBasicFeature2')}</li>
-              <li>{t('planBasicFeature3')}</li>
-            </ul>
-          </button>
-        </div>
-        {/* Hidden input carries selected plan to Server Action */}
-        <input type="hidden" name="planType" value={selectedPlan ?? ''} />
       </div>
 
       {/* Global error message */}

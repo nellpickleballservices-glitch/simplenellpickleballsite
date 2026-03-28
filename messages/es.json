@@ -8,6 +8,7 @@
     "logout": "Cerrar sesion",
     "dashboard": "Panel",
     "about": "Nosotros",
+    "reservations": "Reservaciones",
     "learn": "Aprende Pickleball",
     "events": "Eventos",
     "contact": "Contacto"
@@ -563,6 +564,7 @@
   "Footer": {
     "home": "Inicio",
     "about": "Nosotros",
+    "reservations": "Reservaciones",
     "learn": "Aprende Pickleball",
     "events": "Eventos",
     "contact": "Contacto",

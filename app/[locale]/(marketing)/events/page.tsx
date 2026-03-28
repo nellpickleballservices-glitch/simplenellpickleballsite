@@ -49,9 +49,11 @@ export default async function EventsPage() {
 
   // Determine tourist surcharge for the current user
   let touristSurchargePercent = 0
+  let isLoggedIn = false
 
   try {
     const { data: { user } } = await supabase.auth.getUser()
+    isLoggedIn = !!user
 
     if (user) {
       const { data: profile } = await supabase
@@ -133,19 +135,21 @@ export default async function EventsPage() {
             </StaggerChildren>
           )}
 
-          {/* Bottom CTA */}
-          <ScrollReveal delay={0.3}>
-            <div className="mt-16 text-center flex flex-col items-center">
-              <p className="text-white text-base mb-6">
-                {locale === 'en'
-                  ? 'Join to participate in exclusive member events.'
-                  : 'Unete para participar en eventos exclusivos para miembros.'}
-              </p>
-              <GlowButton href="/#membership-plans" variant="sunset">
-                {locale === 'en' ? 'Join to Participate' : 'Unete para Participar'}
-              </GlowButton>
-            </div>
-          </ScrollReveal>
+          {/* Bottom CTA — only for non-logged-in users */}
+          {!isLoggedIn && (
+            <ScrollReveal delay={0.3}>
+              <div className="mt-16 text-center flex flex-col items-center">
+                <p className="text-white text-base mb-6">
+                  {locale === 'en'
+                    ? 'Sign up to stay updated on upcoming events.'
+                    : 'Regístrate para estar al día con los próximos eventos.'}
+                </p>
+                <GlowButton href="/signup" variant="sunset">
+                  {locale === 'en' ? 'Sign Up' : 'Regístrate'}
+                </GlowButton>
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </section>
     </main>

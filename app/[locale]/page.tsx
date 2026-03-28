@@ -6,10 +6,10 @@ import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { ChatWidget } from '@/components/chatbot/ChatWidget'
 import { GlowButton } from '@/components/effects/GlowButton'
-import { GlowCard } from '@/components/effects/GlowCard'
 import { AnimatedCtaAccents } from '@/components/effects/AnimatedAccents'
+import { PackagesSection } from '@/components/public/PackagesSection'
+import { AboutSection } from '@/components/public/AboutSection'
 import { HeroVideo } from '@/components/effects/HeroVideo'
-import { PricingCards } from './(marketing)/pricing/PricingCards'
 import type { Metadata } from 'next'
 
 interface HomePageProps {
@@ -50,7 +50,6 @@ async function HomePage({ searchParams }: HomePageProps) {
 
   let user: Awaited<ReturnType<Awaited<ReturnType<typeof createClient>>['auth']['getUser']>>['data']['user'] = null
   let firstName = ''
-  let membership: { status: string; plan_type: string } | null = null
 
   try {
     const supabase = await createClient()
@@ -67,13 +66,6 @@ async function HomePage({ searchParams }: HomePageProps) {
         firstName = profile?.first_name ?? user.user_metadata?.first_name ?? user.email?.split('@')[0] ?? ''
       }
 
-      const { data: membershipData } = await supabase
-        .from('memberships')
-        .select('status, plan_type')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .maybeSingle()
-      membership = membershipData
     }
   } catch {
     // Network error reaching Supabase — render as logged-out
@@ -141,358 +133,47 @@ async function HomePage({ searchParams }: HomePageProps) {
                 </p>
               </ScrollReveal>
 
-              {/* CTA */}
-              <ScrollReveal delay={0.75}>
-                <GlowButton href="/signup" variant="lime">
-                  {t('heroCta')}
-                </GlowButton>
-              </ScrollReveal>
+              {/* CTA — only for non-logged-in users */}
+              {!user && (
+                <ScrollReveal delay={0.75}>
+                  <GlowButton href="/signup" variant="lime">
+                    {t('heroCta')}
+                  </GlowButton>
+                </ScrollReveal>
+              )}
             </div>
           </div>
         </section>
 
-        {/* -- FEATURES / WHY NELL -- */}
-        <ScrollReveal>
-          <section className="py-28 sm:py-32 px-6 sm:px-10 bg-midnight">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-20">
-                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
-                  {t('featuresHeading')}
-                </h2>
-                <p className="text-white text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
-                  {t('featuresSubheading')}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                {/* Card 1 -- Court Reservations */}
-                <GlowCard accentColor="var(--color-lime)">
-                  <article className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-5">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-midnight border border-lime/20">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-lime" aria-hidden="true">
-                        <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
-                        {t('feature1Title')}
-                      </h3>
-                      <p className="text-white text-sm leading-relaxed">
-                        {t('feature1Desc')}
-                      </p>
-                    </div>
-                    <div className="mt-auto pt-4 border-t border-offwhite/10">
-                      <span className="font-bebas-neue text-4xl text-lime/20 select-none">01</span>
-                    </div>
-                  </article>
-                </GlowCard>
-
-                {/* Card 2 -- Professional Training */}
-                <GlowCard accentColor="var(--color-turquoise)">
-                  <article className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-5">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-midnight border border-turquoise/20">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-turquoise" aria-hidden="true">
-                        <path fillRule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.075.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.798 49.798 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
-                        {t('feature2Title')}
-                      </h3>
-                      <p className="text-white text-sm leading-relaxed">
-                        {t('feature2Desc')}
-                      </p>
-                    </div>
-                    <div className="mt-auto pt-4 border-t border-offwhite/10">
-                      <span className="font-bebas-neue text-4xl text-turquoise/20 select-none">02</span>
-                    </div>
-                  </article>
-                </GlowCard>
-
-                {/* Card 3 -- Exclusive Community */}
-                <GlowCard accentColor="var(--color-sunset)">
-                  <article className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-5">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-midnight border border-sunset/20">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-sunset" aria-hidden="true">
-                        <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
-                        <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide mb-2">
-                        {t('feature3Title')}
-                      </h3>
-                      <p className="text-white text-sm leading-relaxed">
-                        {t('feature3Desc')}
-                      </p>
-                    </div>
-                    <div className="mt-auto pt-4 border-t border-offwhite/10">
-                      <span className="font-bebas-neue text-4xl text-sunset/20 select-none">03</span>
-                    </div>
-                  </article>
-                </GlowCard>
-
-              </div>
-            </div>
-          </section>
-        </ScrollReveal>
-
-        {/* -- MEMBERSHIP PLANS -- */}
-        <ScrollReveal>
-          <section id="membership-plans" className="scroll-mt-36 py-28 sm:py-32 px-6 sm:px-10 bg-charcoal/40">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-20">
-                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
-                  {t('plansHeading')}
-                </h2>
-                <p className="text-white text-base sm:text-lg leading-relaxed">
-                  {t('plansSubheading')}
-                </p>
-              </div>
-
-              <PricingCards
-                user={user ? { id: user.id, email: user.email ?? '' } : null}
-                membership={membership}
-                showCancelledMessage={false}
-              />
-            </div>
-          </section>
-        </ScrollReveal>
+        {/* -- ABOUT (Vision, Mission, Values) -- */}
+        <AboutSection locale={locale} />
 
         {/* -- PACKAGES & PRICING -- */}
-        <ScrollReveal>
-          <section className="py-28 sm:py-32 px-6 sm:px-10 bg-midnight">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className="font-bebas-neue text-5xl sm:text-6xl lg:text-7xl gradient-text tracking-widest mb-4 inline-block py-1 leading-tight">
-                  {locale === 'en' ? 'Packages & Pricing' : 'Paquetes y Precios'}
+        <PackagesSection locale={locale} />
+
+        {/* -- CTA BANNER — only for non-logged-in users -- */}
+        {!user && (
+          <ScrollReveal>
+            <section className="relative py-32 sm:py-40 px-6 sm:px-10 overflow-hidden bg-midnight">
+              {/* Animated background accents */}
+              <AnimatedCtaAccents />
+
+              <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center gap-8">
+                <h2 className="font-bebas-neue text-[clamp(2.5rem,8vw,5.5rem)] leading-tight gradient-text tracking-widest inline-block py-1">
+                  {t('ctaHeadline')}
                 </h2>
-                <p className="text-white text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                  {locale === 'en'
-                    ? 'Towels and water included with all packages. Paddle rentals available: $5 USD for tourists, $250 DOP for locals.'
-                    : 'Toallas y agua incluidas con todos los paquetes. Raquetas en renta: $5 USD para turistas, $250 pesos para locales.'}
+                <p className="text-white text-base sm:text-lg max-w-xl leading-relaxed">
+                  {t('ctaSubheadline')}
                 </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-                {/* Tourists */}
-                <GlowCard accentColor="var(--color-turquoise)">
-                  <div className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-6 h-full">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-midnight border border-turquoise/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-turquoise" aria-hidden="true">
-                          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM6.262 6.072a8.25 8.25 0 1010.562-.766 4.5 4.5 0 01-1.318 1.357L14.25 7.5l.165.33a.809.809 0 01-1.086 1.085l-.604-.302a1.125 1.125 0 00-1.298.21l-.132.132a1.125 1.125 0 01-1.698-.09l-.556-.742a.75.75 0 01.138-1.024l.88-.704a1.125 1.125 0 00.26-1.43l-1.009-1.735c-.206-.354-.6-.463-.94-.332l-.398.152a1.125 1.125 0 01-1.152-.152l-.2-.164z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <h3 className="font-bebas-neue text-3xl text-offwhite tracking-wide">
-                        {locale === 'en' ? 'Tourists' : 'Turistas'}
-                      </h3>
-                    </div>
-                    <p className="text-white/80 text-xs uppercase tracking-widest">
-                      {locale === 'en' ? '1.5 hours per lesson or game' : '1 hora y media por lecciones o juegos'}
-                    </p>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Private Lesson' : 'Lección Individual'}</span>
-                        <span className="font-bebas-neue text-2xl text-turquoise">$25 <span className="text-sm text-white/80">USD</span></span>
-                      </div>
-                      <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
-                        <span className="font-bebas-neue text-2xl text-turquoise">$20 <span className="text-sm text-white/80">USD</span></span>
-                      </div>
-                      <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Academy (1 hour)' : 'Academia (1 hora)'}</span>
-                        <span className="font-bebas-neue text-2xl text-turquoise">$18 <span className="text-sm text-white/80">USD/{locale === 'en' ? 'person' : 'persona'}</span></span>
-                      </div>
-                      <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$95 <span className="text-sm text-white/80">USD/{locale === 'en' ? 'mo' : 'mes'}</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </GlowCard>
-
-                {/* Locals */}
-                <GlowCard accentColor="var(--color-lime)">
-                  <div className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-6 h-full">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-midnight border border-lime/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-lime" aria-hidden="true">
-                          <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <h3 className="font-bebas-neue text-3xl text-offwhite tracking-wide">
-                        {locale === 'en' ? 'Locals' : 'Locales'}
-                      </h3>
-                    </div>
-                    <p className="text-white/80 text-xs uppercase tracking-widest">
-                      {locale === 'en' ? '1.5 hours per lesson or game' : '1 hora y media por lecciones o juegos'}
-                    </p>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Private Lesson (1 hour)' : 'Lección Privada (1 hora)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$750 <span className="text-sm text-white/80">DOP</span></span>
-                      </div>
-                      <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$600 <span className="text-sm text-white/80">DOP</span></span>
-                      </div>
-                      <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
-                        <span className="font-bebas-neue text-2xl text-lime">$3,000 <span className="text-sm text-white/80">DOP/{locale === 'en' ? 'mo' : 'mes'}</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </GlowCard>
-
-                {/* Churches & Schools */}
-                <GlowCard accentColor="var(--color-sunset)">
-                  <div className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-6 h-full">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-midnight border border-sunset/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-sunset" aria-hidden="true">
-                          <path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z" />
-                          <path fillRule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <h3 className="font-bebas-neue text-2xl text-offwhite tracking-wide">
-                        {locale === 'en' ? 'Churches & Schools' : 'Iglesias y Centros Educativos'}
-                      </h3>
-                    </div>
-                    <p className="text-white/80 text-xs uppercase tracking-widest">
-                      {locale === 'en' ? '1 hour per lesson or game' : '1 hora por lecciones o juegos'}
-                    </p>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Group (2–4 people)' : 'Grupo (2–4 personas)'}</span>
-                        <span className="font-bebas-neue text-2xl text-sunset">$500 <span className="text-sm text-white/80">DOP</span></span>
-                      </div>
-                      <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-white text-sm">{locale === 'en' ? 'Membership (2 games/week)' : 'Membresía (2 juegos/semana)'}</span>
-                        <span className="font-bebas-neue text-2xl text-sunset">$2,000 <span className="text-sm text-white/80">DOP/{locale === 'en' ? 'mo' : 'mes'}</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </GlowCard>
-
-              </div>
-
-              {/* Tournaments Section */}
-              <div className="mt-20">
-                <div className="text-center mb-12">
-                  <h3 className="font-bebas-neue text-4xl sm:text-5xl text-offwhite tracking-widest mb-3">
-                    {locale === 'en' ? 'Tournaments' : 'Torneos'}
-                  </h3>
-                  <p className="text-white/80 text-sm uppercase tracking-widest">
-                    {locale === 'en' ? 'Per person pricing' : 'Precio por persona'}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                  {/* Tournament - Tourists */}
-                  <GlowCard accentColor="var(--color-turquoise)">
-                    <div className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-5 h-full">
-                      <h4 className="font-bebas-neue text-2xl text-turquoise tracking-wide">
-                        {locale === 'en' ? 'Tourists' : 'Turistas'}
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
-                          <span className="font-bebas-neue text-2xl text-turquoise">$50 <span className="text-sm text-white/80">USD</span></span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
-                          <span className="font-bebas-neue text-2xl text-turquoise">$40 <span className="text-sm text-white/80">USD</span></span>
-                        </div>
-                      </div>
-                    </div>
-                  </GlowCard>
-
-                  {/* Tournament - Locals */}
-                  <GlowCard accentColor="var(--color-lime)">
-                    <div className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-5 h-full">
-                      <h4 className="font-bebas-neue text-2xl text-lime tracking-wide">
-                        {locale === 'en' ? 'Locals' : 'Locales'}
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
-                          <span className="font-bebas-neue text-2xl text-lime">$1,500 <span className="text-sm text-white/80">DOP</span></span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
-                          <span className="font-bebas-neue text-2xl text-lime">$1,200 <span className="text-sm text-white/80">DOP</span></span>
-                        </div>
-                      </div>
-                    </div>
-                  </GlowCard>
-
-                  {/* Tournament - Churches & Schools */}
-                  <GlowCard accentColor="var(--color-sunset)">
-                    <div className="bg-charcoal border border-charcoal rounded-2xl p-8 flex flex-col gap-5 h-full">
-                      <h4 className="font-bebas-neue text-2xl text-sunset tracking-wide">
-                        {locale === 'en' ? 'Churches & Schools' : 'Iglesias y Centros Educativos'}
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-baseline border-b border-offwhite/10 pb-3">
-                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 2' : 'Equipo de 2'}</span>
-                          <span className="font-bebas-neue text-2xl text-sunset">$1,300 <span className="text-sm text-white/80">DOP</span></span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-white text-sm">{locale === 'en' ? 'Team of 4' : 'Equipo de 4'}</span>
-                          <span className="font-bebas-neue text-2xl text-sunset">$1,000 <span className="text-sm text-white/80">DOP</span></span>
-                        </div>
-                      </div>
-                    </div>
-                  </GlowCard>
-
+                <div className="mt-2">
+                  <GlowButton href="/signup" variant="sunset">
+                    {t('ctaButton')}
+                  </GlowButton>
                 </div>
               </div>
-
-              {/* WhatsApp CTA */}
-              <div className="mt-16 text-center">
-                <a
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? ''}?text=${encodeURIComponent(locale === 'en' ? 'Hello, I\'d like to make a reservation at NELL Pickleball Club' : 'Hola, me gustaría hacer una reservación en NELL Pickleball Club')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 text-green-400 hover:text-green-300 transition-colors group"
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" className="shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                  </svg>
-                  <span className="font-bebas-neue text-xl sm:text-2xl tracking-wide">
-                    {locale === 'en' ? 'Contact us to make your reservations!' : '¡Contáctanos para hacer tus reservaciones!'}
-                  </span>
-                </a>
-              </div>
-            </div>
-          </section>
-        </ScrollReveal>
-
-        {/* -- CTA BANNER -- */}
-        <ScrollReveal>
-          <section className="relative py-32 sm:py-40 px-6 sm:px-10 overflow-hidden bg-midnight">
-            {/* Animated background accents */}
-            <AnimatedCtaAccents />
-
-            <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center gap-8">
-              <h2 className="font-bebas-neue text-[clamp(2.5rem,8vw,5.5rem)] leading-tight gradient-text tracking-widest inline-block py-1">
-                {t('ctaHeadline')}
-              </h2>
-              <p className="text-white text-base sm:text-lg max-w-xl leading-relaxed">
-                {t('ctaSubheadline')}
-              </p>
-              <div className="mt-2">
-                <GlowButton href="/signup" variant="sunset">
-                  {t('ctaButton')}
-                </GlowButton>
-              </div>
-            </div>
-          </section>
-        </ScrollReveal>
+            </section>
+          </ScrollReveal>
+        )}
       </main>
       <Footer />
       <ChatWidget locale={locale} />

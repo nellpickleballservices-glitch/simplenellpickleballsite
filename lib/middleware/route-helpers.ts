@@ -1,7 +1,7 @@
-const PROTECTED_PREFIXES = ['/member/', '/admin/', '/dashboard']
+const PROTECTED_PREFIXES = ['/member/', '/n3ll-admin-x9k2/', '/dashboard']
 const AUTH_REDIRECT_ROUTES = ['/login', '/signup']
 const COMPLETE_PROFILE_PATH = '/signup/complete-profile'
-const RESERVATION_SEGMENTS = ['/reservations', '/checkout-session']
+const RESERVATION_SEGMENTS = ['/r3s-x7m1', '/checkout-session']
 
 export function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(prefix => pathname.includes(prefix))

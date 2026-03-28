@@ -16,7 +16,7 @@ export default function LocationCard({ location }: LocationCardProps) {
   return (
     <button
       aria-label={`${t('viewCourts')} — ${location.name}`}
-      onClick={() => router.push(`/reservations/${location.id}`)}
+      onClick={() => router.push(`/r3s-x7m1/${location.id}`)}
       className="bg-[#1E293B] rounded-xl shadow-lg overflow-hidden text-left hover:ring-2 hover:ring-lime/50 transition-all group w-full"
     >
       {/* Hero Image */}

@@ -30,8 +30,8 @@ export async function createCheckoutSessionAction(planType: 'vip' | 'basic') {
     line_items: [{ price: priceId, quantity: 1 }],
     client_reference_id: user.id,
     customer_email: user.email,
-    success_url: `${origin}${localePrefix}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}${localePrefix}/#membership-plans`,
+    success_url: `${origin}${localePrefix}/chk-s8p2?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}${localePrefix}/`,
     subscription_data: {
       metadata: {
         supabase_user_id: user.id,

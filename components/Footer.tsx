@@ -26,11 +26,9 @@ export async function Footer() {
 
   const navLinks = [
     { href: '/', label: t('home') },
-    { href: '/about', label: t('about') },
+    { href: '/#packages', label: t('reservations') },
     { href: '/learn-pickleball', label: t('learn') },
-    { href: '/events', label: t('events') },
     { href: '/contact', label: t('contact') },
-    { href: '/#membership-plans', label: t('pricing') },
   ]
 
   return (

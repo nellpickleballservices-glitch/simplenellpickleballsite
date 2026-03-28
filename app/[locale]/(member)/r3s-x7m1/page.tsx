@@ -31,10 +31,10 @@ export default async function ReservationsPage() {
   if (isMember && !isVip) {
     if (membership.location_id) {
       // Already has a home location — go straight to their courts
-      redirect(`/reservations/${membership.location_id}`)
+      redirect(`/r3s-x7m1/${membership.location_id}`)
     } else {
       // Needs to choose a home location first
-      redirect('/reservations/select-location')
+      redirect('/r3s-x7m1/select-location')
     }
   }
 
