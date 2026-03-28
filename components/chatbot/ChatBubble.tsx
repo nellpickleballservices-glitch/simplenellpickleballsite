@@ -46,7 +46,7 @@ export function ChatBubble({ onClick, isOpen }: ChatBubbleProps) {
           style={{
             backgroundImage: 'url(/images/icons/nellyBot1.png)',
             backgroundSize: 'cover',
-            backgroundPosition: 'center 20%',
+            backgroundPosition: 'center 60%',
           }}
         />
       )}

@@ -245,7 +245,7 @@ export default async function LearnPickleballPage() {
                   <img
                     src="/images/siteImages/pickleball_history.png"
                     alt={isEn ? 'Historic photo — Bainbridge Island, 1965' : 'Foto histórica — Isla Bainbridge, 1965'}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
 
