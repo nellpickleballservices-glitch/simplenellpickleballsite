@@ -23,14 +23,20 @@ export async function getLocationsAction(): Promise<LocationRow[]> {
     .select('*')
     .order('name')
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[locations] getLocations error:', error.message)
+    throw new Error('Operation failed')
+  }
 
   // Get court counts per location
   const { data: courts, error: courtsCountError } = await supabaseAdmin
     .from('courts')
     .select('location_id')
 
-  if (courtsCountError) throw new Error(courtsCountError.message)
+  if (courtsCountError) {
+    console.error('[locations] getLocations courts error:', courtsCountError.message)
+    throw new Error('Operation failed')
+  }
 
   const countMap = new Map<string, number>()
   for (const c of courts ?? []) {
@@ -80,7 +86,10 @@ export async function addLocationAction(
     description: description || null,
   })
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[locations] addLocation error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }
 
@@ -113,7 +122,10 @@ export async function updateLocationAction(
     })
     .eq('id', locationId)
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[locations] updateLocation error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }
 
@@ -127,6 +139,9 @@ export async function deleteLocationAction(
     .delete()
     .eq('id', locationId)
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[locations] deleteLocation error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }

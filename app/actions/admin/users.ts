@@ -34,7 +34,10 @@ export async function searchUsersAction(
     .order('created_at', { ascending: false })
     .range(offset, offset + USER_PAGE_SIZE - 1)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[users] searchUsers error:', error.message)
+    throw new Error('Operation failed')
+  }
   if (!data) return { users: [], total: 0, page }
 
   // Batch-fetch memberships for returned user IDs
@@ -213,7 +216,10 @@ export async function updateUserCountryAction(userId: string, country: string) {
     .update({ country })
     .eq('id', userId)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[users] updateUserCountry error:', error.message)
+    throw new Error('Operation failed')
+  }
 
   return { success: true }
 }

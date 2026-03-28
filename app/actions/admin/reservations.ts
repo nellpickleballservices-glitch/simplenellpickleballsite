@@ -66,7 +66,10 @@ export async function getAllReservationsAction(filters: {
     .order('starts_at', { ascending: false })
     .range(from, to)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[reservations] getAllReservations error:', error.message)
+    throw new Error('Operation failed')
+  }
 
   return {
     reservations: (data ?? []) as AdminReservation[],
@@ -85,7 +88,10 @@ export async function adminCancelReservationAction(
     .update({ status: 'cancelled' })
     .eq('id', reservationId)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[reservations] adminCancelReservation error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }
 
@@ -115,6 +121,22 @@ export async function adminCreateReservationAction(
   }
   if (endDate <= startDate) {
     return { error: 'End time must be after start time' }
+  }
+
+  const durationHours = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60)
+  if (durationHours > 4) {
+    return { error: 'Maximum reservation duration is 4 hours' }
+  }
+
+  if (guestName && guestName.length > 100) {
+    return { error: 'Guest name must be 100 characters or fewer' }
+  }
+
+  if (spotNumber) {
+    const spot = parseInt(spotNumber, 10)
+    if (isNaN(spot) || spot < 1 || spot > 20) {
+      return { error: 'Spot number must be between 1 and 20' }
+    }
   }
 
   if (bookingMode && !['full_court', 'open_play'].includes(bookingMode)) {
@@ -201,7 +223,10 @@ export async function adminCreateReservationAction(
     is_tourist_price: userIsTourist,
   })
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[reservations] adminCreateReservation error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }
 
@@ -215,7 +240,10 @@ export async function markCashPaidAction(
     .update({ payment_status: 'paid', payment_method: 'cash' })
     .eq('id', reservationId)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[reservations] markCashPaid error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }
 

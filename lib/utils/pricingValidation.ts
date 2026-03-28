@@ -8,7 +8,7 @@ export function validateDayOfWeek(day: number): boolean {
 }
 
 export function validatePriceCents(cents: number): boolean {
-  return Number.isInteger(cents) && cents >= 0
+  return Number.isInteger(cents) && cents >= 0 && cents <= 10_000_000
 }
 
 export function validateSurchargePct(pct: number): boolean {

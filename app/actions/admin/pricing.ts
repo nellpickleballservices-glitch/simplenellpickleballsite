@@ -23,7 +23,10 @@ export async function getSessionPricingAction(): Promise<CourtPricingGrid[]> {
     .select('id, name')
     .order('name')
 
-  if (courtsErr) throw new Error(courtsErr.message)
+  if (courtsErr) {
+    console.error('[pricing] getSessionPricing courts error:', courtsErr.message)
+    throw new Error('Operation failed')
+  }
 
   // Fetch all session_pricing rows
   const { data: pricing, error: pricingErr } = await supabaseAdmin
@@ -31,7 +34,10 @@ export async function getSessionPricingAction(): Promise<CourtPricingGrid[]> {
     .select('court_id, day_of_week, price_cents')
     .order('day_of_week')
 
-  if (pricingErr) throw new Error(pricingErr.message)
+  if (pricingErr) {
+    console.error('[pricing] getSessionPricing pricing error:', pricingErr.message)
+    throw new Error('Operation failed')
+  }
 
   // Build lookup: court_id -> Map<day_of_week, price_cents>
   const pricingMap = new Map<string, Map<number, number>>()
@@ -81,7 +87,10 @@ export async function upsertSessionPricingAction(
       { onConflict: 'court_id,day_of_week' }
     )
 
-  if (error) return { success: false, error: error.message }
+  if (error) {
+    console.error('[pricing] upsertSessionPricing error:', error.message)
+    return { success: false, error: 'Operation failed' }
+  }
   return { success: true }
 }
 
@@ -97,7 +106,10 @@ export async function getTouristSurchargeAction(): Promise<number> {
     .eq('key', 'tourist_surcharge_pct')
     .maybeSingle()
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[pricing] getTouristSurcharge error:', error.message)
+    throw new Error('Operation failed')
+  }
   return data ? Number(data.value) : 25
 }
 
@@ -118,6 +130,9 @@ export async function updateTouristSurchargeAction(
     .update({ value: pct })
     .eq('key', 'tourist_surcharge_pct')
 
-  if (error) return { success: false, error: error.message }
+  if (error) {
+    console.error('[pricing] updateTouristSurcharge error:', error.message)
+    return { success: false, error: 'Operation failed' }
+  }
   return { success: true }
 }

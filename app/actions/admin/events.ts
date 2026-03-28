@@ -21,7 +21,10 @@ export async function getEventsAction(
   }
 
   const { data, error } = await query
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[events] getEvents error:', error.message)
+    throw new Error('Operation failed')
+  }
   return (data ?? []) as Event[]
 }
 
@@ -39,8 +42,23 @@ export async function createEventAction(formData: FormData): Promise<{ success: 
     throw new Error('Invalid event type')
   }
 
+  const imageUrl = (formData.get('image_url') as string) || null
+  if (imageUrl) {
+    try {
+      const parsed = new URL(imageUrl)
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error('Image URL must use http or https')
+      }
+    } catch {
+      throw new Error('Image URL must use http or https')
+    }
+  }
+
   const priceRaw = formData.get('price_cents') as string | null
   const price_cents = priceRaw && priceRaw.trim() !== '' ? parseInt(priceRaw, 10) : null
+  if (price_cents !== null && (isNaN(price_cents) || price_cents < 0 || price_cents > 1_000_000)) {
+    throw new Error('Invalid price')
+  }
 
   const { error } = await supabaseAdmin.from('events').insert({
     title_es,
@@ -51,12 +69,15 @@ export async function createEventAction(formData: FormData): Promise<{ success: 
     event_type,
     start_time: (formData.get('start_time') as string) || null,
     end_time: (formData.get('end_time') as string) || null,
-    image_url: (formData.get('image_url') as string) || null,
+    image_url: imageUrl,
     location_id: (formData.get('location_id') as string) || null,
     price_cents,
   })
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[events] createEvent error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }
 
@@ -77,8 +98,23 @@ export async function updateEventAction(
     throw new Error('Invalid event type')
   }
 
+  const imageUrl = (formData.get('image_url') as string) || null
+  if (imageUrl) {
+    try {
+      const parsed = new URL(imageUrl)
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error('Image URL must use http or https')
+      }
+    } catch {
+      throw new Error('Image URL must use http or https')
+    }
+  }
+
   const priceRaw = formData.get('price_cents') as string | null
   const price_cents = priceRaw && priceRaw.trim() !== '' ? parseInt(priceRaw, 10) : null
+  if (price_cents !== null && (isNaN(price_cents) || price_cents < 0 || price_cents > 1_000_000)) {
+    throw new Error('Invalid price')
+  }
 
   const { error } = await supabaseAdmin
     .from('events')
@@ -91,13 +127,16 @@ export async function updateEventAction(
       event_type,
       start_time: (formData.get('start_time') as string) || null,
       end_time: (formData.get('end_time') as string) || null,
-      image_url: (formData.get('image_url') as string) || null,
+      image_url: imageUrl,
       location_id: (formData.get('location_id') as string) || null,
       price_cents,
     })
     .eq('id', eventId)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[events] updateEvent error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }
 
@@ -105,6 +144,9 @@ export async function deleteEventAction(eventId: string): Promise<{ success: boo
   await requireAdmin()
 
   const { error } = await supabaseAdmin.from('events').delete().eq('id', eventId)
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[events] deleteEvent error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }

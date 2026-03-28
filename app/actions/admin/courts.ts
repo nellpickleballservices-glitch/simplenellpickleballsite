@@ -25,7 +25,10 @@ export async function getCourtsAction(): Promise<CourtWithLocation[]> {
     .select('*, locations(name, address)')
     .order('name')
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[courts] getCourts error:', error.message)
+    throw new Error('Operation failed')
+  }
   return (data ?? []) as CourtWithLocation[]
 }
 
@@ -40,6 +43,9 @@ export async function addCourtAction(
 
   if (!locationId || !courtName) {
     return { error: 'Location and court name are required' }
+  }
+  if (courtName.length > 100) {
+    return { error: 'Court name must be 100 characters or fewer' }
   }
 
   // Get location data to copy to court
@@ -63,7 +69,10 @@ export async function addCourtAction(
     .select('id')
     .single()
 
-  if (courtError) return { error: courtError.message }
+  if (courtError) {
+    console.error('[courts] addCourt error:', courtError.message)
+    return { error: 'Operation failed' }
+  }
 
   // Create default court_config (weekday + weekend)
   const { error: configError } = await supabaseAdmin.from('court_config').insert([
@@ -99,7 +108,10 @@ export async function addCourtAction(
     },
   ])
 
-  if (configError) return { error: `Failed to create court schedule: ${configError.message}` }
+  if (configError) {
+    console.error('[courts] addCourt config error:', configError.message)
+    return { error: 'Operation failed' }
+  }
 
   // Create default court_pricing (full_court + open_play)
   const { error: pricingError } = await supabaseAdmin.from('court_pricing').insert([
@@ -107,7 +119,10 @@ export async function addCourtAction(
     { court_id: courtData.id, mode: 'open_play', price_cents: 1000 },
   ])
 
-  if (pricingError) return { error: `Failed to create court pricing: ${pricingError.message}` }
+  if (pricingError) {
+    console.error('[courts] addCourt pricing error:', pricingError.message)
+    return { error: 'Operation failed' }
+  }
 
   return { success: true }
 }
@@ -140,7 +155,10 @@ export async function getCourtConfigAction(
     .eq('court_id', courtId)
     .order('day_type')
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[courts] getCourtConfig error:', error.message)
+    throw new Error('Operation failed')
+  }
   return (data ?? []) as CourtConfigRow[]
 }
 
@@ -174,7 +192,10 @@ export async function updateCourtConfigAction(
       { onConflict: 'court_id,day_type' }
     )
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[courts] updateCourtConfig error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }
 
@@ -195,7 +216,10 @@ export async function setMaintenanceAction(
     })
     .eq('id', courtId)
 
-  if (courtError) throw new Error(courtError.message)
+  if (courtError) {
+    console.error('[courts] setMaintenance error:', courtError.message)
+    throw new Error('Operation failed')
+  }
 
   // Cancel overlapping reservations
   const { data: affected, error: cancelError } = await supabaseAdmin
@@ -207,7 +231,10 @@ export async function setMaintenanceAction(
     .in('status', ['confirmed', 'pending_payment'])
     .select('user_id, reservation_user_first_name, starts_at')
 
-  if (cancelError) throw new Error(cancelError.message)
+  if (cancelError) {
+    console.error('[courts] setMaintenance cancel error:', cancelError.message)
+    throw new Error('Operation failed')
+  }
 
   // Send cancellation notification emails (fire-and-forget)
   if (affected && affected.length > 0) {
@@ -250,7 +277,10 @@ export async function clearMaintenanceAction(
     })
     .eq('id', courtId)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[courts] clearMaintenance error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }
 
@@ -284,7 +314,10 @@ export async function deleteCourtAction(
     .delete()
     .eq('id', courtId)
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[courts] deleteCourt error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }
 
@@ -294,11 +327,18 @@ export async function updateCourtAddressAction(
 ): Promise<{ success?: boolean; error?: string }> {
   await requireAdmin()
 
+  if (address && address.length > 500) {
+    return { error: 'Address must be 500 characters or fewer' }
+  }
+
   const { error } = await supabaseAdmin
     .from('courts')
     .update({ address: address || null })
     .eq('id', courtId)
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[courts] updateCourtAddress error:', error.message)
+    return { error: 'Operation failed' }
+  }
   return { success: true }
 }

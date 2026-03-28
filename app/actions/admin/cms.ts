@@ -5,6 +5,8 @@ import { requireAdmin } from './auth'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import type { ContentBlock } from '@/lib/types/admin'
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 interface GroupedContentBlocks {
   home: ContentBlock[]
   about: ContentBlock[]
@@ -20,7 +22,10 @@ export async function getContentBlocksAction(): Promise<GroupedContentBlocks> {
     .select('*')
     .order('sort_order', { ascending: true })
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[cms] getContentBlocks error:', error.message)
+    throw new Error('Operation failed')
+  }
 
   const blocks = (data ?? []) as ContentBlock[]
   const grouped: GroupedContentBlocks = { home: [], about: [], learn: [], faq: [] }
@@ -52,7 +57,10 @@ export async function updateContentBlockAction(
     })
     .eq('id', blockId)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[cms] updateContentBlock error:', error.message)
+    throw new Error('Operation failed')
+  }
 
   // Trigger ISR cache invalidation so public pages see fresh content
   revalidatePath('/')
@@ -69,10 +77,20 @@ export async function reorderContentBlocksAction(
 ): Promise<{ success: boolean }> {
   await requireAdmin()
 
+  if (blockIds.length > 200) {
+    throw new Error('Operation failed')
+  }
+  if (!blockIds.every((id) => UUID_RE.test(id))) {
+    throw new Error('Operation failed')
+  }
+
   const { error } = await supabaseAdmin.rpc('batch_reorder_content_blocks', {
     items: blockIds.map((id, i) => ({ id, sort_order: i + 1 }))
   })
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[cms] reorderContentBlocks error:', error.message)
+    throw new Error('Operation failed')
+  }
   return { success: true }
 }

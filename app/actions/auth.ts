@@ -39,6 +39,12 @@ export async function signUpAction(
   if (passwordError) errors.password = passwordError
   if (confirmError) errors.confirmPassword = confirmError
   if (countryError) errors.country = countryError
+  if (phone) {
+    const phoneTrimmed = phone.trim()
+    if (phoneTrimmed.length < 7 || phoneTrimmed.length > 20 || !/^[0-9\s\-+()]+$/.test(phoneTrimmed)) {
+      errors.phone = 'Invalid phone number'
+    }
+  }
   if (Object.keys(errors).length > 0) return { errors }
 
   // Normalize names before creating account

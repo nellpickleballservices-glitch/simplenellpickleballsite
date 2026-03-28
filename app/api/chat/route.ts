@@ -2,11 +2,25 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/chat/rate-limit'
+import { checkIpRateLimit } from '@/lib/chat/ip-rate-limit'
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // ---------------------------------------------------------------------------
 // POST /api/chat
 // ---------------------------------------------------------------------------
 export async function POST(req: NextRequest) {
+  // IP burst rate limit (in-memory, 10 req/60s per IP)
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || req.headers.get('x-real-ip')
+    || 'unknown'
+  if (!checkIpRateLimit(ip).allowed) {
+    return NextResponse.json(
+      { error: 'rate_limited', message: 'Too many requests. Please wait a moment.' },
+      { status: 429 },
+    )
+  }
+
   // Validate API key
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json(
@@ -36,6 +50,11 @@ export async function POST(req: NextRequest) {
   const { messages, locale, sessionId } = body
 
   if (!messages || !Array.isArray(messages) || !sessionId) {
+    return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
+  }
+
+  // Validate sessionId format
+  if (!UUID_RE.test(sessionId)) {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
   }
 
@@ -173,6 +192,7 @@ ${eventsText}`
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
+        'X-Content-Type-Options': 'nosniff',
       },
     })
   } catch (e) {
