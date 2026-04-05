@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useActionState } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { createSessionPaymentAction } from '@/app/actions/sessionPayment'
 
 interface PaymentPanelProps {
   reservationId: string
@@ -15,10 +14,6 @@ export default function PaymentPanel({
 }: PaymentPanelProps) {
   const t = useTranslations('Reservations')
   const [cashConfirmed, setCashConfirmed] = useState(false)
-  const [stripeState, stripeAction, isStripePending] = useActionState(
-    createSessionPaymentAction,
-    {}
-  )
 
   if (cashConfirmed) {
     return (
@@ -55,37 +50,6 @@ export default function PaymentPanel({
         {priceDisplay && (
           <p className="text-[#A3FF12] text-lg font-bold">{priceDisplay}</p>
         )}
-      </div>
-
-      {/* Stripe payment option */}
-      <form action={stripeAction}>
-        <input type="hidden" name="reservationId" value={reservationId} />
-        <button
-          type="submit"
-          disabled={isStripePending}
-          className="w-full bg-[#635BFF] text-white font-semibold py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {isStripePending && (
-            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-          )}
-          {t('payment.payWithStripe')}
-        </button>
-      </form>
-
-      {/* Stripe error */}
-      {stripeState.error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
-          <p className="text-red-400 text-xs">
-            {t(`errors.${stripeState.error}`)}
-          </p>
-        </div>
-      )}
-
-      {/* Divider */}
-      <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-700" />
-        <span className="text-gray-500 text-xs">{t('payment.or')}</span>
-        <div className="flex-1 h-px bg-gray-700" />
       </div>
 
       {/* Cash payment option */}

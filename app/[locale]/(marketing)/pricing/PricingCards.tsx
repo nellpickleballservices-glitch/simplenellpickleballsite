@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { createPortalSessionAction } from '@/app/actions/billing'
 import { PlanConfirmation } from './PlanConfirmation'
 
 type PlanType = 'vip' | 'basic'
@@ -88,10 +87,6 @@ export function PricingCards({ user, membership, showCancelledMessage }: Pricing
             onSubscribe={() => setConfirmingPlan('vip')}
             t={t}
           />
-
-          <p className="text-offwhite/30 text-xs text-center mt-3">
-            {t('securedByStripe')}
-          </p>
         </div>
 
         {/* Basic Plan Card */}
@@ -171,31 +166,27 @@ function PlanCTA({
     )
   }
 
-  // Active member viewing current plan: manage subscription
+  // Active member viewing current plan
   if (isCurrentPlan) {
     return (
-      <form action={createPortalSessionAction}>
-        <button
-          type="submit"
-          className="w-full bg-turquoise text-midnight font-semibold py-3 rounded-full hover:opacity-90 transition-opacity"
-        >
-          {t('manageCta')}
-        </button>
-      </form>
+      <button
+        disabled
+        className="w-full bg-turquoise/50 text-midnight font-semibold py-3 rounded-full cursor-not-allowed"
+      >
+        {t('manageCta')}
+      </button>
     )
   }
 
-  // Active member viewing other plan: also manage (portal handles upgrades/downgrades)
+  // Active member viewing other plan
   if (isActiveMember) {
     return (
-      <form action={createPortalSessionAction}>
-        <button
-          type="submit"
-          className="w-full bg-lime/80 text-midnight font-semibold py-3 rounded-full hover:opacity-90 transition-opacity"
-        >
-          {t('manageCta')}
-        </button>
-      </form>
+      <button
+        disabled
+        className="w-full bg-lime/50 text-midnight font-semibold py-3 rounded-full cursor-not-allowed"
+      >
+        {t('manageCta')}
+      </button>
     )
   }
 

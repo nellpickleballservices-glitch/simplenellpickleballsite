@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { createCheckoutSessionAction } from '@/app/actions/billing'
 
 interface PlanConfirmationProps {
   planType: 'vip' | 'basic'
@@ -15,10 +14,6 @@ export function PlanConfirmation({ planType, onCancel }: PlanConfirmationProps) 
   const planPrice = planType === 'vip'
     ? `${t('vipPrice')}${t('vipPeriod')}`
     : `${t('basicPrice')}${t('basicPeriod')}`
-
-  const handleProceed = async () => {
-    await createCheckoutSessionAction(planType)
-  }
 
   return (
     <div className="bg-charcoal border border-charcoal/50 rounded-2xl p-8 text-center">
@@ -40,14 +35,12 @@ export function PlanConfirmation({ planType, onCancel }: PlanConfirmationProps) 
       <p className="text-white/80 text-xs mb-6">{t('confirmBilling')}</p>
 
       <div className="space-y-3">
-        <form action={handleProceed}>
-          <button
-            type="submit"
-            className="w-full bg-lime text-midnight font-semibold py-3 rounded-full hover:opacity-90 transition-opacity"
-          >
-            {t('confirmProceed')}
-          </button>
-        </form>
+        <button
+          disabled
+          className="w-full bg-lime/50 text-midnight font-semibold py-3 rounded-full cursor-not-allowed"
+        >
+          {t('confirmProceed')}
+        </button>
 
         <button
           onClick={onCancel}
@@ -56,8 +49,6 @@ export function PlanConfirmation({ planType, onCancel }: PlanConfirmationProps) 
           {t('confirmCancel')}
         </button>
       </div>
-
-      <p className="text-offwhite/30 text-xs mt-4">{t('securedByStripe')}</p>
     </div>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { createPortalSessionAction } from '@/app/actions/billing'
 
 interface MembershipProps {
   membership: {
@@ -51,14 +50,6 @@ export default function MembershipCard({ membership, userName }: MembershipProps
       {membership.status === 'past_due' && (
         <div className="mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
           <p className="text-yellow-400 text-sm font-medium">{t('pastDueWarning')}</p>
-          <form action={createPortalSessionAction}>
-            <button
-              type="submit"
-              className="mt-2 text-sm text-yellow-300 underline hover:text-yellow-200"
-            >
-              {t('updatePaymentCta')}
-            </button>
-          </form>
         </div>
       )}
 
@@ -92,14 +83,12 @@ export default function MembershipCard({ membership, userName }: MembershipProps
       )}
 
       {/* Action buttons */}
-      <form action={createPortalSessionAction}>
-        <button
-          type="submit"
-          className="w-full py-3 rounded-lg bg-[#BFFF00] text-[#0F172A] font-semibold hover:bg-[#a8e600] transition-colors"
-        >
-          {membership.status === 'cancelled' ? t('reactivateCta') : t('manageCta')}
-        </button>
-      </form>
+      <button
+        disabled
+        className="w-full py-3 rounded-lg bg-[#BFFF00]/50 text-[#0F172A] font-semibold cursor-not-allowed"
+      >
+        {membership.status === 'cancelled' ? t('reactivateCta') : t('manageCta')}
+      </button>
     </div>
   )
 }
