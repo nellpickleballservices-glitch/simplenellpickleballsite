@@ -7,7 +7,6 @@ import { CourtDiagram } from '@/components/public/CourtDiagram'
 import { GlowButton } from '@/components/effects/GlowButton'
 import { FloatingParticles } from '@/components/effects/FloatingParticles'
 import { SubpageHeroAccents } from '@/components/effects/SubpageHeroAccents'
-import { PlaceholderImage } from '@/components/public/PlaceholderImage'
 import type { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -206,10 +205,14 @@ export default async function LearnPickleballPage() {
                         : 'Lo que hace especial al pickleball es su baja barrera de entrada — la mayoría de los principiantes pueden pelotear en minutos — mientras ofrece un juego estratégico profundo para competidores avanzados.'}
                     </p>
                   </div>
-                  <PlaceholderImage
-                    label={isEn ? 'Players in action' : 'Jugadores en acción'}
-                    icon="🏓"
-                  />
+                  <div className="relative w-full overflow-hidden rounded-2xl aspect-video">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/images/siteImages/players_in_action.jpeg"
+                      alt={isEn ? 'Players in action' : 'Jugadores en acción'}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
                 </div>
 
                 {/* Why people love it */}
@@ -313,10 +316,14 @@ export default async function LearnPickleballPage() {
                 <SectionHeading label={t.sections[2].label} />
 
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
-                  <PlaceholderImage
-                    label={isEn ? 'Serve in action' : 'Servicio en acción'}
-                    icon="🎯"
-                  />
+                  <div className="relative w-full overflow-hidden rounded-2xl aspect-video">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/images/siteImages/server.png"
+                      alt={isEn ? 'Serve in action' : 'Servicio en acción'}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
                   <div className="space-y-3">
                     <h3 className="text-offwhite font-semibold text-lg mb-3">
                       {isEn ? 'The Serve' : 'El Servicio'}
@@ -787,11 +794,12 @@ export default async function LearnPickleballPage() {
                   ))}
                 </div>
 
-                <div className="mt-8">
-                  <PlaceholderImage
-                    label={isEn ? 'Shot technique demonstrations' : 'Demostraciones de técnicas de golpes'}
-                    aspect="wide"
-                    icon="🎬"
+                <div className="mt-8 relative w-full overflow-hidden rounded-2xl aspect-[21/9]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/siteImages/serve_demonstration.png"
+                    alt={isEn ? 'Shot technique demonstrations' : 'Demostraciones de técnicas de golpes'}
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
               </ScrollReveal>
@@ -810,10 +818,14 @@ export default async function LearnPickleballPage() {
                         : 'La estrategia del pickleball gira en torno a un principio clave: controlar la línea de la kitchen. El equipo que controla la red tiene una ventaja significativa. Aquí hay estrategias esenciales para mejorar tu juego:'}
                     </p>
                   </div>
-                  <PlaceholderImage
-                    label={isEn ? 'Doubles strategy positioning' : 'Posicionamiento estratégico en dobles'}
-                    icon="🧠"
-                  />
+                  <div className="relative w-full overflow-hidden rounded-2xl aspect-video">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/images/siteImages/strategy_demo.png"
+                      alt={isEn ? 'Doubles strategy positioning' : 'Posicionamiento estratégico en dobles'}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-4">
