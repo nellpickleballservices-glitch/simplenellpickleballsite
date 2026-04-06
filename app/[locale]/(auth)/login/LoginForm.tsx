@@ -76,6 +76,7 @@ export default function LoginForm() {
             type="email"
             autoComplete="email"
             required
+            defaultValue={state.fields?.email ?? ''}
             className="bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
           />
         </div>

@@ -1,0 +1,28 @@
+# NELL Pickleball Club
+
+> Premier pickleball club in Bavaro, Dominican Republic. Community-driven sports club offering courts, memberships, events, tournaments, and training sessions.
+
+## About
+
+NELL Pickleball Club is a pickleball sports facility located in Bavaro, La Altagracia, Dominican Republic. The club provides court reservations, membership plans (VIP and Basic), organized events, tournaments, and pickleball training for players of all skill levels.
+
+## Pages
+
+- [Home](https://www.nellpickleball.com/en): Main page with club overview, membership packages, and pricing
+- [Learn Pickleball](https://www.nellpickleball.com/en/learn-pickleball): Guide to pickleball rules, techniques, court layout, and strategies
+- [Events](https://www.nellpickleball.com/en/events): Upcoming tournaments, training sessions, and club events
+- [Gallery](https://www.nellpickleball.com/en/gallery): Photos and videos from the club
+- [Contact](https://www.nellpickleball.com/en/contact): Contact information and inquiry form
+
+## Membership Plans
+
+- **VIP Membership**: $50/month - Full access to all locations and courts
+- **Basic Membership**: $35/month - Access to a single location
+
+## Location
+
+Bavaro, La Altagracia, Dominican Republic
+
+## Languages
+
+The site is available in English (/en) and Spanish (/es).

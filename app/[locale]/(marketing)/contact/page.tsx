@@ -19,8 +19,16 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t('contactMetaDescription'),
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'es_DO',
+      images: [{ url: '/images/siteImages/players_in_action.jpeg', width: 1200, height: 630, alt: 'NELL Pickleball Club' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('contactMetaTitle'),
+      description: t('contactMetaDescription'),
+      images: ['/images/siteImages/players_in_action.jpeg'],
     },
     alternates: {
+      canonical: `/${locale}/contact`,
       languages: {
         en: '/en/contact',
         es: '/es/contact',
@@ -33,14 +41,18 @@ export default async function ContactPage() {
   const locale = await getLocale()
   const t = await getTranslations('Contact')
 
-  // Fetch social links from CMS
-  let socialLinks: { instagram?: string; facebook?: string } = {}
+  // Fetch social links from CMS, with hardcoded fallbacks
+  let socialLinks: { instagram?: string; facebook?: string; tiktok?: string } = {
+    instagram: 'https://www.instagram.com/nellpickleballclub/',
+    facebook: 'https://www.facebook.com/nell.pickleball.club',
+    tiktok: 'https://www.tiktok.com/@nell.pickleball.c',
+  }
   const rawSocial = await getContentBlock('footer_social_links', locale)
   if (rawSocial) {
     try {
-      socialLinks = JSON.parse(rawSocial)
+      socialLinks = { ...socialLinks, ...JSON.parse(rawSocial) }
     } catch {
-      // fallback to empty
+      // fallback to defaults
     }
   }
 
@@ -139,10 +151,10 @@ export default async function ContactPage() {
                   {t('emailLabel')}
                 </h3>
                 <a
-                  href="mailto:nellpickleball@gmail.com"
+                  href="mailto:nellpickleballclub@gmail.com"
                   className="text-turquoise text-sm hover:text-lime transition-colors"
                 >
-                  nellpickleball@gmail.com
+                  nellpickleballclub@gmail.com
                 </a>
               </div>
             </GlowCard>
@@ -151,7 +163,7 @@ export default async function ContactPage() {
       </section>
 
       {/* Social */}
-      {(socialLinks.instagram || socialLinks.facebook) && (
+      {(socialLinks.instagram || socialLinks.facebook || socialLinks.tiktok) && (
         <section className="py-16 px-6">
           <ScrollReveal delay={0.3}>
             <div className="max-w-lg mx-auto text-center">
@@ -184,6 +196,19 @@ export default async function ContactPage() {
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                    </svg>
+                  </a>
+                )}
+                {socialLinks.tiktok && (
+                  <a
+                    href={socialLinks.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="TikTok"
+                    className="w-14 h-14 bg-charcoal border border-charcoal rounded-full flex items-center justify-center text-turquoise hover:text-lime hover:border-lime/30 hover:scale-110 transition-all"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52V6.8a4.84 4.84 0 01-1-.11z" />
                     </svg>
                   </a>
                 )}

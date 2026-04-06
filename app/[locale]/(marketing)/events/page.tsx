@@ -23,8 +23,16 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t('eventsMetaDescription'),
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'es_DO',
+      images: [{ url: '/images/siteImages/players_in_action.jpeg', width: 1200, height: 630, alt: 'NELL Pickleball Club' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('eventsMetaTitle'),
+      description: t('eventsMetaDescription'),
+      images: ['/images/siteImages/players_in_action.jpeg'],
     },
     alternates: {
+      canonical: `/${locale}/events`,
       languages: {
         en: '/en/events',
         es: '/es/events',

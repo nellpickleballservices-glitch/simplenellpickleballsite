@@ -32,8 +32,16 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'es_DO',
       siteName: 'NELL Pickleball Club',
+      images: [{ url: '/images/siteImages/players_in_action.jpeg', width: 1200, height: 630, alt: 'NELL Pickleball Club' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/images/siteImages/players_in_action.jpeg'],
     },
     alternates: {
+      canonical: `/${locale}`,
       languages: {
         en: '/en',
         es: '/es',
@@ -82,31 +90,33 @@ async function HomePage({ searchParams }: HomePageProps) {
           {/* Background video with dark overlay */}
           <HeroVideo />
 
-          {/* Content pinned to bottom-left over the video */}
-          <div className="relative z-[10] w-full px-6 sm:px-12 lg:px-20 pb-24 sm:pb-28 lg:pb-32 pt-[15vh] sm:pt-[15vh]">
-            <div className="max-w-2xl">
-              {/* Location badge */}
-              <ScrollReveal delay={0}>
-                <div className="inline-flex items-center gap-2 mb-6 px-5 py-2 rounded-full border border-offwhite/15 bg-black/40 backdrop-blur-md">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-4 h-4 text-lime shrink-0"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.013 3.5-4.799 3.5-8.327a8.25 8.25 0 00-16.5 0c0 3.527 1.557 6.314 3.5 8.328a19.583 19.583 0 002.683 2.281 16.975 16.975 0 001.144.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-lime text-sm font-semibold tracking-widest uppercase">
-                    {t('heroLocationBadge')}
-                  </span>
-                </div>
-              </ScrollReveal>
+          {/* Location badge — pinned to top, right below navbar */}
+          <div className="absolute top-[10px] left-6 sm:left-12 lg:left-20 z-[10]">
+            <ScrollReveal delay={0}>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-offwhite/10 bg-black/30 backdrop-blur-sm">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-3 h-3 text-lime shrink-0"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.013 3.5-4.799 3.5-8.327a8.25 8.25 0 00-16.5 0c0 3.527 1.557 6.314 3.5 8.328a19.583 19.583 0 002.683 2.281 16.975 16.975 0 001.144.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="text-lime text-xs font-medium tracking-widest uppercase">
+                  {t('heroLocationBadge')}
+                </span>
+              </div>
+            </ScrollReveal>
+          </div>
 
+          {/* Content pinned to bottom-left over the video */}
+          <div className="relative z-[10] w-full px-6 sm:px-12 lg:px-20 pb-[174px] sm:pb-[178px] lg:pb-[182px] pt-[15vh] sm:pt-[15vh]">
+            <div className="max-w-2xl">
               {/* Main headline */}
               <ScrollReveal delay={0.15}>
                 <h1 className="font-bebas-neue text-[clamp(3.5rem,12vw,8rem)] leading-[1] tracking-widest text-offwhite mb-3 py-1 drop-shadow-[0_2px_20px_rgba(0,0,0,0.6)]">

@@ -122,6 +122,7 @@ export default function SignupForm() {
           type="text"
           autoComplete="given-name"
           required
+          defaultValue={state.fields?.firstName ?? ''}
           onBlur={(e) => handleNameBlur('firstName', e.target.value, setFirstNameError)}
           className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
@@ -139,6 +140,7 @@ export default function SignupForm() {
           type="text"
           autoComplete="family-name"
           required
+          defaultValue={state.fields?.lastName ?? ''}
           onBlur={(e) => handleNameBlur('lastName', e.target.value, setLastNameError)}
           className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
@@ -156,6 +158,7 @@ export default function SignupForm() {
           type="email"
           autoComplete="email"
           required
+          defaultValue={state.fields?.email ?? ''}
           className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
@@ -170,6 +173,7 @@ export default function SignupForm() {
           name="phone"
           type="tel"
           autoComplete="tel"
+          defaultValue={state.fields?.phone ?? ''}
           className="w-full bg-charcoal text-offwhite border border-[#1E293B] focus:border-turquoise rounded-lg px-4 py-2.5 outline-none transition-colors"
         />
       </div>
@@ -180,7 +184,7 @@ export default function SignupForm() {
           name="country"
           label={t('country')}
           locale={locale as 'en' | 'es'}
-          defaultValue="DO"
+          defaultValue={state.fields?.country ?? 'DO'}
         />
         {state.errors?.country && (
           <p className="text-red-400 text-sm mt-1">{state.errors.country}</p>

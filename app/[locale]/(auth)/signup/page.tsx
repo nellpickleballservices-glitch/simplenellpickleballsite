@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import SignupForm from './SignupForm'
+import { LogoOrb } from '@/components/effects/LogoOrb'
 
 async function SignupPage() {
   const t = await getTranslations('Auth.signup')
@@ -10,11 +11,9 @@ async function SignupPage() {
     <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md sm:max-w-lg lg:max-w-3xl">
         {/* NELL Logo */}
-        <div className="text-center mb-8">
-          <Image src="/images/icons/NellLogo.png" alt="NELL" width={200} height={100} className="h-[100px] w-[200px] mx-auto" />
-          <p className="text-white/90 text-sm mt-3">
-            {tBrand('tagline')}
-          </p>
+        <div className="relative text-center mb-8">
+          <LogoOrb />
+          <Image src="/images/icons/NellLogo.png" alt="NELL" width={200} height={100} className="relative z-10 h-[100px] w-[200px] mx-auto" />
         </div>
 
         <div className="bg-[#0F172A] border border-[#38BDF8] rounded-2xl shadow-xl p-8">

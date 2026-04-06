@@ -10,6 +10,7 @@ import { extractCountry, validateCountryCode } from '@/lib/utils/countryValidati
 export type AuthActionResult = {
   errors?: Record<string, string>
   message?: string
+  fields?: Record<string, string>
 }
 
 // useActionState requires signature: (prevState: State, formData: FormData) => Promise<State>
@@ -45,7 +46,9 @@ export async function signUpAction(
       errors.phone = 'Invalid phone number'
     }
   }
-  if (Object.keys(errors).length > 0) return { errors }
+  const fields = { firstName: rawFirstName, lastName: rawLastName, email, phone, country }
+
+  if (Object.keys(errors).length > 0) return { errors, fields }
 
   // Normalize names before creating account
   const firstName = normalizeName(rawFirstName)
@@ -64,7 +67,7 @@ export async function signUpAction(
     },
   })
 
-  if (error) return { message: error.message }
+  if (error) return { message: error.message, fields }
   if (!data.user) return { message: 'Signup failed — no user returned' }
 
   // Auto-confirm the user via admin client so they can sign in immediately
@@ -98,7 +101,7 @@ export async function loginAction(
   const supabase = await createClient()
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) return { message: error.message }
+  if (error) return { message: error.message, fields: { email } }
 
   redirect('/')
 }

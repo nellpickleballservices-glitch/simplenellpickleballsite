@@ -7,14 +7,18 @@ export async function Footer() {
   const locale = await getLocale()
   const t = await getTranslations('Footer')
 
-  // Fetch social links from CMS
-  let socialLinks: { instagram?: string; facebook?: string } = {}
+  // Fetch social links from CMS, with hardcoded fallbacks
+  let socialLinks: { instagram?: string; facebook?: string; tiktok?: string } = {
+    instagram: 'https://www.instagram.com/nellpickleballclub/',
+    facebook: 'https://www.facebook.com/nell.pickleball.club',
+    tiktok: 'https://www.tiktok.com/@nell.pickleball.c',
+  }
   const raw = await getContentBlock('footer_social_links', locale)
   if (raw) {
     try {
-      socialLinks = JSON.parse(raw)
+      socialLinks = { ...socialLinks, ...JSON.parse(raw) }
     } catch {
-      // fallback to empty
+      // fallback to defaults
     }
   }
 
@@ -43,10 +47,10 @@ export async function Footer() {
             </p>
             <p className="text-white text-sm mt-1">Pickleball Club</p>
             <a
-              href="mailto:nellpickleball@gmail.com"
+              href="mailto:nellpickleballclub@gmail.com"
               className="text-turquoise text-sm mt-3 block hover:text-lime transition-colors"
             >
-              nellpickleball@gmail.com
+              nellpickleballclub@gmail.com
             </a>
             {whatsappPhone && (
               <a
@@ -114,6 +118,19 @@ export async function Footer() {
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                  </svg>
+                </a>
+              )}
+              {socialLinks.tiktok && (
+                <a
+                  href={socialLinks.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="TikTok"
+                  className="text-turquoise hover:text-lime transition-colors"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52V6.8a4.84 4.84 0 01-1-.11z" />
                   </svg>
                 </a>
               )}

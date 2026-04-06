@@ -6,8 +6,8 @@ export function HeroVideo() {
     <div className="absolute inset-0 z-[1]" aria-hidden="true">
       {/* Mobile: static image */}
       <img
-        src="/images/siteImages/hero-mobile-img.png"
-        alt=""
+        src="/images/siteImages/hero-mobile-img.jpeg"
+        alt="Pickleball players at NELL Pickleball Club in Bavaro, Dominican Republic"
         className="absolute inset-0 w-full h-full object-cover md:hidden"
       />
       {/* Desktop: autoplay video */}

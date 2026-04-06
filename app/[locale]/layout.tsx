@@ -27,9 +27,44 @@ const bungee = Bungee({
   display: 'swap',
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.nellpickleball.com'
+
 export const metadata: Metadata = {
-  title: 'NELL Pickleball Club',
-  description: 'Club de pickleball en República Dominicana',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'NELL Pickleball Club | Bavaro, Dominican Republic',
+    template: '%s | NELL Pickleball Club',
+  },
+  description: 'Premier pickleball club in Bavaro, Dominican Republic. Join our community for courts, events, tournaments, and training sessions.',
+  keywords: ['pickleball', 'pickleball club', 'Bavaro', 'Dominican Republic', 'Punta Cana', 'pickleball courts', 'pickleball lessons', 'pickleball tournaments'],
+  icons: {
+    icon: '/images/siteImages/favicon/nell_favicon.png',
+    apple: '/images/siteImages/favicon/nell_favicon.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'NELL Pickleball Club',
+    title: 'NELL Pickleball Club | Bavaro, Dominican Republic',
+    description: 'Premier pickleball club in Bavaro, Dominican Republic. Courts, events, tournaments, and training.',
+    images: [
+      {
+        url: '/images/siteImages/players_in_action.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'NELL Pickleball Club - Players in action',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NELL Pickleball Club | Bavaro, Dominican Republic',
+    description: 'Premier pickleball club in Bavaro, Dominican Republic.',
+    images: ['/images/siteImages/players_in_action.jpeg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default async function RootLayout({
@@ -45,6 +80,41 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${bebasNeue.variable} ${poppins.variable} ${bungee.variable}`}>
       <body className="font-poppins">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SportsActivityLocation',
+              name: 'NELL Pickleball Club',
+              description: 'Premier pickleball club in Bavaro, Dominican Republic.',
+              url: siteUrl,
+              logo: `${siteUrl}/images/icons/NellLogo.png`,
+              image: `${siteUrl}/images/siteImages/players_in_action.jpeg`,
+              sport: 'Pickleball',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Bavaro',
+                addressRegion: 'La Altagracia',
+                addressCountry: 'DO',
+              },
+              geo: {
+                '@type': 'GeoCoordinates',
+                latitude: 18.6872,
+                longitude: -68.4543,
+              },
+              openingHoursSpecification: {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+              },
+              sameAs: [
+                'https://www.instagram.com/nellpickleballclub/',
+                'https://www.facebook.com/nell.pickleball.club',
+                'https://www.tiktok.com/@nell.pickleball.c',
+              ],
+            }),
+          }}
+        />
         <NextIntlClientProvider messages={messages}>
           <MotionProvider>
             <Navbar />
