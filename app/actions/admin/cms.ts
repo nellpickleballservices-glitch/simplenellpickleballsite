@@ -12,6 +12,7 @@ interface GroupedContentBlocks {
   about: ContentBlock[]
   learn: ContentBlock[]
   faq: ContentBlock[]
+  contact: ContentBlock[]
 }
 
 export async function getContentBlocksAction(): Promise<GroupedContentBlocks> {
@@ -28,7 +29,7 @@ export async function getContentBlocksAction(): Promise<GroupedContentBlocks> {
   }
 
   const blocks = (data ?? []) as ContentBlock[]
-  const grouped: GroupedContentBlocks = { home: [], about: [], learn: [], faq: [] }
+  const grouped: GroupedContentBlocks = { home: [], about: [], learn: [], faq: [], contact: [] }
 
   for (const block of blocks) {
     if (block.block_key.startsWith('home_')) grouped.home.push(block)
@@ -36,6 +37,7 @@ export async function getContentBlocksAction(): Promise<GroupedContentBlocks> {
     else if (block.block_key.startsWith('about_')) grouped.about.push(block)
     else if (block.block_key.startsWith('learn_')) grouped.learn.push(block)
     else if (block.block_key.startsWith('faq_')) grouped.faq.push(block)
+    else if (block.block_key.startsWith('contact_')) grouped.contact.push(block)
   }
 
   return grouped

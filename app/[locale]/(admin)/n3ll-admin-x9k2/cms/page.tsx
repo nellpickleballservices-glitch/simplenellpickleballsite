@@ -11,11 +11,12 @@ import {
 } from '@/app/actions/admin'
 import type { ContentBlock } from '@/lib/types/admin'
 
-type PageTab = 'learn' | 'faq'
+type PageTab = 'learn' | 'faq' | 'contact'
 
 const PAGE_TABS: { key: PageTab; labelKey: string }[] = [
   { key: 'learn', labelKey: 'learnBlocks' },
   { key: 'faq', labelKey: 'faqBlocks' },
+  { key: 'contact', labelKey: 'contactBlocks' },
 ]
 
 function formatBlockKey(key: string): string {
@@ -30,6 +31,7 @@ export default function AdminCmsPage() {
   const [blocks, setBlocks] = useState<Record<PageTab, ContentBlock[]>>({
     learn: [],
     faq: [],
+    contact: [],
   })
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null)
   const [langTab, setLangTab] = useState<'es' | 'en'>('es')

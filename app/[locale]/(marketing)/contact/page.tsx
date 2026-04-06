@@ -56,6 +56,9 @@ export default async function ContactPage() {
     }
   }
 
+  // Fetch hours from CMS, fallback to translation
+  const hoursFromCms = await getContentBlock('contact_hours', locale)
+
   const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? ''
   const whatsappGreeting =
     locale === 'en'
@@ -218,15 +221,15 @@ export default async function ContactPage() {
         </section>
       )}
 
-      {/* Hours */}
-      <section className="py-16 px-6 bg-charcoal/30">
+      {/* Hours — hidden until client confirms usage */}
+      <section className="hidden py-16 px-6 bg-charcoal/30">
         <ScrollReveal>
           <div className="max-w-lg mx-auto text-center">
             <h2 className="font-bebas-neue text-3xl gradient-text tracking-widest mb-4 inline-block">
               {t('hoursTitle')}
             </h2>
             <p className="text-white text-base">
-              {t('hoursDescription')}
+              {hoursFromCms ?? t('hoursDescription')}
             </p>
           </div>
         </ScrollReveal>

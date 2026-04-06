@@ -1,0 +1,16 @@
+{
+  "name": "NELL Pickleball Club",
+  "short_name": "NELL",
+  "description": "Premier pickleball club in Bavaro, Dominican Republic",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#A3E635",
+  "icons": [
+    {
+      "src": "/images/siteImages/favicon/nell_favicon.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

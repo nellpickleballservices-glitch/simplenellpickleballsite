@@ -64,7 +64,19 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
+  manifest: '/manifest.json',
+  other: {
+    'theme-color': '#A3E635',
+  },
+  verification: {},
 }
 
 export default async function RootLayout({
@@ -103,10 +115,15 @@ export default async function RootLayout({
                 latitude: 18.6872,
                 longitude: -68.4543,
               },
+              telephone: '+18296554777',
+              email: 'nellpickleballclub@gmail.com',
               openingHoursSpecification: {
                 '@type': 'OpeningHoursSpecification',
                 dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                opens: '07:00',
+                closes: '22:00',
               },
+              priceRange: '$$',
               sameAs: [
                 'https://www.instagram.com/nellpickleballclub/',
                 'https://www.facebook.com/nell.pickleball.club',
