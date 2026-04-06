@@ -54,26 +54,19 @@ export async function signUpAction(
   const firstName = normalizeName(rawFirstName)
   const lastName = normalizeName(rawLastName)
 
-  const supabase = await createClient()
-
-  const { data, error } = await supabase.auth.signUp({
+  // Create user via admin API to skip email confirmation entirely
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
-    options: {
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-      },
+    email_confirm: true,
+    user_metadata: {
+      first_name: firstName,
+      last_name: lastName,
     },
   })
 
   if (error) return { message: error.message, fields }
   if (!data.user) return { message: 'Signup failed — no user returned' }
-
-  // Auto-confirm the user via admin client so they can sign in immediately
-  await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
-    email_confirm: true,
-  })
 
   // Insert profile row via admin client — regular client has no session yet
   // until email is confirmed, so auth.uid() is null and RLS would block the insert.
@@ -87,6 +80,11 @@ export async function signUpAction(
   })
 
   if (profileError) return { message: profileError.message }
+
+  // Sign the user in immediately after account creation
+  const supabase = await createClient()
+  const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+  if (signInError) return { message: signInError.message }
 
   // ?welcome=1 triggers the WelcomeBanner component in app/[locale]/page.tsx
   redirect('/?welcome=1')
