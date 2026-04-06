@@ -67,6 +67,11 @@ export async function signUpAction(
   if (error) return { message: error.message }
   if (!data.user) return { message: 'Signup failed — no user returned' }
 
+  // Auto-confirm the user via admin client so they can sign in immediately
+  await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
+    email_confirm: true,
+  })
+
   // Insert profile row via admin client — regular client has no session yet
   // until email is confirmed, so auth.uid() is null and RLS would block the insert.
   const { error: profileError } = await supabaseAdmin.from('profiles').insert({

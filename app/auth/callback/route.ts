@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         if (!existingProfile) {
           // New OAuth user — create profile without country
           const meta = user.user_metadata ?? {}
-          await supabaseAdmin.from('profiles').insert({
+          const { error: insertError } = await supabaseAdmin.from('profiles').insert({
             id: user.id,
             first_name: meta.full_name?.split(' ')[0] ?? meta.name?.split(' ')[0] ?? '',
             last_name: meta.full_name?.split(' ').slice(1).join(' ') ?? meta.name?.split(' ').slice(1).join(' ') ?? '',
@@ -31,6 +31,9 @@ export async function GET(request: Request) {
             locale_pref: 'es',
             country: null,
           })
+          if (insertError) {
+            console.error('OAuth profile insert failed:', insertError)
+          }
           return NextResponse.redirect(`${origin}/signup/complete-profile`)
         }
 
