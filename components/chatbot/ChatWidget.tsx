@@ -20,8 +20,8 @@ export function ChatWidget({ locale }: ChatWidgetProps) {
 
   const tooltipText =
     locale === 'es'
-      ? 'Tienes preguntas? Pregunta a Nelly!'
-      : 'Have questions? Ask Nelly!'
+      ? 'Tienes preguntas? Pregunta a Nell!'
+      : 'Have questions? Ask Nell!'
 
   // Auto-greeting tooltip (once per session)
   useEffect(() => {

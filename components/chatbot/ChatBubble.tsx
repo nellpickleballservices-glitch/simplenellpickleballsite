@@ -17,10 +17,10 @@ export function ChatBubble({ onClick, isOpen }: ChatBubbleProps) {
   return (
     <button
       onClick={onClick}
-      aria-label={isOpen ? 'Close chat' : 'Open chat with Nelly'}
+      aria-label={isOpen ? 'Close chat' : 'Open chat with Nell'}
       className={`fixed right-6 bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-300 ${
         isOpen
-          ? 'hidden sm:flex bg-gray-700 hover:bg-gray-800'
+          ? 'hidden lg:flex bg-gray-700 hover:bg-gray-800'
           : 'bg-[#A3FF12] hover:scale-110 hover:bg-[#7ED957]'
       } ${mounted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
     >
@@ -40,7 +40,7 @@ export function ChatBubble({ onClick, isOpen }: ChatBubbleProps) {
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       ) : (
-        /* Nelly bot image as background — shifted down to show face + upper body */
+        /* Nell bot image as background — shifted down to show face + upper body */
         <div
           className="w-full h-full rounded-full"
           style={{

@@ -22,23 +22,23 @@ interface ChatPanelProps {
 const i18n = {
   en: {
     greeting:
-      "Hi! I'm Nelly, your NELL Pickleball Club assistant. How can I help you?",
+      "Hi! I'm Nell, your NELL Pickleball Club assistant. How can I help you?",
     chip1: 'Membership plans',
     chip2: 'Court locations',
     chip3: 'How to play pickleball',
     chip4: 'Upcoming events',
-    placeholder: 'Ask Nelly...',
-    unavailable: 'Nelly is unavailable right now. Please try again later.',
+    placeholder: 'Ask Nell...',
+    unavailable: 'Nell is unavailable right now. Please try again later.',
   },
   es: {
     greeting:
-      'Hola! Soy Nelly, tu asistente de NELL Pickleball Club. Como puedo ayudarte?',
+      'Hola! Soy Nell, tu asistente de NELL Pickleball Club. Como puedo ayudarte?',
     chip1: 'Planes de membresia',
     chip2: 'Ubicaciones de canchas',
     chip3: 'Como jugar pickleball',
     chip4: 'Proximos eventos',
-    placeholder: 'Pregunta a Nelly...',
-    unavailable: 'Nelly no esta disponible en este momento. Intenta mas tarde.',
+    placeholder: 'Pregunta a Nell...',
+    unavailable: 'Nell no esta disponible en este momento. Intenta mas tarde.',
   },
 } as const
 
@@ -78,7 +78,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640)
+    const check = () => setIsMobile(window.innerWidth < 1024)
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
@@ -237,8 +237,8 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
     <div className={panelClasses}>
       {/* Header */}
       <div className="flex items-center gap-3 bg-[#0F172A] px-4 py-3">
-        <img src="/images/icons/nellyBot1.png" alt="Nelly" className="h-8 w-8 rounded-full object-cover" />
-        <span className="flex-1 text-sm font-semibold text-white">Nelly</span>
+        <img src="/images/icons/nellyBot1.png" alt="Nell" className="h-8 w-8 rounded-full object-cover" />
+        <span className="flex-1 text-sm font-semibold text-white">Nell</span>
         <button
           onClick={onClose}
           aria-label="Close chat"
@@ -271,7 +271,7 @@ export function ChatPanel({ locale, onClose }: ChatPanelProps) {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'assistant' && (
-              <img src="/images/icons/nellyBot1.png" alt="Nelly" className="mr-2 mt-1 h-6 w-6 flex-shrink-0 rounded-full object-cover" />
+              <img src="/images/icons/nellyBot1.png" alt="Nell" className="mr-2 mt-1 h-6 w-6 flex-shrink-0 rounded-full object-cover" />
             )}
             <div
               className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${

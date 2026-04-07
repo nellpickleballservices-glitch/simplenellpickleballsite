@@ -244,14 +244,14 @@ export function PackagesSection({ locale }: { locale: string }) {
                         {pkg.title[locale as 'en' | 'es']}
                       </h3>
                     </div>
-                    <p className="text-white/80 text-xs uppercase tracking-widest">
+                    <p className="text-white text-xs uppercase tracking-widest">
                       {pkg.subtitle[locale as 'en' | 'es']}
                     </p>
                     <div className="mt-auto pt-4 border-t border-offwhite/10 flex items-center justify-between">
-                      <span className="text-white/50 text-xs uppercase tracking-widest">
+                      <span className={`text-${pkg.accentVar} text-xs uppercase tracking-widest font-medium`}>
                         {locale === 'en' ? 'Tap for details' : 'Toca para ver detalles'}
                       </span>
-                      <svg className={`w-5 h-5 text-${pkg.accentVar}/60`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className={`w-5 h-5 text-${pkg.accentVar}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                       </svg>
                     </div>
@@ -281,10 +281,10 @@ export function PackagesSection({ locale }: { locale: string }) {
                         {t.title[locale as 'en' | 'es']}
                       </h4>
                       <div className="mt-auto pt-4 border-t border-offwhite/10 flex items-center justify-between">
-                        <span className="text-white/50 text-xs uppercase tracking-widest">
+                        <span className={`text-${t.accentVar} text-xs uppercase tracking-widest font-medium`}>
                           {locale === 'en' ? 'Tap for details' : 'Toca para ver detalles'}
                         </span>
-                        <svg className={`w-5 h-5 text-${t.accentVar}/60`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg className={`w-5 h-5 text-${t.accentVar}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
                       </div>

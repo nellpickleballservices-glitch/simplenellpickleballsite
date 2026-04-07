@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   // Validate API key
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json(
-      { error: 'configuration_error', message: 'Nelly is unavailable right now. Please try again later.' },
+      { error: 'configuration_error', message: 'Nell is unavailable right now. Please try again later.' },
       { status: 500 },
     )
   }
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
     }
   } catch (e) {
     console.error('[chat] CMS fetch error:', e)
-    // If CMS fetch fails, continue with empty knowledge — Nelly still works
+    // If CMS fetch fails, continue with empty knowledge — Nell still works
   }
 
   // ---------------------------------------------------------------------------
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
   // ---------------------------------------------------------------------------
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? ''
 
-  const systemPrompt = `You are Nelly, the friendly AI assistant for NELL Pickleball Club in Bavaro, Dominican Republic.
+  const systemPrompt = `You are Nell, the friendly AI assistant for NELL Pickleball Club in Bavaro, Dominican Republic.
 Your name plays on the club name NELL, inspired by founder Maria Nelly Mercedes Carrasco.
 
 RULES:
@@ -198,7 +198,7 @@ ${eventsText}`
   } catch (e) {
     console.error('[chat] Groq API error:', e)
     return NextResponse.json(
-      { error: 'api_error', message: 'Nelly is unavailable right now. Please try again later.' },
+      { error: 'api_error', message: 'Nell is unavailable right now. Please try again later.' },
       { status: 500 },
     )
   }
