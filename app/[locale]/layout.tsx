@@ -91,7 +91,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={`${bebasNeue.variable} ${poppins.variable} ${bungee.variable}`}>
-      <body className="font-poppins">
+      <body className="font-poppins bg-midnight overflow-x-hidden">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

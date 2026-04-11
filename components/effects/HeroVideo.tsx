@@ -4,11 +4,11 @@
 export function HeroVideo() {
   return (
     <div className="absolute inset-0 z-[1]" aria-hidden="true">
-      {/* Mobile: static image */}
+      {/* Mobile: static image — positioned relative to hero section */}
       <img
         src="/images/siteImages/hero-mobile-img.jpeg"
         alt="Pickleball players at NELL Pickleball Club in Bavaro, Dominican Republic"
-        className="absolute inset-0 w-full h-full object-cover md:hidden"
+        className="absolute top-0 left-0 right-0 w-full h-auto object-contain object-top bg-midnight md:hidden"
       />
       {/* Desktop: autoplay video */}
       <video

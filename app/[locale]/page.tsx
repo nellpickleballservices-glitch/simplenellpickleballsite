@@ -84,16 +84,86 @@ async function HomePage({ searchParams }: HomePageProps) {
       <main className="min-h-screen bg-midnight">
         {showWelcome && firstName && <WelcomeBanner firstName={firstName} />}
 
-        {/* -- HERO -- */}
-        <section className="relative flex items-end min-h-screen overflow-hidden">
+        {/* -- HERO — Mobile: image banner with content below -- */}
+        <section className="md:hidden bg-midnight">
+          {/* Hero image */}
+          <div className="relative">
+            <img
+              src="/images/siteImages/hero-mobile-img.jpeg"
+              alt="Pickleball players at NELL Pickleball Club in Bavaro, Dominican Republic"
+              className="w-full h-auto object-contain object-top block"
+            />
+            {/* Badge over the top-left of image */}
+            <div className="absolute top-2 left-4 z-[10]">
+              <ScrollReveal delay={0}>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-offwhite/10 bg-black/30 backdrop-blur-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-3 h-3 text-lime shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.013 3.5-4.799 3.5-8.327a8.25 8.25 0 00-16.5 0c0 3.527 1.557 6.314 3.5 8.328a19.583 19.583 0 002.683 2.281 16.975 16.975 0 001.144.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-lime text-xs font-medium tracking-widest uppercase">
+                    {t('heroLocationBadge')}
+                  </span>
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* Content below image */}
+          <div className="w-full px-6 py-8">
+            <div className="max-w-2xl">
+              <ScrollReveal delay={0.15}>
+                <h1 className="font-bebas-neue text-[clamp(3.5rem,12vw,8rem)] leading-[1] tracking-widest text-offwhite mb-3 py-1 drop-shadow-[0_2px_20px_rgba(0,0,0,0.6)]">
+                  {t('heroHeadline')}
+                </h1>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.3}>
+                <p className="font-bebas-neue text-[clamp(1.2rem,4vw,2.5rem)] leading-[1.2] text-sunset tracking-[0.3em] uppercase mb-8 pr-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+                  {t('title')}&nbsp;{t('subtitle')}
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.45}>
+                <div className="w-24 h-[3px] bg-gradient-to-r from-lime/60 to-transparent mb-8" />
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.55}>
+                <p className="text-white text-base sm:text-lg max-w-lg leading-relaxed mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
+                  {t('heroSubheadline')}
+                </p>
+              </ScrollReveal>
+
+              {!user && (
+                <ScrollReveal delay={0.75}>
+                  <GlowButton href="/signup" variant="lime">
+                    {t('heroCta')}
+                  </GlowButton>
+                </ScrollReveal>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* -- HERO — Desktop: full-screen video with overlay -- */}
+        <section className="relative hidden md:flex items-end min-h-screen overflow-hidden">
 
           {/* Background video with dark overlay */}
           <HeroVideo />
 
-          {/* Location badge — pinned to top, right below navbar */}
-          <div className="absolute top-[10px] left-6 sm:left-12 lg:left-20 z-[10]">
+          {/* Location badge — top-left */}
+          <div className="absolute top-4 left-20 z-[10]">
             <ScrollReveal delay={0}>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-offwhite/10 bg-black/30 backdrop-blur-sm">
+              <div className="h-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-offwhite/10 bg-black/30 backdrop-blur-sm">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -115,7 +185,7 @@ async function HomePage({ searchParams }: HomePageProps) {
           </div>
 
           {/* Content pinned to bottom-left over the video */}
-          <div className="relative z-[10] w-full px-6 sm:px-12 lg:px-20 pb-[174px] sm:pb-[178px] lg:pb-[182px] pt-[15vh] sm:pt-[15vh]">
+          <div className="relative z-[10] w-full px-12 lg:px-20 pb-[174px] lg:pb-[182px] pt-[15vh]">
             <div className="max-w-2xl">
               {/* Main headline */}
               <ScrollReveal delay={0.15}>
@@ -133,7 +203,7 @@ async function HomePage({ searchParams }: HomePageProps) {
 
               {/* Accent divider */}
               <ScrollReveal delay={0.45}>
-                <div className="w-16 h-px bg-gradient-to-r from-lime/60 to-transparent mb-8" />
+                <div className="w-24 h-[3px] bg-gradient-to-r from-lime/60 to-transparent mb-8" />
               </ScrollReveal>
 
               {/* Sub-headline */}
