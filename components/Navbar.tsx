@@ -35,7 +35,7 @@ export async function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-3 py-3 flex items-center justify-between relative">
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-3 py-3 flex items-center justify-between">
       {/* Brand */}
       <Link href="/" className="flex items-center shrink-0 min-w-0">
         <Image src="/images/icons/NellLogo.png" alt="NELL" width={120} height={60} priority className="h-[60px] w-[120px] sm:h-[75px] sm:w-[150px] md:h-[100px] md:w-[200px] origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />

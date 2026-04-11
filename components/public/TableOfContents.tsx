@@ -51,8 +51,8 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
 
   return (
     <>
-      {/* Desktop: sticky sidebar */}
-      <nav className="hidden lg:block sticky top-36 self-start w-56 shrink-0">
+      {/* Desktop: sticky sidebar — stays in its column */}
+      <nav className="hidden lg:block sticky top-36 w-56">
         <div className="bg-charcoal/80 backdrop-blur-sm rounded-xl p-4 border border-charcoal">
           <ul className="flex flex-col gap-1">
             {sections.map((section) => (
@@ -73,29 +73,8 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
         </div>
       </nav>
 
-      {/* Mobile: collapsible accordion */}
-      <div className="lg:hidden sticky top-[140px] z-20 mb-6">
-        <button
-          onClick={() => setMobileOpen((v) => !v)}
-          className="w-full flex items-center justify-between bg-charcoal/90 backdrop-blur-sm border border-charcoal rounded-xl px-4 py-3 text-offwhite"
-        >
-          <span className="text-sm font-semibold">
-            {sections.find((s) => s.id === activeId)?.label ?? 'Contents'}
-          </span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className={`w-5 h-5 transition-transform ${mobileOpen ? 'rotate-180' : ''}`}
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-
+      {/* Mobile: floating collapsible TOC button */}
+      <div className="lg:hidden fixed bottom-6 left-4 right-4 z-40">
         <AnimatePresence>
           {mobileOpen && (
             <m.div
@@ -103,9 +82,9 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="overflow-hidden"
+              className="overflow-hidden mb-2"
             >
-              <div className="bg-charcoal/90 backdrop-blur-sm border border-charcoal border-t-0 rounded-b-xl px-4 pb-3">
+              <div className="bg-charcoal/95 backdrop-blur-sm border border-charcoal rounded-xl px-4 pb-3 pt-2">
                 <ul className="flex flex-col gap-1">
                   {sections.map((section) => (
                     <li key={section.id}>
@@ -126,6 +105,27 @@ export function TableOfContents({ sections }: TableOfContentsProps) {
             </m.div>
           )}
         </AnimatePresence>
+
+        <button
+          onClick={() => setMobileOpen((v) => !v)}
+          className="w-full flex items-center justify-between bg-charcoal/95 backdrop-blur-sm border border-lime/30 rounded-xl px-4 py-3 text-offwhite shadow-lg shadow-black/30"
+        >
+          <span className="text-sm font-semibold">
+            {mobileOpen ? 'Close Contents' : '📖 Table of Contents'}
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className={`w-5 h-5 transition-transform ${mobileOpen ? 'rotate-180' : ''}`}
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
       </div>
     </>
   )

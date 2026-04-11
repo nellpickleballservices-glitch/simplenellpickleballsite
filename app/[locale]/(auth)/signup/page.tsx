@@ -8,7 +8,7 @@ async function SignupPage() {
   const tBrand = await getTranslations('Brand')
 
   return (
-    <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12">
+    <main className="min-h-screen bg-midnight flex items-center justify-center px-4 py-12 pt-[146px]">
       <div className="w-full max-w-md sm:max-w-lg lg:max-w-3xl">
         {/* NELL Logo */}
         <div className="relative text-center mb-8">

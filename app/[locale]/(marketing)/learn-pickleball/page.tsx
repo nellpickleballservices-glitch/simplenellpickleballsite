@@ -186,9 +186,10 @@ export default async function LearnPickleballPage() {
 
       {/* ━━━ Content + TOC ━━━ */}
       <section className="pb-24 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8">
-          <TableOfContents sections={t.sections} />
-
+        <div className="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row gap-8">
+          <div className="hidden lg:block w-56 shrink-0">
+            <TableOfContents sections={t.sections} />
+          </div>
           <div className="flex-1 min-w-0">
             {/* ─── What is Pickleball? ─── */}
             <div id="what" className="mb-20 scroll-mt-24">

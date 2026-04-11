@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git show *)",
+      "Bash(git diff *)",
+      "Bash(marketing)",
+      "Bash(/learn-pickleball/page.tsx)"
+    ]
+  },
+  "$version": 3
+}

@@ -81,7 +81,7 @@ async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <MotionProvider>
-      <main className="min-h-screen bg-midnight">
+      <main className="min-h-screen bg-midnight pt-[120px]">
         {showWelcome && firstName && <WelcomeBanner firstName={firstName} />}
 
         {/* -- HERO — Mobile: image banner with content below -- */}
