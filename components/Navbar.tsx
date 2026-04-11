@@ -35,10 +35,10 @@ export async function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-6 py-3 flex flex-wrap items-center justify-between relative">
+    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between relative overflow-x-hidden">
       {/* Brand */}
-      <Link href="/" className="flex items-center">
-        <Image src="/images/icons/NellLogo.png" alt="NELL" width={200} height={100} priority className="h-[100px] w-[200px] scale-125 origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
+      <Link href="/" className="flex items-center shrink-0">
+        <Image src="/images/icons/NellLogo.png" alt="NELL" width={150} height={75} priority className="h-[75px] w-[150px] sm:h-[100px] sm:w-[200px] scale-125 origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
       </Link>
 
       {/* Desktop nav */}
