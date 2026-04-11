@@ -27,6 +27,21 @@
   --color-danger: #EF4444;
 }
 
+/* Prevent horizontal overflow globally (doesn't clip fixed elements like dropdown menus) */
+html {
+  overflow-x: clip;
+}
+
+/* Hide visual scrollbar track while keeping scroll functionality */
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+body {
+  scrollbar-width: none; /* Firefox */
+}
+
 /* ---- Effect Animations ---- */
 
 @keyframes glow-pulse {

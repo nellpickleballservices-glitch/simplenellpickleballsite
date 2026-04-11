@@ -78,7 +78,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   ]
 
   return (
-    <div className="lg:hidden">
+    <div className="min-[500px]:hidden">
       {/* Hamburger / X toggle button */}
       <button
         ref={buttonRef}

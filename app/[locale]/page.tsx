@@ -81,7 +81,7 @@ async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <MotionProvider>
-      <main className="min-h-screen bg-midnight overflow-x-hidden">
+      <main className="min-h-screen bg-midnight">
         {showWelcome && firstName && <WelcomeBanner firstName={firstName} />}
 
         {/* -- HERO — Mobile: image banner with content below -- */}
@@ -155,7 +155,7 @@ async function HomePage({ searchParams }: HomePageProps) {
         </section>
 
         {/* -- HERO — Desktop: full-screen video with overlay -- */}
-        <section className="relative hidden md:flex items-end min-h-screen overflow-hidden">
+        <section className="relative hidden md:flex items-end min-h-dvh overflow-hidden">
 
           {/* Background video with dark overlay */}
           <HeroVideo />

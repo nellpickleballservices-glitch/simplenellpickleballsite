@@ -35,29 +35,29 @@ export async function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between relative overflow-x-hidden">
+    <nav className="sticky top-0 z-50 w-full bg-midnight/95 backdrop-blur-md border-b border-charcoal px-3 py-3 flex items-center justify-between relative">
       {/* Brand */}
-      <Link href="/" className="flex items-center shrink-0">
-        <Image src="/images/icons/NellLogo.png" alt="NELL" width={150} height={75} priority className="h-[75px] w-[150px] sm:h-[100px] sm:w-[200px] scale-125 origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
+      <Link href="/" className="flex items-center shrink-0 min-w-0">
+        <Image src="/images/icons/NellLogo.png" alt="NELL" width={120} height={60} priority className="h-[60px] w-[120px] sm:h-[75px] sm:w-[150px] md:h-[100px] md:w-[200px] origin-left drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
       </Link>
 
-      {/* Desktop nav */}
-      <div className="hidden lg:flex items-center gap-6">
+      {/* Desktop nav — smaller on tablet, full size at 1024px+ */}
+      <div className="hidden min-[500px]:flex items-center gap-2 lg:gap-5">
         {/* Public page links */}
-        <NavLink href="/#packages">{t('reservations')}</NavLink>
-        <NavLink href="/learn-pickleball">{t('learn')}</NavLink>
-        <NavLink href="/gallery">{t('gallery')}</NavLink>
-        <NavLink href="/contact">{t('contact')}</NavLink>
+        <NavLink href="/#packages" className="text-xs lg:text-sm">{t('reservations')}</NavLink>
+        <NavLink href="/learn-pickleball" className="text-xs lg:text-sm">{t('learn')}</NavLink>
+        <NavLink href="/gallery" className="text-xs lg:text-sm">{t('gallery')}</NavLink>
+        <NavLink href="/contact" className="text-xs lg:text-sm">{t('contact')}</NavLink>
         {user ? (
           <>
-            <NavLink href="/dashboard">{firstName ?? t('dashboard')}</NavLink>
+            <NavLink href="/dashboard" className="text-xs lg:text-sm">{firstName ?? t('dashboard')}</NavLink>
             {isAdmin && (
-              <NavLink href="/n3ll-admin-x9k2">{tAdmin('adminNav')}</NavLink>
+              <NavLink href="/n3ll-admin-x9k2" className="text-xs lg:text-sm">{tAdmin('adminNav')}</NavLink>
             )}
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="font-bungee text-sm text-offwhite hover:text-lime transition-colors"
+                className="font-bungee text-xs lg:text-sm text-offwhite hover:text-lime transition-colors"
               >
                 {t('logout')}
               </button>
@@ -67,13 +67,13 @@ export async function Navbar() {
           <>
             <Link
               href="/login"
-              className="font-bungee text-sm text-offwhite hover:text-lime transition-colors"
+              className="font-bungee text-xs lg:text-sm text-offwhite hover:text-lime transition-colors"
             >
               {t('login')}
             </Link>
             <Link
               href="/signup"
-              className="font-bungee text-sm bg-lime text-midnight px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity"
+              className="font-bungee text-xs lg:text-sm bg-lime text-midnight px-3 py-1 lg:px-4 lg:py-1.5 rounded-full hover:opacity-90 transition-opacity"
             >
               {t('signup')}
             </Link>

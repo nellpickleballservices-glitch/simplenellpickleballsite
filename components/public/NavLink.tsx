@@ -65,7 +65,7 @@ export function NavLink({ href, children, className = '' }: NavLinkProps) {
     <Link
       href={href}
       onClick={handleClick}
-      className={`font-bungee text-sm transition-colors ${
+      className={`font-bungee transition-colors ${
         isActive
           ? 'text-lime'
           : 'text-offwhite hover:text-lime'
