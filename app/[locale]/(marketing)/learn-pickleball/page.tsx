@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { ScrollReveal } from '@/components/motion/ScrollReveal'
 import { HeroEntrance } from '@/components/motion/HeroEntrance'
-import { TableOfContents } from '@/components/public/TableOfContents'
+import { TableOfContentsDesktop, TableOfContentsMobile } from '@/components/public/TableOfContents'
 import { CourtDiagram } from '@/components/public/CourtDiagram'
 import { GlowButton } from '@/components/effects/GlowButton'
 import { FloatingParticles } from '@/components/effects/FloatingParticles'
@@ -184,15 +184,20 @@ export default async function LearnPickleballPage() {
         </HeroEntrance>
       </section>
 
+      {/* ━━━ Mobile TOC ━━━ */}
+      <div className="lg:hidden">
+        <TableOfContentsMobile sections={t.sections} />
+      </div>
+
       {/* ━━━ Content + TOC ━━━ */}
       <section className="pb-24 px-6">
         <div className="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row gap-8">
           <div className="hidden lg:block w-56 shrink-0">
-            <TableOfContents sections={t.sections} />
+            <TableOfContentsDesktop sections={t.sections} />
           </div>
           <div className="flex-1 min-w-0">
             {/* ─── What is Pickleball? ─── */}
-            <div id="what" className="mb-20 scroll-mt-24">
+            <div id="what" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[0].label} />
 
@@ -258,7 +263,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── History & Origin ─── */}
-            <div id="origin" className="mb-20 scroll-mt-24">
+            <div id="origin" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[1].label} />
 
@@ -320,7 +325,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Basic Rules ─── */}
-            <div id="rules" className="mb-20 scroll-mt-24">
+            <div id="rules" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[2].label} />
 
@@ -422,7 +427,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Scoring ─── */}
-            <div id="scoring" className="mb-20 scroll-mt-24">
+            <div id="scoring" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[3].label} />
 
@@ -524,7 +529,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Court Dimensions ─── */}
-            <div id="court" className="mb-20 scroll-mt-24">
+            <div id="court" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[4].label} />
 
@@ -571,7 +576,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Equipment ─── */}
-            <div id="equipment" className="mb-20 scroll-mt-24">
+            <div id="equipment" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[5].label} />
 
@@ -690,7 +695,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Essential Shots ─── */}
-            <div id="shots" className="mb-20 scroll-mt-24">
+            <div id="shots" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[6].label} />
 
@@ -815,7 +820,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Strategy & Tips ─── */}
-            <div id="strategy" className="mb-20 scroll-mt-24">
+            <div id="strategy" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[7].label} />
 
@@ -912,7 +917,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── Court Etiquette ─── */}
-            <div id="etiquette" className="mb-20 scroll-mt-24">
+            <div id="etiquette" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[8].label} />
 
@@ -954,7 +959,7 @@ export default async function LearnPickleballPage() {
             </div>
 
             {/* ─── FAQ ─── */}
-            <div id="faq" className="mb-20 scroll-mt-24">
+            <div id="faq" className="mb-20 scroll-mt-[130px] lg:scroll-mt-24">
               <ScrollReveal>
                 <SectionHeading label={t.sections[9].label} />
 

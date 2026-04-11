@@ -90,8 +90,8 @@ export default async function RootLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} className={`${bebasNeue.variable} ${poppins.variable} ${bungee.variable}`}>
-      <body className="font-poppins bg-midnight overflow-x-hidden">
+    <html lang={locale} className={`${bebasNeue.variable} ${poppins.variable} ${bungee.variable} overflow-x-hidden`}>
+      <body className="font-poppins bg-midnight">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
