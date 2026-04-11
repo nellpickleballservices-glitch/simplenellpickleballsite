@@ -78,7 +78,7 @@ export function MobileNav({ user, firstName, isAdmin }: MobileNavProps) {
   ]
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       {/* Hamburger / X toggle button */}
       <button
         ref={buttonRef}

@@ -42,7 +42,7 @@ export async function Navbar() {
       </Link>
 
       {/* Desktop nav */}
-      <div className="hidden md:flex items-center gap-6">
+      <div className="hidden lg:flex items-center gap-6">
         {/* Public page links */}
         <NavLink href="/#packages">{t('reservations')}</NavLink>
         <NavLink href="/learn-pickleball">{t('learn')}</NavLink>
